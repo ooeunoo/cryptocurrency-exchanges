@@ -1,0 +1,28 @@
+abstract class Exchange {
+  public abstract fetchMarkets(): any
+  public abstract fetchBalance(): any
+  public abstract fetchOrderBooks(): any
+  public abstract fetchOrderBook(): any
+  public abstract fetchTickers(): any
+  public abstract fetchTicker(): any
+  public abstract fetchTrades(): any
+  public abstract fetchTradingFee(): any
+  public abstract fetchOHLCV(): any
+  public abstract createOrder(): any
+  public abstract cancelOrder(): any
+  public abstract fetchDeposits(): any
+  public abstract fetchDeposit(): any
+  public abstract fetchWithdrawals(): any
+  public abstract fetchWithdrawal(): any
+  public abstract fetchOpenOrders(): any
+  public abstract fetchClosedOrders(): any
+  public abstract fetchCanceledOrders(): any
+  public abstract fetchOrder(): any
+  public abstract fetchDepositAddresses(): any
+  public abstract fetchDepositAddress(): any
+  public abstract createDepositAddress(): any
+  public abstract withdraw(): any
+  public abstract watchTicker(): any
+  public abstract watchTrades(): any
+  public abstract watchOrderBook(): any
+}
