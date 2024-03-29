@@ -40,10 +40,12 @@ export const marketPriceConverter = (data: UpbitMarketPrice[]): ExchangeMarketPr
 };
 
 export const balanceConverter = (data: UpbitBalance[]): ExchangeBalance[] => {
-  return data.map(({ currency, balance }) => {
+  return data.map(({ currency, balance, locked, avg_buy_price }) => {
     return {
       currency,
       balance: toBigNumberString(balance),
+      lockedBalance: toBigNumberString(locked),
+      avgBuyPrice: toBigNumberString(avg_buy_price),
     };
   });
 };

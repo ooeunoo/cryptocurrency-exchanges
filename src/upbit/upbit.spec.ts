@@ -19,6 +19,10 @@ describe("UPBIT", () => {
       const result = await upbit.fetchMarketsPrices(markets.map(({ currency, unit }) => `${unit}-${currency}`));
       console.log(result);
     });
+    it("Fetch Order History", async () => {
+      const result = await upbit.fetchOrderHistory("BTC");
+      console.log(result);
+    });
   });
 
   describe("PRIVATE", () => {

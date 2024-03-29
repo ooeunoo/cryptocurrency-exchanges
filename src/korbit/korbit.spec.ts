@@ -20,39 +20,39 @@ describe("KORBIT", () => {
     });
   });
 
-  // describe("PRIVATE", () => {
-  //   let upbit: Upbit;
-  //   beforeAll(async () => {
-  //     const env = dotenv.config({
-  //       path: path.join(__dirname, "..", "..", ".env"),
-  //     }).parsed;
+  describe("PRIVATE", () => {
+    let korbit: Korbit;
+    beforeAll(async () => {
+      const env = dotenv.config({
+        path: path.join(__dirname, "..", "..", ".env"),
+      }).parsed;
 
-  //     upbit = new Upbit(env.UPBIT_ACCESS_KEY, env.UPBIT_SECRET_KEY);
-  //   });
+      korbit = new Korbit(env.KORBIT_API_KEY, env.KORBIT_SECRET_KEY);
+    });
 
-  //   it("Fetch Balances", async () => {
-  //     const result = await upbit.fetchBalances();
-  //     console.log(result);
-  //   });
+    it("Fetch Balances", async () => {
+      const result = await korbit.fetchBalances();
+      console.log(result);
+    });
 
-  //   it("Fetch Deposit Histories", async () => {
-  //     const result = await upbit.fetchDepositHistory("BTC");
-  //     console.log(result);
-  //   });
+    // it("Fetch Deposit Histories", async () => {
+    //   const result = await upbit.fetchDepositHistory("BTC");
+    //   console.log(result);
+    // });
 
-  //   it("Fetch Withdraw History", async () => {
-  //     const result = await upbit.fetchWithdrawHistory("BTC");
-  //     console.log(result);
-  //   });
+    // it("Fetch Withdraw History", async () => {
+    //   const result = await upbit.fetchWithdrawHistory("BTC");
+    //   console.log(result);
+    // });
 
-  //   it("Fetch Deposit Addresses", async () => {
-  //     const result = await upbit.fetchDepositAddress("BTC", "BTC");
-  //     console.log(result);
-  //   });
+    // it("Fetch Deposit Addresses", async () => {
+    //   const result = await upbit.fetchDepositAddress("BTC", "BTC");
+    //   console.log(result);
+    // });
 
-  //   it("Fetch Order History", async () => {
-  //     const result = await upbit.fetchOrderHistory("BTC");
-  //     console.log(result);
-  //   });
-  // });
+    // it("Fetch Order History", async () => {
+    //   const result = await upbit.fetchOrderHistory("BTC");
+    //   console.log(result);
+    // });
+  });
 });

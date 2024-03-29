@@ -34,6 +34,17 @@ import {
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
+import { CREDENTITAL_NOT_SETTED } from "@common/error";
+
+function UpbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (!this.accessKey || !this.secretKey) {
+      throw new Error(CREDENTITAL_NOT_SETTED);
+    }
+    return originalMethod.apply(this, args);
+  };
+}
 
 export class Upbit extends Exchange {
   private accessKey: string;
@@ -47,20 +58,28 @@ export class Upbit extends Exchange {
 
   /* ------------------마켓 조회-------------------- */
   public async fetchMarkets(): Promise<ExchangeMarket[]> {
-    return requestPublic<UpbitMarket[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, marketConverter);
+    return requestPublic<UpbitMarket[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null, marketConverter);
   }
 
   /* ------------------마켓 현재가 조회-------------------- */
   public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
-    return requestPublic<UpbitMarketPrice[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.ticker, { markets: markets.join(",") }, marketPriceConverter);
+    return requestPublic<UpbitMarketPrice[]>(
+      Method.GET,
+      UPBIT_BASE_URL,
+      UPBIT_PUBLIC_ENDPOINT.ticker,
+      { markets: markets.join(",") },
+      null,
+      marketPriceConverter,
+    );
   }
 
   /* ------------------잔액 조회-------------------- */
-  public async fetchBalances(): Promise<ExchangeBalance[]> {
+  @UpbitPrivate
+  public async fetchBalances(currency?: string): Promise<ExchangeBalance[]> {
     return requestSign<UpbitBalance[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT.balance, this._header(), null, null, balanceConverter);
   }
-
   /* ------------------입금 주소 조회-------------------- */
+  @UpbitPrivate
   public async fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress> {
     const params = { currency, net_type: network };
     return requestSign<UpbitDepositAddress>(
@@ -73,8 +92,8 @@ export class Upbit extends Exchange {
       depositAddressesConverter,
     );
   }
-
   /* ------------------입금 내역 조회-------------------- */
+  @UpbitPrivate
   public async fetchDepositHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -91,8 +110,8 @@ export class Upbit extends Exchange {
       depositHistoryConverter,
     );
   }
-
   /* ------------------출금 내역 조회-------------------- */
+  @UpbitPrivate
   public async fetchWithdrawHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -109,13 +128,14 @@ export class Upbit extends Exchange {
       withdrawHistoryConverter,
     );
   }
-
   /* ------------------주문 내역 조회-------------------- */
+  @UpbitPrivate
   public async fetchOrderHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeOrderHistory[]> {
+    console.log("herer");
     const params = { currency, page, limit };
     return requestSign<UpbitOrderHistory[]>(
       Method.GET,
@@ -127,8 +147,7 @@ export class Upbit extends Exchange {
       orderHistoryConverter,
     );
   }
-
-  /* -------------------------------------- */
+  /* -----------------헤더------------------ */
   private _header(params?: any): RawAxiosRequestHeaders {
     const payload: any = {
       access_key: this.accessKey,

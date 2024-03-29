@@ -15,9 +15,5 @@ export abstract class Exchange {
   public abstract fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress>;
   public abstract fetchOrderHistory(currency: string, page: number, limit: number): Promise<ExchangeOrderHistory[]>;
   public abstract fetchDepositHistory(currency: string, page: number, limit: number): Promise<ExchangeDepositHistory[]>;
-  public abstract fetchWithdrawHistory(
-    currency: string,
-    page: number,
-    limit: number,
-  ): Promise<ExchangeWithdrawHistory[]>;
+  public abstract fetchWithdrawHistory(currency: string, page: number, limit: number): Promise<ExchangeWithdrawHistory[]>;
 }

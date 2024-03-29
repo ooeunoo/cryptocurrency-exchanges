@@ -66,17 +66,18 @@ export const marketPriceConverterBTC = (data: IBithumbResponse<BithumbTicker[]>)
 };
 export const balanceConverter = (data: IBithumbResponse<BithumbBalance[]>): ExchangeBalance[] => {
   const pdata = data.data;
-
   const result: ExchangeBalance[] = [];
-
   Object.keys(pdata).forEach((key) => {
     if (key.startsWith("total_")) {
       const balance = pdata[key];
       if (parseFloat(balance) > 0) {
         const [, currency] = key.split("_");
+        const lockedBalance = pdata[`in_use_${currency}`];
         result.push({
           currency: currency.toUpperCase(),
           balance: toBigNumberString(balance),
+          lockedBalance: toBigNumberString(lockedBalance),
+          avgBuyPrice: null,
         });
       }
     }

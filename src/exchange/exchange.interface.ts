@@ -30,20 +30,22 @@ export enum OrderSide {
 }
 
 export interface ExchangeMarket {
-  currency: string;
-  unit: string;
+  currency: string; // 통화 화폐
+  unit: string; // 마켓
 }
 
 export interface ExchangeBalance {
-  currency: string;
-  balance: string;
+  currency: string; // 통화 화폐
+  balance: string; // 유동 수량
+  lockedBalance: string; // 묶여있는 수량
+  avgBuyPrice: string; // 평단가
 }
 
 export interface ExchangeDepositAddress {
-  currency: string;
-  network: string;
-  address: string;
-  memo: string;
+  currency: string; // 통화 화폐
+  network: string; // 네트워크
+  address: string; // 주소
+  memo: string; // 메모 (태그) ex) 리플
 }
 
 export interface ExchangeDepositHistory {

@@ -33,6 +33,17 @@ import {
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
+import { CREDENTITAL_NOT_SETTED } from "@common/error";
+
+function BithumbPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (!this.connectKey || !this.secretKey) {
+      throw new Error(CREDENTITAL_NOT_SETTED);
+    }
+    return originalMethod.apply(this, args);
+  };
+}
 
 export class Bithumb extends Exchange {
   private connectKey: string;
@@ -47,14 +58,18 @@ export class Bithumb extends Exchange {
   /* ------------------마켓 조회-------------------- */
   public async fetchMarkets(): Promise<ExchangeMarket[]> {
     const resultkrw = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+      Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_KRW",
+      null,
       null,
       marketConverterKRW,
     );
     const resultbtc = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+      Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_BTC",
+      null,
       null,
       marketConverterBTC,
     );
@@ -64,48 +79,53 @@ export class Bithumb extends Exchange {
   public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
     markets;
     const resultkrw = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+      Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_KRW",
+      null,
       null,
       marketPriceConverterKRW,
     );
     const resultbtc = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+      Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_BTC",
+      null,
       null,
       marketPriceConverterBTC,
     );
     return resultkrw.concat(resultbtc);
   }
   /* ------------------잔액 조회-------------------- */
+  @BithumbPrivate
   public async fetchBalances(): Promise<ExchangeBalance[]> {
     const params = { currency: "ALL" };
     return requestSign<IBithumbResponse<BithumbBalance[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
-      BITHUMB_PRIVATE_DOMAIN.info_balanace,
-      this._headers(BITHUMB_PRIVATE_DOMAIN.info_balanace, params),
+      BITHUMB_PRIVATE_DOMAIN.balance,
+      this._headers(BITHUMB_PRIVATE_DOMAIN.balance, params),
       queystring.stringify(params),
       null,
       balanceConverter,
     );
   }
-
   /* ------------------입금 주소 조회-------------------- */
+  @BithumbPrivate
   public async fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress> {
     const params = { currency, net_type: network };
     return requestSign<IBithumbResponse<BithumbDepositAddress>>(
       Method.POST,
       BITHUMB_BASE_URL,
-      BITHUMB_PRIVATE_DOMAIN.info_wallet_address,
-      this._headers(BITHUMB_PRIVATE_DOMAIN.info_wallet_address, params),
+      BITHUMB_PRIVATE_DOMAIN.deposit_address,
+      this._headers(BITHUMB_PRIVATE_DOMAIN.deposit_address, params),
       queystring.stringify(params),
       null,
       depositAddressesConverter,
     );
   }
-
   /* ------------------입금 내역 조회-------------------- */
+  @BithumbPrivate
   public async fetchDepositHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -122,8 +142,8 @@ export class Bithumb extends Exchange {
       depositHistoryConverter,
     );
   }
-
   /* ------------------출금 내역 조회-------------------- */
+  @BithumbPrivate
   public async fetchWithdrawHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -140,8 +160,8 @@ export class Bithumb extends Exchange {
       withdrawHistoryConverter,
     );
   }
-
   /* ------------------주문 내역 조회-------------------- */
+  @BithumbPrivate
   public async fetchOrderHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -159,6 +179,7 @@ export class Bithumb extends Exchange {
     );
   }
 
+  /* ------------------헤더-------------------- */
   private _headers(endpoint, parameters) {
     const nonce = new Date().getTime();
     const requestSignature = `${endpoint}${String.fromCharCode(0)}${queystring.stringify(parameters)}${String.fromCharCode(0)}${nonce}`;
