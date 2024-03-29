@@ -3,20 +3,22 @@ export interface IBithumbResponse<T> {
   data?: T;
 }
 
+interface BithumbTickerData {
+  opening_price: string;
+  closing_price: string;
+  min_price: string;
+  max_price: string;
+  units_traded: string;
+  acc_trade_value: string;
+  prev_closing_price: string;
+  units_traded_24H: string;
+  acc_trade_value_24H: string;
+  fluctate_24H: string;
+  fluctate_rate_24H: string;
+}
+
 export interface BithumbTicker {
-  [currency: string]: {
-    opening_price: string; // "54353000";
-    closing_price: string; // "53768000";
-    min_price: string; // "53000000";
-    max_price: string; // "54610000";
-    units_traded: string; // "1378.61062205";
-    acc_trade_value: string; // "74345961713.2492";
-    prev_closing_price: string; // "54372000";
-    units_traded_24H: string; // "3486.39812606";
-    acc_trade_value_24H: string; // "191016108210.6192";
-    fluctate_24H: string; // "-1974000";
-    fluctate_rate_24H: string; // "-3.54";
-  };
+  [currency: string]: BithumbTickerData | string; // date 필드
 }
 
 export interface BithumbBalance {
@@ -51,7 +53,16 @@ export interface BithumbWithdrawHistory {
   payment_balance: string; // "1140499718";
 }
 
-export interface BithumbOrderHistory {}
+export interface BithumbOrderHistory {
+  order_currency: string; // "BTC";
+  payment_currency: string; // "KRW";
+  order_id: string; // "C0101000007408440032";
+  order_date: string; // "1571728739360570";
+  type: string; // "bid";
+  units: string; // "5.0";
+  units_remaining: string; // "5.0";
+  price: string; // "501000";
+}
 
 export interface BithumbDepositAddress {
   wallet_address: string; // "1H7WL8Lb8mxCTwpL1RN8yckL2gcPLgqtqD";

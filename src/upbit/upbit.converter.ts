@@ -1,31 +1,54 @@
-import { Market } from "src/interface/market";
-import { UpbitBalance, UpbitDepositAddress, UpbitDepositHistory, UpbitMarket, UpbitOrderHistory, UpbitWithdrawHistory } from "./upbit.interface";
-import { Balance } from "src/interface/balance";
-import { DepositAddress } from "src/interface/depositAddress";
-import { DepositHistory } from "src/interface/depositHistory";
-import { WithdrawHistory } from "src/interface/withdrawHistory";
-import { OrderHistory } from "src/interface/orderHistory";
+import { toBigNumberString } from "@utils/number";
+import {
+  ExchangeBalance,
+  ExchangeDepositAddress,
+  ExchangeDepositHistory,
+  ExchangeMarket,
+  ExchangeMarketPrice,
+  ExchangeOrderHistory,
+  ExchangeWithdrawHistory,
+} from "@exchange/exchange.interface";
+import {
+  UpbitBalance,
+  UpbitDepositAddress,
+  UpbitDepositHistory,
+  UpbitMarket,
+  UpbitMarketPrice,
+  UpbitOrderHistory,
+  UpbitWithdrawHistory,
+} from "@upbit/upbit.interface";
 
-export const marketConverter = (data: UpbitMarket[]): Market[] => {
+export const marketConverter = (data: UpbitMarket[]): ExchangeMarket[] => {
   return data.map(({ market }) => {
     const [unit, currency] = market.split("-");
     return {
       currency,
       unit,
-    } as Market;
+    };
   });
 };
 
-export const balanceConverter = (data: UpbitBalance[]): Balance[] => {
+export const marketPriceConverter = (data: UpbitMarketPrice[]): ExchangeMarketPrice[] => {
+  return data.map(({ market, trade_price }) => {
+    const [unit, currency] = market.split("-");
+    return {
+      currency,
+      unit,
+      price: toBigNumberString(trade_price),
+    };
+  });
+};
+
+export const balanceConverter = (data: UpbitBalance[]): ExchangeBalance[] => {
   return data.map(({ currency, balance }) => {
     return {
       currency,
-      balance,
-    } as Balance;
+      balance: toBigNumberString(balance),
+    };
   });
 };
 
-export const depositAddressesConverter = (data: UpbitDepositAddress): DepositAddress => {
+export const depositAddressesConverter = (data: UpbitDepositAddress): ExchangeDepositAddress => {
   return {
     currency: data.currency,
     network: data.net_type,
@@ -34,47 +57,48 @@ export const depositAddressesConverter = (data: UpbitDepositAddress): DepositAdd
   };
 };
 
-export const depositHistoryConverter = (data: UpbitDepositHistory[]): DepositHistory[] => {
+export const depositHistoryConverter = (data: UpbitDepositHistory[]): ExchangeDepositHistory[] => {
   console.log(data);
   return data.map(({ currency, txid, state, created_at, done_at, amount, fee }) => {
     return {
       type: "deposit",
       txId: txid,
       currency,
-      amount,
-      fee,
+      amount: toBigNumberString(amount),
+      fee: toBigNumberString(fee),
       state,
       createdAt: created_at,
       confirmedAt: done_at,
-    } as DepositHistory;
+    };
   });
 };
 
-export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): WithdrawHistory[] => {
+export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): ExchangeWithdrawHistory[] => {
   return data.map(({ currency, txid, state, created_at, done_at, amount, fee }) => {
     return {
       type: "withdraw",
       txId: txid,
       currency,
-      amount,
-      fee,
+      amount: toBigNumberString(amount),
+      fee: toBigNumberString(fee),
       state,
       createdAt: created_at,
       confirmedAt: done_at,
-    } as WithdrawHistory;
+    };
   });
 };
 
-export const orderHistoryConverter = (data: UpbitOrderHistory[]): OrderHistory[] => {
-  return data.map(({ market, price, created_at, volume, paid_fee }) => {
+export const orderHistoryConverter = (data: UpbitOrderHistory[]): ExchangeOrderHistory[] => {
+  return data.map(({ market, price, side, created_at, volume, paid_fee }) => {
     const [unit, currency] = market.split("-");
     return {
       currency,
       unit,
-      price,
-      amount: volume,
-      fee: paid_fee,
+      side,
+      price: toBigNumberString(price),
+      amount: toBigNumberString(volume),
+      fee: toBigNumberString(paid_fee),
       createdAt: created_at,
-    } as OrderHistory;
+    };
   });
 };

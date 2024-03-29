@@ -26,6 +26,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/request": "^2.48.12",
     "axios": "^1.6.8",
+    "bignumber.js": "^9.1.2",
     "crypto-js": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.1.13",
@@ -73,6 +74,14 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@exchange/(.*)$": "<rootDir>/exchange/$1",
+      "^@bithumb/(.*)$": "<rootDir>/bithumb/$1",
+      "^@upbit/(.*)$": "<rootDir>/upbit/$1",
+      "^@common/(.*)$": "<rootDir>/common/$1",
+      "^@korbit/(.*)$": "<rootDir>/korbit/$1",
+      "^@utils/(.*)$": "<rootDir>/utils/$1"
+    }
   }
 }

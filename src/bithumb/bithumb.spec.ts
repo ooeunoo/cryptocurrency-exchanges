@@ -1,4 +1,4 @@
-import { Bithumb } from "./bithumb";
+import { Bithumb } from "@bithumb/bithumb";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
@@ -11,6 +11,11 @@ describe("Bithumb", () => {
 
     it("Fetch Market", async () => {
       const result = await bithumb.fetchMarkets();
+      console.log(result);
+    });
+
+    it("Fetch Market Price", async () => {
+      const result = await bithumb.fetchMarketsPrices([]);
       console.log(result);
     });
   });
@@ -27,30 +32,28 @@ describe("Bithumb", () => {
     });
 
     it("Fetch Balances", async () => {
-      const result = await bithumb.fetchBalance();
+      const result = await bithumb.fetchBalances();
       console.log(result);
     });
 
     it("Fetch Deposit Histories", async () => {
-      const result = await bithumb.fetchDepositHistory({ currency: "ETH", page: 1, limit: 10 });
+      const result = await bithumb.fetchDepositHistory("ETH");
       console.log(result);
     });
-    // it("Fetch Withdraw History", async () => {
-    //   const result = await upbit.fetchWithdrawHistory();
-    //   console.log(result);
-    // });
+
+    it("Fetch Withdraw History", async () => {
+      const result = await bithumb.fetchWithdrawHistory("ETC");
+      console.log(result);
+    });
 
     it("Fetch Deposit Addresses", async () => {
-      const result = await bithumb.fetchDepositAddress({
-        currency: "ETH",
-        network: "ETH",
-      });
+      const result = await bithumb.fetchDepositAddress("ETH", "ETH");
       console.log(result);
     });
 
-    // it("Fetch Order History", async () => {
-    //   const result = await upbit.fetchOrderHistory();
-    //   console.log(result);
-    // });
+    it("Fetch Order History", async () => {
+      const result = await bithumb.fetchOrderHistory("WEMIXC");
+      console.log(result);
+    });
   });
 });
