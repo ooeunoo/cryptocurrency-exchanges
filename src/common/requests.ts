@@ -5,7 +5,7 @@ export enum Method {
   "POST" = "POST",
 }
 
-export const requestPublic = async <T>(baseUrl: string, endpoint: string, params?: any) => {
+export const requestPublic = async <T>(baseUrl: string, endpoint: string, params: any, converter: any) => {
   try {
     const response: AxiosResponse<T> = await axios({
       method: Method.GET,
@@ -13,7 +13,7 @@ export const requestPublic = async <T>(baseUrl: string, endpoint: string, params
       params: params,
     });
 
-    return response.data;
+    return converter(response.data);
   } catch (e) {
     // TODO: error handling
     console.log(e);
@@ -26,8 +26,9 @@ export const requestSign = async <T>(
   baseUrl: string,
   endpoint: string,
   headers: RawAxiosRequestHeaders,
-  data?: any,
-  params?: any,
+  data: any,
+  params: any,
+  converter: any,
 ) => {
   // console.log(method, baseUrl, endpoint, headers);
   try {
@@ -38,7 +39,7 @@ export const requestSign = async <T>(
       params,
       data,
     });
-    return response.data;
+    return converter(response.data);
   } catch (e) {
     // TODO: error handling
     console.log(e.response);

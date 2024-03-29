@@ -47,43 +47,31 @@ export class Upbit extends Exchange {
 
   /* ------------------마켓 조회-------------------- */
   public async fetchMarkets(): Promise<ExchangeMarket[]> {
-    const result = await requestPublic<UpbitMarket[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all);
-    return marketConverter(result);
+    return requestPublic<UpbitMarket[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, marketConverter);
   }
 
   /* ------------------마켓 현재가 조회-------------------- */
   public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
-    const result = await requestPublic<UpbitMarketPrice[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.ticker, {
-      markets: markets.join(","),
-    });
-    return marketPriceConverter(result);
+    return requestPublic<UpbitMarketPrice[]>(UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.ticker, { markets: markets.join(",") }, marketPriceConverter);
   }
 
   /* ------------------잔액 조회-------------------- */
   public async fetchBalances(): Promise<ExchangeBalance[]> {
-    const result = await requestSign<UpbitBalance[]>(
-      Method.GET,
-      UPBIT_BASE_URL,
-      UPBIT_PRIVATE_ENDPOINT.balance,
-      this._header(),
-      null,
-      null,
-    );
-    return balanceConverter(result);
+    return requestSign<UpbitBalance[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT.balance, this._header(), null, null, balanceConverter);
   }
 
   /* ------------------입금 주소 조회-------------------- */
   public async fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress> {
     const params = { currency, net_type: network };
-    const result = await requestSign<UpbitDepositAddress>(
+    return requestSign<UpbitDepositAddress>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.deposit_coin_address,
       this._header(params),
       null,
       params,
+      depositAddressesConverter,
     );
-    return depositAddressesConverter(result);
   }
 
   /* ------------------입금 내역 조회-------------------- */
@@ -93,15 +81,15 @@ export class Upbit extends Exchange {
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeDepositHistory[]> {
     const params = { currency, page, limit };
-    const result = await requestSign<UpbitDepositHistory[]>(
+    return requestSign<UpbitDepositHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.deposits,
       this._header(params),
       null,
       params,
+      depositHistoryConverter,
     );
-    return depositHistoryConverter(result);
   }
 
   /* ------------------출금 내역 조회-------------------- */
@@ -111,15 +99,15 @@ export class Upbit extends Exchange {
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeWithdrawHistory[]> {
     const params = { currency, page, limit };
-    const result = await requestSign<UpbitWithdrawHistory[]>(
+    return requestSign<UpbitWithdrawHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.withdraws,
       this._header(params),
       null,
       params,
+      withdrawHistoryConverter,
     );
-    return withdrawHistoryConverter(result);
   }
 
   /* ------------------주문 내역 조회-------------------- */
@@ -129,15 +117,15 @@ export class Upbit extends Exchange {
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeOrderHistory[]> {
     const params = { currency, page, limit };
-    const result = await requestSign<UpbitOrderHistory[]>(
+    return requestSign<UpbitOrderHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.order,
       this._header(params),
       null,
       params,
+      orderHistoryConverter,
     );
-    return orderHistoryConverter(result);
   }
 
   /* -------------------------------------- */
