@@ -9,13 +9,13 @@ describe("Bithumb", () => {
       bithumb = new Bithumb();
     });
 
-    it("Fetch Market", async () => {
-      const result = await bithumb.fetchMarkets();
+    it("Fetch Tickers", async () => {
+      const result = await bithumb.fetchTickers();
       console.log(result);
     });
 
-    it("Fetch Market Price", async () => {
-      const result = await bithumb.fetchMarketsPrices([]);
+    it("Fetch Wallet Status", async () => {
+      const result = await bithumb.fetchWalletStatus();
       console.log(result);
     });
   });
@@ -35,19 +35,18 @@ describe("Bithumb", () => {
       const result = await bithumb.fetchBalances();
       console.log(result);
     });
+    it("Fetch Deposit Addresses", async () => {
+      const result = await bithumb.fetchDepositAddresses();
+      console.log(result);
+    });
 
     it("Fetch Deposit Histories", async () => {
-      const result = await bithumb.fetchDepositHistory("ETH");
+      const result = await bithumb.fetchDepositHistory("XRP");
       console.log(result);
     });
 
     it("Fetch Withdraw History", async () => {
       const result = await bithumb.fetchWithdrawHistory("ETC");
-      console.log(result);
-    });
-
-    it("Fetch Deposit Addresses", async () => {
-      const result = await bithumb.fetchDepositAddress("ETH", "ETH");
       console.log(result);
     });
 

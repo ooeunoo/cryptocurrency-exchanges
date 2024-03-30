@@ -1,12 +1,11 @@
 import { BITHUMB_BASE_URL, BITHUMB_PRIVATE_DOMAIN, BITHUMB_PUBLIC_DOMAIN } from "@bithumb/bithumb.constant";
 import {
-  balanceConverter,
+  bithumbBalanceConverter,
+  bithumbMarketTickerConverterBTC,
+  bithumbMarketTickerConverterKRW,
+  bithumbWalletStatusConverter,
   depositAddressesConverter,
   depositHistoryConverter,
-  marketConverterBTC,
-  marketConverterKRW,
-  marketPriceConverterBTC,
-  marketPriceConverterKRW,
   orderHistoryConverter,
   withdrawHistoryConverter,
 } from "@bithumb/bithumb.converter";
@@ -16,6 +15,7 @@ import {
   BithumbDepositHistory,
   BithumbOrderHistory,
   BithumbTicker,
+  BithumbWalletStatus,
   BithumbWithdrawHistory,
   IBithumbResponse,
 } from "@bithumb/bithumb.interface";
@@ -30,20 +30,11 @@ import {
   ExchangeMarket,
   ExchangeMarketPrice,
   ExchangeOrderHistory,
+  ExchangeTicker,
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
-
-function BithumbPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
-  const originalMethod = descriptor.value;
-  descriptor.value = function (...args: any[]) {
-    if (!this.connectKey || !this.secretKey) {
-      throw new Error(CREDENTITAL_NOT_SETTED);
-    }
-    return originalMethod.apply(this, args);
-  };
-}
 
 export class Bithumb extends Exchange {
   private connectKey: string;
@@ -56,14 +47,14 @@ export class Bithumb extends Exchange {
   }
 
   /* ------------------마켓 조회-------------------- */
-  public async fetchMarkets(): Promise<ExchangeMarket[]> {
+  public async fetchTickers(): Promise<ExchangeTicker[]> {
     const resultkrw = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
       Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_KRW",
       null,
       null,
-      marketConverterKRW,
+      bithumbMarketTickerConverterKRW,
     );
     const resultbtc = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
       Method.GET,
@@ -71,33 +62,25 @@ export class Bithumb extends Exchange {
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_BTC",
       null,
       null,
-      marketConverterBTC,
+      bithumbMarketTickerConverterBTC,
     );
     return resultkrw.concat(resultbtc);
   }
-  /* ------------------마켓 현재가 조회-------------------- */
-  public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
-    markets;
-    const resultkrw = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+
+  /* ------------------지갑 입출금 상태 조회-------------------- */
+  public async fetchWalletStatus(): Promise<any[]> {
+    return requestPublic<IBithumbResponse<BithumbWalletStatus[]>>(
       Method.GET,
       BITHUMB_BASE_URL,
-      BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_KRW",
+      BITHUMB_PUBLIC_DOMAIN.support_networks,
       null,
       null,
-      marketPriceConverterKRW,
+      bithumbWalletStatusConverter,
     );
-    const resultbtc = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
-      Method.GET,
-      BITHUMB_BASE_URL,
-      BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_BTC",
-      null,
-      null,
-      marketPriceConverterBTC,
-    );
-    return resultkrw.concat(resultbtc);
   }
+
   /* ------------------잔액 조회-------------------- */
-  @BithumbPrivate
+  @bithumbPrivate
   public async fetchBalances(): Promise<ExchangeBalance[]> {
     const params = { currency: "ALL" };
     return requestSign<IBithumbResponse<BithumbBalance[]>>(
@@ -107,31 +90,46 @@ export class Bithumb extends Exchange {
       this._headers(BITHUMB_PRIVATE_DOMAIN.balance, params),
       queystring.stringify(params),
       null,
-      balanceConverter,
+      bithumbBalanceConverter,
     );
   }
+
   /* ------------------입금 주소 조회-------------------- */
-  @BithumbPrivate
-  public async fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress> {
-    const params = { currency, net_type: network };
-    return requestSign<IBithumbResponse<BithumbDepositAddress>>(
-      Method.POST,
-      BITHUMB_BASE_URL,
-      BITHUMB_PRIVATE_DOMAIN.deposit_address,
-      this._headers(BITHUMB_PRIVATE_DOMAIN.deposit_address, params),
-      queystring.stringify(params),
-      null,
-      depositAddressesConverter,
-    );
+  @bithumbPrivate
+  public async fetchDepositAddresses(): Promise<ExchangeDepositAddress[]> {
+    const supports = await requestPublic(Method.GET, BITHUMB_BASE_URL, BITHUMB_PUBLIC_DOMAIN.support_networks, null, null);
+
+    const requests = [];
+    supports.data.forEach(async ({ currency, net_type }) => {
+      const params = { currency, net_type };
+      requests.push(
+        requestSign<IBithumbResponse<BithumbDepositAddress>>(
+          Method.POST,
+          BITHUMB_BASE_URL,
+          BITHUMB_PRIVATE_DOMAIN.deposit_address,
+          this._headers(BITHUMB_PRIVATE_DOMAIN.deposit_address, params),
+          queystring.stringify(params),
+          null,
+          depositAddressesConverter,
+        ),
+      );
+    });
+    const results = await Promise.allSettled(requests);
+    return results
+      .filter(({ status }) => status == "fulfilled")
+      .map((result: any) => {
+        return result.value;
+      });
   }
+
   /* ------------------입금 내역 조회-------------------- */
-  @BithumbPrivate
+  @bithumbPrivate
   public async fetchDepositHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeDepositHistory[]> {
-    const params = { searchGb: 4, order_currency: currency, offset: page, count: limit };
+    const params = { searchGb: 4, order_currency: currency, offset: page - 1, count: limit };
     return requestSign<IBithumbResponse<BithumbDepositHistory[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
@@ -143,7 +141,7 @@ export class Bithumb extends Exchange {
     );
   }
   /* ------------------출금 내역 조회-------------------- */
-  @BithumbPrivate
+  @bithumbPrivate
   public async fetchWithdrawHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -161,7 +159,7 @@ export class Bithumb extends Exchange {
     );
   }
   /* ------------------주문 내역 조회-------------------- */
-  @BithumbPrivate
+  @bithumbPrivate
   public async fetchOrderHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -180,7 +178,7 @@ export class Bithumb extends Exchange {
   }
 
   /* ------------------헤더-------------------- */
-  private _headers(endpoint, parameters) {
+  private _headers(endpoint: string, parameters?: any) {
     const nonce = new Date().getTime();
     const requestSignature = `${endpoint}${String.fromCharCode(0)}${queystring.stringify(parameters)}${String.fromCharCode(0)}${nonce}`;
     const hmacSignature = Buffer.from(crypto.createHmac("sha512", this.secretKey).update(requestSignature).digest("hex")).toString("base64");
@@ -191,4 +189,14 @@ export class Bithumb extends Exchange {
       "Api-Nonce": nonce,
     };
   }
+}
+
+function bithumbPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (!this.connectKey || !this.secretKey) {
+      throw new Error(CREDENTITAL_NOT_SETTED);
+    }
+    return originalMethod.apply(this, args);
+  };
 }

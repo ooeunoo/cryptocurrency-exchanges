@@ -27,3 +27,34 @@ export interface KorbitTicker {
     changePercent: string; // "-2.08";
   };
 }
+
+export interface KorbitBalance {
+  [currency: string]: {
+    available: string; //"0";
+    trade_in_use: string; //"0";
+    withdrawal_in_use: string; //"0";
+    avg_price: string; // "0";
+    avg_price_updated_at: number; // 1646184883782;
+  };
+}
+
+export interface KorbitMyAddresses {
+  deposit: {
+    [currency: string]: {
+      bank_name: string; // krw
+      account_name: string; // krw
+      account_number: string; // krw
+      address: string;
+      destination_tag: string;
+    };
+  };
+  withdrawal: {
+    [currency: string]: {
+      bank_name: string; // krw
+      account_name: string; // krw
+      account_number: string; // krw
+      address: string;
+      destination_tag: string;
+    };
+  };
+}

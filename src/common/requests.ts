@@ -17,7 +17,7 @@ export const requestPublic = async <T>(method: Method, baseUrl: string, endpoint
     return converter ? converter(response.data) : response.data;
   } catch (e) {
     // TODO: error handling
-    console.log(e);
+    console.log(e.response.data);
     throw new Error(e);
   }
 };
@@ -42,7 +42,7 @@ export const requestSign = async <T>(
     return converter ? converter(response.data) : response.data;
   } catch (e) {
     // TODO: error handling
-    console.log(e.response);
+    // console.log(e.response);
     throw new Error(e);
   }
 };

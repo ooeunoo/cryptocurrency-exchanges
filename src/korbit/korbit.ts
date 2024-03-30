@@ -6,24 +6,15 @@ import {
   ExchangeOrderHistory,
   ExchangeDepositHistory,
   ExchangeWithdrawHistory,
+  ExchangeTicker,
 } from "@exchange/exchange.interface";
 import { KORBIT_AUTH_DOMAIN, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN, KORBIT_PUBLIC_DOMAIN } from "@korbit/korbit.constant";
 import axios, { AxiosResponse } from "axios";
-import { KorbitOAuth, KorbitOAuthData, KorbitTicker } from "@korbit/koribt.interface";
-import { marketConverter, marketPriceConverter } from "@korbit/korbit.converter";
+import { KorbitMyAddresses, KorbitOAuth, KorbitOAuthData, KorbitTicker } from "@korbit/koribt.interface";
+import { balanceConverter, depositAddressesConverter, korbitTickerConverter } from "@korbit/korbit.converter";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
 import * as queystring from "querystring";
-
-function KorbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
-  const originalMethod = descriptor.value;
-  descriptor.value = function (...args: any[]) {
-    if (!this.api || !this.secretKey) {
-      throw new Error(CREDENTITAL_NOT_SETTED);
-    }
-    return originalMethod.apply(this, args);
-  };
-}
 
 export class Korbit {
   private apiKey?: string;
@@ -38,62 +29,30 @@ export class Korbit {
     this.secretKey = secretKey;
   }
 
-  public async fetchMarkets(): Promise<ExchangeMarket[]> {
-    return requestPublic<KorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, marketConverter);
+  /* ------------------티커 조회-------------------- */
+  public async fetchTickers(): Promise<ExchangeTicker[]> {
+    return requestPublic<KorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, korbitTickerConverter);
   }
 
-  public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
-    markets;
-    return requestPublic<KorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, marketPriceConverter);
-  }
-
+  /* ------------------잔액 조회-------------------- */
+  @korbitPrivate
   public async fetchBalances(): Promise<any> {
-    const headers = await this._header();
-    console.log(headers);
-    return requestSign(Method.GET, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN.balance, await this._header(), null, null);
+    return requestSign(Method.GET, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN.balance, await this._header(), null, null, balanceConverter);
   }
 
-  // public fetchDepositAddress(
-  //     currency: string,
-  //     network: string,
-  //   ): Promise<ExchangeDepositAddress> {
-  //     // throw new Error("Method not implemented.");
-  //   }
-  //   public fetchOrderHistory(
-  //     currency: string,
-  //     page: number,
-  //     limit: number,
-  //   ): Promise<ExchangeOrderHistory[]> {
-  //     throw new Error("Method not implemented.");
-  //   }
-  //   public fetchDepositHistory(
-  //     currency: string,
-  //     page: number,
-  //     limit: number,
-  //   ): Promise<ExchangeDepositHistory[]> {
-  //     throw new Error("Method not implemented.");
-  //   }
-  //   public fetchWithdrawHistory(
-  //     currency: string,
-  //     page: number,
-  //     limit: number,
-  //   ): Promise<ExchangeWithdrawHistory[]> {
-  //     throw new Error("Method not implemented.");
-  //   }
-
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  /* -------------------------------------- */
-  // curl -D - -X POST -d "
-  // client_id=$CLIENT_ID&
-  // client_secret=$CLIENT_SECRET&
-  // grant_type=client_credentials"
+  /* ------------------입금 주소 조회-------------------- */
+  @korbitPrivate
+  public async fetchDepositAddress(): Promise<ExchangeDepositAddress[]> {
+    return requestSign<KorbitMyAddresses>(
+      Method.GET,
+      KORBIT_BASE_URL,
+      KORBIT_PRIVATE_DOMAIN.deposit_address,
+      await this._header(),
+      null,
+      null,
+      depositAddressesConverter,
+    );
+  }
 
   private async _header() {
     if (this.accessToken == null || this.expiresIn == null || this.expiresIn < new Date().getTime()) {
@@ -103,7 +62,6 @@ export class Korbit {
     return { Authorization: `Bearer ${this.accessToken}` };
   }
   private async _refreshAccessToken() {
-    console.log("in");
     const data: KorbitOAuthData = {
       client_id: this.apiKey,
       client_secret: this.secretKey,
@@ -126,4 +84,14 @@ export class Korbit {
     this.refresehToken = refresh_token;
     this.expiresIn = new Date().getTime() + expires_in;
   }
+}
+
+function korbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (!this.api || !this.secretKey) {
+      throw new Error(CREDENTITAL_NOT_SETTED);
+    }
+    return originalMethod.apply(this, args);
+  };
 }

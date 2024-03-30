@@ -9,18 +9,18 @@ import {
   balanceConverter,
   depositAddressesConverter,
   depositHistoryConverter,
-  marketConverter,
-  marketPriceConverter,
   orderHistoryConverter,
+  upbitTickerConverter,
+  upbitWalletStatusConverter,
   withdrawHistoryConverter,
 } from "@upbit/upbit.converter";
 import {
   UpbitBalance,
   UpbitDepositAddress,
   UpbitDepositHistory,
-  UpbitMarket,
-  UpbitMarketPrice,
   UpbitOrderHistory,
+  UpbitTicker,
+  UpbitWalletStatus,
   UpbitWithdrawHistory,
 } from "@upbit/upbit.interface";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
@@ -28,23 +28,12 @@ import {
   ExchangeBalance,
   ExchangeDepositAddress,
   ExchangeDepositHistory,
-  ExchangeMarket,
-  ExchangeMarketPrice,
   ExchangeOrderHistory,
+  ExchangeTicker,
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
-
-function UpbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
-  const originalMethod = descriptor.value;
-  descriptor.value = function (...args: any[]) {
-    if (!this.accessKey || !this.secretKey) {
-      throw new Error(CREDENTITAL_NOT_SETTED);
-    }
-    return originalMethod.apply(this, args);
-  };
-}
 
 export class Upbit extends Exchange {
   private accessKey: string;
@@ -56,44 +45,54 @@ export class Upbit extends Exchange {
     this.secretKey = secretKey;
   }
 
-  /* ------------------마켓 조회-------------------- */
-  public async fetchMarkets(): Promise<ExchangeMarket[]> {
-    return requestPublic<UpbitMarket[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null, marketConverter);
-  }
-
-  /* ------------------마켓 현재가 조회-------------------- */
-  public async fetchMarketsPrices(markets: string[]): Promise<ExchangeMarketPrice[]> {
-    return requestPublic<UpbitMarketPrice[]>(
+  /* ------------------티커 조회-------------------- */
+  public async fetchTickers(): Promise<ExchangeTicker[]> {
+    const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
+    return requestPublic<UpbitTicker[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PUBLIC_ENDPOINT.ticker,
-      { markets: markets.join(",") },
+      { markets: marketResponse.map(({ market }) => market).join(",") },
       null,
-      marketPriceConverter,
+      upbitTickerConverter,
+    );
+  }
+
+  /* ------------------지갑 입출금 상태 조회-------------------- */
+  @upbitPrivate
+  public async fetchWalletStatus(): Promise<any> {
+    return requestSign<UpbitWalletStatus[]>(
+      Method.GET,
+      UPBIT_BASE_URL,
+      UPBIT_PUBLIC_ENDPOINT.wallet_status,
+      this._header(),
+      null,
+      null,
+      upbitWalletStatusConverter,
     );
   }
 
   /* ------------------잔액 조회-------------------- */
-  @UpbitPrivate
-  public async fetchBalances(currency?: string): Promise<ExchangeBalance[]> {
+  @upbitPrivate
+  public async fetchBalances(): Promise<ExchangeBalance[]> {
     return requestSign<UpbitBalance[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT.balance, this._header(), null, null, balanceConverter);
   }
+
   /* ------------------입금 주소 조회-------------------- */
-  @UpbitPrivate
-  public async fetchDepositAddress(currency: string, network: string): Promise<ExchangeDepositAddress> {
-    const params = { currency, net_type: network };
-    return requestSign<UpbitDepositAddress>(
+  @upbitPrivate
+  public async fetchDepositAddresses(): Promise<ExchangeDepositAddress[]> {
+    return requestSign<UpbitDepositAddress[]>(
       Method.GET,
       UPBIT_BASE_URL,
-      UPBIT_PRIVATE_ENDPOINT.deposit_coin_address,
-      this._header(params),
+      UPBIT_PRIVATE_ENDPOINT.deposit_addresses,
+      this._header(),
       null,
-      params,
+      null,
       depositAddressesConverter,
     );
   }
   /* ------------------입금 내역 조회-------------------- */
-  @UpbitPrivate
+  @upbitPrivate
   public async fetchDepositHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -111,7 +110,7 @@ export class Upbit extends Exchange {
     );
   }
   /* ------------------출금 내역 조회-------------------- */
-  @UpbitPrivate
+  @upbitPrivate
   public async fetchWithdrawHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -129,7 +128,7 @@ export class Upbit extends Exchange {
     );
   }
   /* ------------------주문 내역 조회-------------------- */
-  @UpbitPrivate
+  @upbitPrivate
   public async fetchOrderHistory(
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
@@ -164,6 +163,17 @@ export class Upbit extends Exchange {
     }
 
     const token = sign(payload, this.secretKey);
+    console.log(token);
     return { Authorization: `Bearer ${token}` };
   }
+}
+
+function upbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    if (!this.accessKey || !this.secretKey) {
+      throw new Error(CREDENTITAL_NOT_SETTED);
+    }
+    return originalMethod.apply(this, args);
+  };
 }

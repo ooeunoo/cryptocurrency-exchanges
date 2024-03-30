@@ -2,6 +2,7 @@ export const BITHUMB_BASE_URL = "https://api.bithumb.com";
 
 export enum BITHUMB_PUBLIC_DOMAIN {
   ticker = "/public/ticker",
+  support_networks = "/public/assetsstatus/multichain/ALL",
 }
 
 export enum BITHUMB_PRIVATE_DOMAIN {

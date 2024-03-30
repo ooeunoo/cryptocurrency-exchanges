@@ -25,8 +25,13 @@ export enum OrderState {
 }
 
 export enum OrderSide {
-  ask,
-  bid,
+  ASK,
+  BID,
+}
+
+export enum DepositWithdrawalType {
+  DEPOSIT,
+  WITHDRAWAL,
 }
 
 export interface ExchangeMarket {
@@ -34,10 +39,28 @@ export interface ExchangeMarket {
   unit: string; // 마켓
 }
 
+export interface ExchangeTicker {
+  currency: string; // base
+  unit: string; // quote
+  high: string; //	고가 (24시간 기준)
+  low: string; //	저가 (24시간 기준)
+  first: string; //	시가 (24시간 기준)
+  last: string; // 종가 (24시간 기준)
+}
+
+export interface ExchangeWalletStatus {
+  currency: string; // 통화
+  network: string; // 네트워크
+  deposit: boolean; // 입금 가능 여부
+  withdraw: boolean; // 출금 가능 여부
+  withdrawMin?: string; // 최소 출금 금액
+  withdrawFee?: string; // 출금 수수료
+}
+
 export interface ExchangeBalance {
-  currency: string; // 통화 화폐
+  currency: string; // 통화
   balance: string; // 유동 수량
-  lockedBalance: string; // 묶여있는 수량
+  lockedBalance: string; // 잠긴 수량
   avgBuyPrice: string; // 평단가
 }
 
@@ -49,25 +72,25 @@ export interface ExchangeDepositAddress {
 }
 
 export interface ExchangeDepositHistory {
-  type: "deposit";
+  type: DepositWithdrawalType.DEPOSIT;
   txId: string;
   currency: string;
   amount: string;
   fee: string;
   state: string;
-  createdAt: string;
-  confirmedAt: string;
+  createdAt: number;
+  confirmedAt: number;
 }
 
 export interface ExchangeWithdrawHistory {
-  type: "withdraw";
+  type: DepositWithdrawalType.WITHDRAWAL;
   currency: string;
   txId: string;
   amount: string;
   fee: string;
   state: string;
-  createdAt: string;
-  confirmedAt: string;
+  createdAt: number;
+  confirmedAt: number;
 }
 
 export interface ExchangeOrderHistory {
@@ -77,7 +100,7 @@ export interface ExchangeOrderHistory {
   amount: string; // 개수
   side: string; // ask
   fee: string; // 수수료
-  createdAt: string;
+  createdAt: number;
 }
 
 export interface ExchangeMarketPrice {

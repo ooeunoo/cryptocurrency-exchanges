@@ -1,10 +1,14 @@
 import {
+  DepositWithdrawalType,
+  DepsoitState,
   ExchangeBalance,
   ExchangeDepositAddress,
   ExchangeDepositHistory,
   ExchangeMarket,
   ExchangeMarketPrice,
   ExchangeOrderHistory,
+  ExchangeTicker,
+  ExchangeWalletStatus,
   ExchangeWithdrawHistory,
   WithdrawState,
 } from "@exchange/exchange.interface";
@@ -14,57 +18,57 @@ import {
   BithumbDepositHistory,
   BithumbOrderHistory,
   BithumbTicker,
+  BithumbWalletStatus,
   BithumbWithdrawHistory,
   IBithumbResponse,
 } from "@bithumb/bithumb.interface";
 import { toBigNumberString } from "@utils/number";
 
-export const marketConverterKRW = (data: IBithumbResponse<BithumbTicker[]>): ExchangeMarket[] => {
-  const pdata = data.data;
-  delete pdata["date"];
-  return Object.keys(pdata).map((currency) => {
+export const bithumbMarketTickerConverterKRW = (res: IBithumbResponse<BithumbTicker[]>): ExchangeTicker[] => {
+  const data = res.data;
+  delete data["date"];
+  return Object.keys(data).map((currency) => {
+    const target = data[currency];
     return {
-      currency,
+      currency: currency.toUpperCase(),
       unit: "KRW",
+      high: toBigNumberString(target.max_price),
+      low: toBigNumberString(target.min_price),
+      first: toBigNumberString(target.opening_price),
+      last: toBigNumberString(target.closing_price),
     };
   });
 };
 
-export const marketConverterBTC = (data: IBithumbResponse<BithumbTicker[]>): ExchangeMarket[] => {
-  const pdata = data.data;
-  delete pdata["date"];
-  return Object.keys(pdata).map((currency) => {
+export const bithumbMarketTickerConverterBTC = (res: IBithumbResponse<BithumbTicker[]>): ExchangeTicker[] => {
+  const data = res.data;
+  delete data["date"];
+  return Object.keys(data).map((currency) => {
+    const target = data[currency];
     return {
-      currency,
+      currency: currency.toUpperCase(),
       unit: "BTC",
+      high: toBigNumberString(target.max_price),
+      low: toBigNumberString(target.min_price),
+      first: toBigNumberString(target.opening_price),
+      last: toBigNumberString(target.closing_price),
     };
   });
 };
 
-export const marketPriceConverterKRW = (data: IBithumbResponse<BithumbTicker[]>): ExchangeMarketPrice[] => {
+export const bithumbWalletStatusConverter = (data: IBithumbResponse<BithumbWalletStatus[]>): ExchangeWalletStatus[] => {
   const pdata = data.data;
-  delete pdata["date"];
-  return Object.keys(pdata).map((currency) => {
+  return pdata.map(({ currency, net_type, deposit_status, withdrawal_status }) => {
     return {
-      currency,
-      unit: "KRW",
-      price: toBigNumberString(pdata[currency].closing_price),
+      currency: currency.toUpperCase(),
+      network: net_type.toUpperCase(),
+      deposit: deposit_status == 1,
+      withdraw: withdrawal_status == 1,
     };
   });
 };
 
-export const marketPriceConverterBTC = (data: IBithumbResponse<BithumbTicker[]>): ExchangeMarketPrice[] => {
-  const pdata = data.data;
-  delete pdata["date"];
-  return Object.keys(pdata).map((currency) => {
-    return {
-      currency,
-      unit: "BTC",
-      price: toBigNumberString(pdata[currency].closing_price),
-    };
-  });
-};
-export const balanceConverter = (data: IBithumbResponse<BithumbBalance[]>): ExchangeBalance[] => {
+export const bithumbBalanceConverter = (data: IBithumbResponse<BithumbBalance[]>): ExchangeBalance[] => {
   const pdata = data.data;
   const result: ExchangeBalance[] = [];
   Object.keys(pdata).forEach((key) => {
@@ -88,27 +92,36 @@ export const balanceConverter = (data: IBithumbResponse<BithumbBalance[]>): Exch
 export const depositAddressesConverter = (data: IBithumbResponse<BithumbDepositAddress>): ExchangeDepositAddress => {
   const pdata = data.data;
 
+  let address = pdata.wallet_address;
+  let memo = null;
+
+  const [wallet_address, destination_tag] = pdata.wallet_address.split("&");
+  if (destination_tag != undefined) {
+    address = wallet_address;
+    memo = destination_tag.split("=")[1];
+  }
+
   return {
     currency: pdata.currency,
     network: pdata.net_type,
-    address: pdata.wallet_address,
-    memo: null,
+    address,
+    memo: memo,
   };
 };
 
 export const depositHistoryConverter = (data: IBithumbResponse<BithumbDepositHistory[]>): ExchangeDepositHistory[] => {
   const pdata = data.data;
-
-  return pdata.map(({}) => {
+  console.log(pdata);
+  return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
     return {
-      type: "deposit",
+      type: DepositWithdrawalType.DEPOSIT,
       txId: "",
-      currency: "",
-      amount: "",
-      fee: "",
-      state: "",
-      createdAt: "",
-      confirmedAt: "",
+      currency: order_currency,
+      amount: toBigNumberString(amount),
+      fee: toBigNumberString(fee),
+      state: WithdrawState.DONE.toString(),
+      createdAt: transfer_date,
+      confirmedAt: null,
     };
   });
 };
@@ -118,14 +131,14 @@ export const withdrawHistoryConverter = (data: IBithumbResponse<BithumbWithdrawH
 
   return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
     return {
-      type: "withdraw",
+      type: DepositWithdrawalType.WITHDRAWAL,
       txId: "",
       currency: order_currency,
       amount: toBigNumberString(amount),
       fee: toBigNumberString(fee),
       state: WithdrawState.DONE.toString(),
-      createdAt: new Date(transfer_date).toISOString().replace(/T/, " ").replace(/\..+/, ""),
-      confirmedAt: "",
+      createdAt: transfer_date,
+      confirmedAt: null,
     };
   });
 };
@@ -141,7 +154,7 @@ export const orderHistoryConverter = (data: IBithumbResponse<BithumbOrderHistory
       amount: toBigNumberString(units),
       side: type,
       fee: null,
-      createdAt: new Date(order_date).toISOString().replace(/T/, " ").replace(/\..+/, ""),
+      createdAt: parseInt(order_date),
     };
   });
 };

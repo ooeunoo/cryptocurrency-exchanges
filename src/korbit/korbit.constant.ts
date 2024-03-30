@@ -6,6 +6,7 @@ export enum KORBIT_PUBLIC_DOMAIN {
 
 export enum KORBIT_PRIVATE_DOMAIN {
   balance = "/user/balances",
+  deposit_address = "/user/accounts",
 }
 
 export enum KORBIT_AUTH_DOMAIN {

@@ -21,6 +21,13 @@ export interface BithumbTicker {
   [currency: string]: BithumbTickerData | string; // date 필드
 }
 
+export interface BithumbWalletStatus {
+  currency: string; // "BTC";
+  net_type: string; //"BTC";
+  deposit_status: number; // 1;
+  withdrawal_status: number; //1;
+}
+
 export interface BithumbBalance {
   [key: string]: string;
 }

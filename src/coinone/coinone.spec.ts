@@ -1,39 +1,45 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
-import { Korbit } from "./korbit";
+import { Coinone } from "./coinone";
 
-describe("KORBIT", () => {
+describe("COINONE", () => {
   describe("PUBLIC", () => {
-    let korbit: Korbit;
+    let coinone: Coinone;
     beforeAll(async () => {
-      korbit = new Korbit();
+      coinone = new Coinone();
     });
 
-    it("Fetch Market", async () => {
-      const result = await korbit.fetchTickers();
+    it("Fetch Tickers", async () => {
+      const result = await coinone.fetchTickers();
+      console.log(result);
+    });
+
+    it("Fetch Wallet Status", async () => {
+      const result = await coinone.fetchWalletStatus();
       console.log(result);
     });
   });
 
   describe("PRIVATE", () => {
-    let korbit: Korbit;
+    let coinone: Coinone;
+
     beforeAll(async () => {
       const env = dotenv.config({
         path: path.join(__dirname, "..", "..", ".env"),
       }).parsed;
-
-      korbit = new Korbit(env.KORBIT_API_KEY, env.KORBIT_SECRET_KEY);
+      coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);
     });
 
+    
     it("Fetch Balances", async () => {
-      const result = await korbit.fetchBalances();
+      const result = await coinone.fetchBalances();
       console.log(result);
     });
 
-    it("Fetch Deposit Addresses", async () => {
-      const result = await korbit.fetchDepositAddress();
-      console.log(result);
-    });
+    // it("Fetch Deposit Addresses", async () => {
+    //   const result = await korbit.fetchDepositAddress();
+    //   console.log(result);
+    // });
 
     // it("Fetch Deposit Histories", async () => {
     //   const result = await upbit.fetchDepositHistory("BTC");
