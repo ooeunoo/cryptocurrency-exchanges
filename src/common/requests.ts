@@ -41,8 +41,8 @@ export const requestSign = async <T>(
     });
     return converter ? converter(response.data) : response.data;
   } catch (e) {
-    // TODO: error handling
-    // console.log(e.response);
+    console.log(e.response.data);
+
     throw new Error(e);
   }
 };

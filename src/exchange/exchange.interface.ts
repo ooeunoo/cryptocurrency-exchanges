@@ -1,37 +1,36 @@
-export enum DepsoitState {
-  PROCESSING,
-  ACCEPTED,
-  CANCELLED,
-  REJECTED,
-  TRAVEL_RULE_SUSPECTED,
-  REFUNDING,
-  REFUNDED,
+export enum depsoitWithdrawState {
+  canceled = "canceled", // 취소
+  waiting = "waiting", // 대기
+  processing = "processing", // 진행
+  accepted = "accepted", // 확정
+  rejected = "rejected", // 거절
+  failed = "failed", // 실패
+  travel_rule_suspected = "travel_rule_suspected", // 트래블룰 의심
+  refunded = "refunded", // 환불
 }
 
-export enum WithdrawState {
-  WAITING,
-  PROCESSING,
-  DONE,
-  FAILED,
-  CANCELLED,
-  REJECTED,
+export enum orderState {
+  wait = "wait",
+  watch = "watch",
+  done = "done",
+  cancel = "cancel",
 }
 
-export enum OrderState {
-  wait,
-  watch,
-  done,
-  cancel,
+export enum orderType {
+  limit = "limit",
+  market = "market",
+  stop_limit = "stop_limit",
+  best = "best",
 }
 
-export enum OrderSide {
-  ASK,
-  BID,
+export enum orderSide {
+  ask = "ask",
+  bid = "bid",
 }
 
-export enum DepositWithdrawalType {
-  DEPOSIT,
-  WITHDRAWAL,
+export enum depositWithdrawType {
+  deposit = "deposit",
+  withdraw = "withdraw",
 }
 
 export interface ExchangeMarket {
@@ -71,34 +70,30 @@ export interface ExchangeDepositAddress {
   memo: string; // 메모 (태그) ex) 리플
 }
 
-export interface ExchangeDepositHistory {
-  type: DepositWithdrawalType.DEPOSIT;
-  txId: string;
-  currency: string;
-  amount: string;
-  fee: string;
-  state: string;
-  createdAt: number;
-  confirmedAt: number;
-}
-
-export interface ExchangeWithdrawHistory {
-  type: DepositWithdrawalType.WITHDRAWAL;
-  currency: string;
-  txId: string;
-  amount: string;
-  fee: string;
-  state: string;
-  createdAt: number;
-  confirmedAt: number;
+export interface ExchangeDepositWithdrawHistory {
+  type: depositWithdrawType; // 타입 - 입금 / 출금
+  txId: string; // 트랜잭션 아이디
+  currency: string; // 통화 화폐
+  network: string; // 네트워크
+  amount: string; // 수량
+  fee: string; // 수수료
+  state: depsoitWithdrawState; //  상태
+  fromAddress: string; // From 주소
+  toAddress: string; // To 주소
+  toAddressTag: string; // To 주소의 태그
+  createdAt: number; // 생성 일시
+  confirmedAt: number; // 확정 일시
 }
 
 export interface ExchangeOrderHistory {
+  id: string; // 주문 id
+  type: orderType; // 타입 - 리밋 / 마켓/ 스탑 리밋
+  side: orderSide; // 사이드 - 매수 / 매도
   currency: string; // 통화
   unit: string; // 단위
   price: string; // 구매가
-  amount: string; // 개수
-  side: string; // ask
+  orderAmount: string; // 주문 수량
+  excutedAmount: string; // 체결 수량
   fee: string; // 수수료
   createdAt: number;
 }

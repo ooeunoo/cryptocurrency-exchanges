@@ -8,6 +8,7 @@ BigNumber.config({ EXPONENTIAL_AT: 100 });
  * @returns BigNumber
  */
 export function toBigNumberString(value: any): string {
+  if (value == undefined || value == null) return toBigNumberString(0);
   return new BigNumber(value.toString()).toString();
 }
 

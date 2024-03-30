@@ -1,15 +1,15 @@
 import { toBigNumberString } from "@utils/number";
 import {
-  DepositWithdrawalType,
   ExchangeBalance,
   ExchangeDepositAddress,
-  ExchangeDepositHistory,
-  ExchangeMarket,
-  ExchangeMarketPrice,
+  ExchangeDepositWithdrawHistory,
   ExchangeOrderHistory,
   ExchangeTicker,
   ExchangeWalletStatus,
-  ExchangeWithdrawHistory,
+  depositWithdrawType,
+  depsoitWithdrawState,
+  orderSide,
+  orderType,
 } from "@exchange/exchange.interface";
 import {
   UpbitBalance,
@@ -89,31 +89,72 @@ export const depositAddressesConverter = (data: UpbitDepositAddress[]): Exchange
   });
 };
 
-export const depositHistoryConverter = (data: UpbitDepositHistory[]): ExchangeDepositHistory[] => {
-  console.log(data);
+export const depositHistoryConverter = (data: UpbitDepositHistory[]): ExchangeDepositWithdrawHistory[] => {
+  const convertState = (state) => {
+    switch (state) {
+      case "PROCESSING": // 입금진행
+        return depsoitWithdrawState.processing;
+      case "ACCEPTED":
+        return depsoitWithdrawState.accepted;
+      case "CANCELLED":
+        return depsoitWithdrawState.canceled;
+      case "REJECTED":
+        return depsoitWithdrawState.rejected;
+      case "TRAVEL_RULE_SUSPECTED":
+        return depsoitWithdrawState.travel_rule_suspected;
+      case "REFUNDING":
+        return depsoitWithdrawState.refunded;
+      case "REFUNDED":
+        return depsoitWithdrawState.refunded;
+    }
+  };
   return data.map(({ currency, txid, state, created_at, done_at, amount, fee }) => {
     return {
-      type: DepositWithdrawalType.DEPOSIT,
+      type: depositWithdrawType.deposit,
       txId: txid,
-      currency,
+      currency: currency.toUpperCase(),
+      network: null,
       amount: toBigNumberString(amount),
       fee: toBigNumberString(fee),
-      state,
+      state: convertState(state),
+      fromAddress: null,
+      toAddress: null,
+      toAddressTag: null,
       createdAt: toTimestamp(created_at),
       confirmedAt: toTimestamp(done_at),
     };
   });
 };
 
-export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): ExchangeWithdrawHistory[] => {
+export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): ExchangeDepositWithdrawHistory[] => {
+  const convertState = (state) => {
+    switch (state) {
+      case "WAITING": // 입금진행
+        return depsoitWithdrawState.waiting;
+      case "PROCESSING":
+        return depsoitWithdrawState.processing;
+      case "DONE":
+        return depsoitWithdrawState.accepted;
+      case "FAILED":
+        return depsoitWithdrawState.failed;
+      case "CANCELLED":
+        return depsoitWithdrawState.canceled;
+      case "REJECTED":
+        return depsoitWithdrawState.rejected;
+    }
+  };
   return data.map(({ currency, txid, state, created_at, done_at, amount, fee }) => {
     return {
-      type: DepositWithdrawalType.WITHDRAWAL,
+      type: depositWithdrawType.withdraw,
       txId: txid,
-      currency,
+      currency: currency.toUpperCase(),
+      network: null,
       amount: toBigNumberString(amount),
       fee: toBigNumberString(fee),
-      state,
+      state: convertState(state),
+      fromAddress: null,
+      toAddress: null,
+      toAddressTag: null,
       createdAt: toTimestamp(created_at),
       confirmedAt: toTimestamp(done_at),
     };
@@ -121,14 +162,31 @@ export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): Exchange
 };
 
 export const orderHistoryConverter = (data: UpbitOrderHistory[]): ExchangeOrderHistory[] => {
-  return data.map(({ market, price, side, created_at, volume, paid_fee }) => {
+  const convertorderType = (type) => {
+    switch (type) {
+      case "limit":
+        return orderType.limit;
+      case "price":
+      case "market":
+        return orderType.market;
+      case "best":
+        return orderType.best;
+      case "stop_limit":
+        return orderType.stop_limit;
+    }
+  };
+  return data.map(({ uuid, market, ord_type, price, side, volume, executed_volume, created_at, paid_fee }) => {
     const [unit, currency] = market.split("-");
+
     return {
+      id: uuid,
+      type: convertorderType(ord_type),
+      side: side == "ask" ? orderSide.ask : orderSide.bid,
       currency,
       unit,
-      side,
       price: toBigNumberString(price),
-      amount: toBigNumberString(volume),
+      orderAmount: toBigNumberString(volume),
+      excutedAmount: toBigNumberString(executed_volume),
       fee: toBigNumberString(paid_fee),
       createdAt: toTimestamp(created_at),
     };

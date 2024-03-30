@@ -1,7 +1,7 @@
 import { RawAxiosRequestHeaders } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { sign } from "jsonwebtoken";
-import * as queystring from "querystring";
+import * as querystring from "querystring";
 import * as crypto from "crypto";
 import { Exchange } from "@exchange/exchange";
 import { UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT, UPBIT_PUBLIC_ENDPOINT } from "@upbit/upbit.constant";
@@ -27,10 +27,9 @@ import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.cons
 import {
   ExchangeBalance,
   ExchangeDepositAddress,
-  ExchangeDepositHistory,
+  ExchangeDepositWithdrawHistory,
   ExchangeOrderHistory,
   ExchangeTicker,
-  ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
@@ -97,7 +96,7 @@ export class Upbit extends Exchange {
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeDepositHistory[]> {
+  ): Promise<ExchangeDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
     return requestSign<UpbitDepositHistory[]>(
       Method.GET,
@@ -115,7 +114,7 @@ export class Upbit extends Exchange {
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeWithdrawHistory[]> {
+  ): Promise<ExchangeDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
     return requestSign<UpbitWithdrawHistory[]>(
       Method.GET,
@@ -131,11 +130,11 @@ export class Upbit extends Exchange {
   @upbitPrivate
   public async fetchOrderHistory(
     currency: string,
+    unit: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeOrderHistory[]> {
-    console.log("herer");
-    const params = { currency, page, limit };
+    const params = { states: ["done", "cancel"] };
     return requestSign<UpbitOrderHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
@@ -146,6 +145,7 @@ export class Upbit extends Exchange {
       orderHistoryConverter,
     );
   }
+
   /* -----------------헤더------------------ */
   private _header(params?: any): RawAxiosRequestHeaders {
     const payload: any = {
@@ -153,17 +153,53 @@ export class Upbit extends Exchange {
       nonce: uuidv4(),
     };
 
+    let query: string = "";
     if (params && Object.keys(params).length != 0) {
-      const query = queystring.encode(params);
+      let nonArrayQuery = null;
+      let arrayQuery = null;
+
+      const arrayParams = {};
+      const nonArrayParams = {};
+
+      // Array 값을 가진 파라미터와 아닌 파라미터 분리
+      for (const key in params) {
+        if (Array.isArray(params[key])) {
+          arrayParams[key] = params[key];
+        } else {
+          nonArrayParams[key] = params[key];
+        }
+      }
+
+      // 각각 다르게 인코딩
+      if (Object.keys(nonArrayParams).length != 0) {
+        nonArrayQuery = querystring.encode(nonArrayParams);
+      }
+
+      if (Object.keys(arrayParams).length != 0) {
+        arrayQuery = Object.keys(arrayParams)
+          .map((key) => {
+            const values = arrayParams[key];
+            return values.map((value) => `${key}[]=${value}`).join("&");
+          })
+          .join("&");
+      }
+
+      // 쿼리 생성
+      if (nonArrayQuery != null) {
+        query += nonArrayQuery;
+      } else if (nonArrayQuery != null && arrayQuery != null) {
+        query += nonArrayQuery + "&" + arrayQuery;
+      } else {
+        query += arrayQuery;
+      }
+
       const hash = crypto.createHash("sha512");
       const queryHash = hash.update(query, "utf-8").digest("hex");
-
       payload.query_hash = queryHash;
       payload.query_hash_alg = "SHA512";
     }
 
     const token = sign(payload, this.secretKey);
-    console.log(token);
     return { Authorization: `Bearer ${token}` };
   }
 }
