@@ -1,9 +1,7 @@
-import { RawAxiosRequestHeaders } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
 import * as crypto from "crypto";
-import * as WebSocket from "ws";
 import { Exchange } from "@exchange/exchange";
 import {
   UPBIT_BASE_URL,
@@ -145,12 +143,7 @@ export class Upbit extends Exchange {
   }
   /* ------------------주문 내역 조회-------------------- */
   @upbitPrivate
-  public async fetchOrderHistory(
-    currency: string,
-    unit: string,
-    page: number = DEFAULT_PAGE_NUMBER,
-    limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<IOrderHistory[]> {
+  public async fetchOrderHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
     const params = { states: ["done", "cancel"] };
     return requestSign<IUpbitOrderHistory[]>(
       Method.GET,
@@ -162,6 +155,7 @@ export class Upbit extends Exchange {
       // upbitOrderHistoryConverter,
     );
   }
+  /* ------------------모든 주문 내역 조회-------------------- */
   @upbitPrivate
   public async fetchAllOrderHistory(): Promise<any> {
     const results = [];
@@ -191,6 +185,7 @@ export class Upbit extends Exchange {
     return sortBy(results, "createdAt");
   }
 
+  /* ------------------공개 데이터 구독-------------------- */
   public async subscribePublicData(type: UPBIT_PUBLIC_STREAM_DATA_TYPE) {
     const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
     const data = [{ ticket: uuidv4() }, { type, codes: marketResponse.map(({ market }) => market.trim()), isOnlyRealtime: true }];
@@ -202,6 +197,7 @@ export class Upbit extends Exchange {
     return ws;
   }
 
+  /* ------------------비공개 데이터 구독-------------------- */
   @upbitPrivate
   public async subscribePrivateData(type: UPBIT_PRIVATE_STREAM_DATA_TYPE = UPBIT_PRIVATE_STREAM_DATA_TYPE.myTrade) {
     const data = [{ ticket: uuidv4() }, { type }];

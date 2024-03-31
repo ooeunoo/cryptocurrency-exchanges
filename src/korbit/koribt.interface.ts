@@ -58,3 +58,19 @@ export interface IKorbitMyAddresses {
     };
   };
 }
+
+export interface IKorbitHistory {
+  id: string; // "270";
+  type: string; // "deposit";
+  currency: string; // "btc";
+  amount: string; // "0.81140000";
+  completed_at: number; // 11750020020;
+  updated_at: number; // 11550050080
+  created_at: number; // 11550020020
+  status: string; // "filled";
+  details: {
+    transaction_id: string; // "2d84855aa9c...";
+    address: string; // "1F1zAaz5x1HUXrCNLbtMDqcw6o5GNx4xqX";
+    destination_tag?: string; // 123213
+  };
+}

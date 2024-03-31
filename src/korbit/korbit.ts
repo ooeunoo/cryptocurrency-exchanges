@@ -4,19 +4,31 @@ import {
   IBalance,
   IDepositAddress,
   IOrderHistory,
-  ExchangeDepositHistory,
-  ExchangeWithdrawHistory,
   ITicker,
+  IDepositWithdrawHistory,
+  IWalletStatus,
 } from "@exchange/exchange.interface";
-import { KORBIT_AUTH_DOMAIN, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN, KORBIT_PUBLIC_DOMAIN } from "@korbit/korbit.constant";
+import { KORBIT_AUTH_ENDPOINT, KORBIT_BASE_URL, KORBIT_PRIVATE_ENDPOINT, KORBIT_PUBLIC_ENDPOINT } from "@korbit/korbit.constant";
 import axios, { AxiosResponse } from "axios";
-import { IKorbitMyAddresses, IKorbitOAuth, IKorbitOAuthData, IKorbitTicker } from "@korbit/koribt.interface";
-import { balanceConverter, depositAddressesConverter, korbitTickerConverter } from "@korbit/korbit.converter";
+import { IKorbitHistory, IKorbitMyAddresses, IKorbitOAuth, IKorbitOAuthData, IKorbitTicker } from "@korbit/koribt.interface";
+import { korbitBalanceConverter, korbitDepositAddressesConverter, korbitTickerConverter } from "@korbit/korbit.converter";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
 import * as queystring from "querystring";
+import { Exchange } from "@exchange/exchange";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
 
-export class Korbit {
+export class Korbit extends Exchange {
+  public fetchOrderHistory(currency: string, page: number, limit: number): Promise<IOrderHistory[]> {
+    throw new Error("Method not implemented.");
+  }
+
+  public fetchWithdrawHistory(currency: string, page: number, limit: number): Promise<IDepositWithdrawHistory[]> {
+    throw new Error("Method not implemented.");
+  }
+  public subscribePublicData(type: string) {
+    throw new Error("Method not implemented.");
+  }
   private apiKey?: string;
   private secretKey?: string;
   private accessToken?: string;
@@ -24,34 +36,49 @@ export class Korbit {
   private expiresIn?: number;
 
   constructor(apiKey?: string, secretKey?: string) {
-    // super();
+    super();
     this.apiKey = apiKey;
     this.secretKey = secretKey;
   }
 
   /* ------------------티커 조회-------------------- */
   public async fetchTickers(): Promise<ITicker[]> {
-    return requestPublic<IKorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, korbitTickerConverter);
+    return requestPublic<IKorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_ENDPOINT.ticker, null, null, korbitTickerConverter);
   }
 
+  /* ------------------지갑 입출금 상태 조회-------------------- */
+  public fetchWalletStatus(): Promise<IWalletStatus[]> {
+    throw new Error("Method not implemented.");
+  }
   /* ------------------잔액 조회-------------------- */
   @korbitPrivate
   public async fetchBalances(): Promise<any> {
-    return requestSign(Method.GET, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN.balance, await this._header(), null, null, balanceConverter);
+    return requestSign(Method.GET, KORBIT_BASE_URL, KORBIT_PRIVATE_ENDPOINT.balance, await this._header(), null, null, korbitBalanceConverter);
   }
 
   /* ------------------입금 주소 조회-------------------- */
   @korbitPrivate
-  public async fetchDepositAddress(): Promise<IDepositAddress[]> {
+  public async fetchDepositAddresses(): Promise<IDepositAddress[]> {
     return requestSign<IKorbitMyAddresses>(
       Method.GET,
       KORBIT_BASE_URL,
-      KORBIT_PRIVATE_DOMAIN.deposit_address,
+      KORBIT_PRIVATE_ENDPOINT.deposit_address,
       await this._header(),
       null,
       null,
-      depositAddressesConverter,
+      korbitDepositAddressesConverter,
     );
+  }
+
+  /* ------------------입금 내역 조회-------------------- */
+  @korbitPrivate
+  public async fetchDepositHistory(
+    currency: string,
+    page: number = DEFAULT_PAGE_NUMBER,
+    limit: number = DEFAULT_PAGE_LIMIT,
+  ): Promise<IDepositWithdrawHistory[]> {
+    const params = { currency, offset: page - 1, limit };
+    return requestSign<IKorbitHistory>(Method.GET, KORBIT_BASE_URL, KORBIT_PRIVATE_ENDPOINT.history, await this._header(), null, params);
   }
 
   private async _header() {
@@ -75,7 +102,7 @@ export class Korbit {
     const { access_token, expires_in, refresh_token } = await requestPublic<IKorbitOAuth>(
       Method.POST,
       KORBIT_BASE_URL,
-      KORBIT_AUTH_DOMAIN.oauth2,
+      KORBIT_AUTH_ENDPOINT.oauth2,
       null,
       queystring.stringify(data as any),
     );
@@ -89,7 +116,7 @@ export class Korbit {
 function korbitPrivate(target: any, key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
   descriptor.value = function (...args: any[]) {
-    if (!this.api || !this.secretKey) {
+    if (!this.apiKey || !this.secretKey) {
       throw new Error(CREDENTITAL_NOT_SETTED);
     }
     return originalMethod.apply(this, args);

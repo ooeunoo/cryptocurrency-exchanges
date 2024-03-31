@@ -5,7 +5,7 @@ export abstract class Exchange {
   public abstract fetchWalletStatus(): Promise<IWalletStatus[]>;
   public abstract fetchBalances(): Promise<IBalance[]>;
   public abstract fetchDepositAddresses(): Promise<IDepositAddress[]>;
-  public abstract fetchOrderHistory(currency: string, unit: string, page: number, limit: number): Promise<IOrderHistory[]>;
+  public abstract fetchOrderHistory(currency: string, page: number, limit: number): Promise<IOrderHistory[]>;
   public abstract fetchDepositHistory(currency: string, page: number, limit: number): Promise<IDepositWithdrawHistory[]>;
   public abstract fetchWithdrawHistory(currency: string, page: number, limit: number): Promise<IDepositWithdrawHistory[]>;
   public abstract subscribePublicData(type: string);

@@ -47,7 +47,7 @@ describe("UPBIT", () => {
   });
 
   it("7. Fetch Order History", async () => {
-    const result = await upbit.fetchOrderHistory("TRX", "KRW");
+    const result = await upbit.fetchOrderHistory("TRX");
     console.log(result);
   });
 

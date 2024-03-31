@@ -46,6 +46,7 @@ export interface IDepositWithdrawHistory {
   fee: string; // 수수료
   state: depsoitWithdrawState; //  상태
   fromAddress: string; // From 주소
+  fromAddressTag: string; // To 주소의 태그
   toAddress: string; // To 주소
   toAddressTag: string; // To 주소의 태그
   createdAt: number; // 생성 일시

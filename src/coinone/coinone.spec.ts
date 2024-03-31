@@ -30,7 +30,6 @@ describe("COINONE", () => {
       coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);
     });
 
-    
     it("Fetch Balances", async () => {
       const result = await coinone.fetchBalances();
       console.log(result);

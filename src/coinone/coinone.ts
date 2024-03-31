@@ -3,17 +3,7 @@ import * as crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import { Exchange } from "@exchange/exchange";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
-import {
-  IBalance,
-  IDepositAddress,
-  ExchangeDepositHistory,
-  IMarket,
-  IMarketPrice,
-  IOrderHistory,
-  ITicker,
-  IWalletStatus,
-  ExchangeWithdrawHistory,
-} from "@exchange/exchange.interface";
+import { IBalance, IDepositAddress, IMarket, IMarketPrice, IOrderHistory, ITicker, IWalletStatus } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
 import axios from "axios";
@@ -40,7 +30,7 @@ export class Coinone {
   }
 
   /* ------------------잔액 조회-------------------- */
-  public async fetchBalances() {
+  public async fetchBalances(): Promise<IBalance> {
     const data = {
       access_token: this.accessKey,
       nonce: uuidv4(),

@@ -1,6 +1,7 @@
-import { IBalance, IDepositAddress, IMarket, IMarketPrice, ITicker } from "@exchange/exchange.interface";
-import { IKorbitBalance, IKorbitMyAddresses, IKorbitTicker } from "@korbit/koribt.interface";
-import { add, toBigNumberString } from "@utils/number";
+import { depositWithdrawType, depsoitWithdrawState } from "@exchange/exchange.enum";
+import { IBalance, IDepositAddress, IDepositWithdrawHistory, IMarket, IMarketPrice, ITicker } from "@exchange/exchange.interface";
+import { IKorbitBalance, IKorbitHistory, IKorbitMyAddresses, IKorbitTicker } from "@korbit/koribt.interface";
+import { add, isGreaterThan, toBigNumberString } from "@utils/number";
 
 export const korbitTickerConverter = (data: IKorbitTicker[]): ITicker[] => {
   return Object.keys(data).map((market) => {
@@ -18,19 +19,26 @@ export const korbitTickerConverter = (data: IKorbitTicker[]): ITicker[] => {
   });
 };
 
-export const balanceConverter = (data: IKorbitBalance): IBalance[] => {
-  return Object.keys(data).map((currency) => {
+export const korbitBalanceConverter = (data: IKorbitBalance): IBalance[] => {
+  const results: IBalance[] = [];
+  Object.keys(data).forEach((currency) => {
     const targetCurrency = data[currency];
-    return {
-      currency: currency.toUpperCase(),
-      balance: toBigNumberString(targetCurrency.available),
-      lockedBalance: add(targetCurrency.trade_in_use, targetCurrency.withdrawal_in_use),
-      avgBuyPrice: targetCurrency.avg_price,
-    };
+    const balance = toBigNumberString(targetCurrency.available);
+    const lockedBalance = add(targetCurrency.trade_in_use, targetCurrency.withdrawal_in_use).toString();
+
+    if (isGreaterThan(add(balance, lockedBalance), 0)) {
+      results.push({
+        currency: currency.toUpperCase(),
+        balance: toBigNumberString(targetCurrency.available),
+        lockedBalance: add(targetCurrency.trade_in_use, targetCurrency.withdrawal_in_use).toString(),
+        avgBuyPrice: toBigNumberString(targetCurrency.avg_price),
+      });
+    }
   });
+  return results;
 };
 
-export const depositAddressesConverter = (data: IKorbitMyAddresses): IDepositAddress[] => {
+export const korbitDepositAddressesConverter = (data: IKorbitMyAddresses): IDepositAddress[] => {
   const depositAddresses = data.deposit;
   delete depositAddresses.krw;
 
@@ -41,6 +49,66 @@ export const depositAddressesConverter = (data: IKorbitMyAddresses): IDepositAdd
       network: null,
       address: targetCurrency.address,
       memo: targetCurrency?.destination_tag ?? null,
+    };
+  });
+};
+
+export const korbitDepositHistoryConverter = (data: IKorbitHistory[]): IDepositWithdrawHistory[] => {
+  const convertState = (state) => {
+    switch (state) {
+      case "filled":
+        return depsoitWithdrawState.accepted;
+      case "requested":
+        return depsoitWithdrawState.processing;
+      // TODO:
+    }
+  };
+
+  return data.map(({ currency, amount, details, status, created_at, completed_at }) => {
+    return {
+      type: depositWithdrawType.deposit,
+      txId: details?.transaction_id,
+      currency: currency.toUpperCase(),
+      network: null,
+      amount: toBigNumberString(amount),
+      fee: null,
+      state: convertState(status),
+      fromAddress: details?.address,
+      fromAddressTag: details?.destination_tag,
+      toAddress: null,
+      toAddressTag: null,
+      createdAt: created_at,
+      confirmedAt: completed_at,
+    };
+  });
+};
+
+export const korbitWithdrawHistoryConverter = (data: IKorbitHistory[]): IDepositWithdrawHistory[] => {
+  const convertState = (state) => {
+    switch (state) {
+      case "filled":
+        return depsoitWithdrawState.accepted;
+      case "requested":
+        return depsoitWithdrawState.processing;
+      // TODO:
+    }
+  };
+
+  return data.map(({ currency, amount, details, status, created_at, completed_at }) => {
+    return {
+      type: depositWithdrawType.withdraw,
+      txId: details?.transaction_id,
+      currency: currency.toUpperCase(),
+      network: null,
+      amount: toBigNumberString(amount),
+      fee: null,
+      state: convertState(status),
+      fromAddress: null,
+      fromAddressTag: null,
+      toAddress: details?.address,
+      toAddressTag: details?.destination_tag,
+      createdAt: created_at,
+      confirmedAt: completed_at,
     };
   });
 };

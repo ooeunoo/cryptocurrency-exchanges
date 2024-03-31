@@ -3,51 +3,42 @@ import * as path from "path";
 import { Korbit } from "./korbit";
 
 describe("KORBIT", () => {
-  describe("PUBLIC", () => {
-    let korbit: Korbit;
-    beforeAll(async () => {
-      korbit = new Korbit();
-    });
+  let korbit: Korbit;
+  beforeAll(async () => {
+    const env = dotenv.config({
+      path: path.join(__dirname, "..", "..", ".env"),
+    }).parsed;
 
-    it("Fetch Market", async () => {
-      const result = await korbit.fetchTickers();
-      console.log(result);
-    });
+    korbit = new Korbit(env.KORBIT_API_KEY, env.KORBIT_SECRET_KEY);
   });
 
-  describe("PRIVATE", () => {
-    let korbit: Korbit;
-    beforeAll(async () => {
-      const env = dotenv.config({
-        path: path.join(__dirname, "..", "..", ".env"),
-      }).parsed;
-
-      korbit = new Korbit(env.KORBIT_API_KEY, env.KORBIT_SECRET_KEY);
-    });
-
-    it("Fetch Balances", async () => {
-      const result = await korbit.fetchBalances();
-      console.log(result);
-    });
-
-    it("Fetch Deposit Addresses", async () => {
-      const result = await korbit.fetchDepositAddress();
-      console.log(result);
-    });
-
-    // it("Fetch Deposit Histories", async () => {
-    //   const result = await upbit.fetchDepositHistory("BTC");
-    //   console.log(result);
-    // });
-
-    // it("Fetch Withdraw History", async () => {
-    //   const result = await upbit.fetchWithdrawHistory("BTC");
-    //   console.log(result);
-    // });
-
-    // it("Fetch Order History", async () => {
-    //   const result = await upbit.fetchOrderHistory("BTC");
-    //   console.log(result);
-    // });
+  it("Fetch Market", async () => {
+    const result = await korbit.fetchTickers();
+    console.log(result);
   });
+
+  it("Fetch Balances", async () => {
+    const result = await korbit.fetchBalances();
+    console.log(result);
+  });
+
+  it("Fetch Deposit Addresses", async () => {
+    const result = await korbit.fetchDepositAddresses();
+    console.log(result);
+  });
+
+  it("Fetch Deposit Histories", async () => {
+    const result = await korbit.fetchDepositHistory("BTC");
+    console.log(result);
+  });
+
+  // it("Fetch Withdraw History", async () => {
+  //   const result = await upbit.fetchWithdrawHistory("BTC");
+  //   console.log(result);
+  // });
+
+  // it("Fetch Order History", async () => {
+  //   const result = await upbit.fetchOrderHistory("BTC");
+  //   console.log(result);
+  // });
 });

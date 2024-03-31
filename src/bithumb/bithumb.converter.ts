@@ -1,16 +1,12 @@
 import {
-  DepositWithdrawalType,
-  DepsoitState,
   IBalance,
   IDepositAddress,
-  ExchangeDepositHistory,
+  IDepositWithdrawHistory,
   IMarket,
   IMarketPrice,
   IOrderHistory,
   ITicker,
   IWalletStatus,
-  ExchangeWithdrawHistory,
-  WithdrawState,
 } from "@exchange/exchange.interface";
 import {
   IBithumbBalance,
@@ -22,7 +18,8 @@ import {
   IBithumbWithdrawHistory,
   IBithumbResponse,
 } from "@bithumb/bithumb.interface";
-import { toBigNumberString } from "@utils/number";
+import { sub, toBigNumberString } from "@utils/number";
+import { depositWithdrawType, depsoitWithdrawState, orderSide } from "@exchange/exchange.enum";
 
 export const bithumbMarketTickerConverterKRW = (res: IBithumbResponse<IBithumbTicker[]>): ITicker[] => {
   const data = res.data;
@@ -89,7 +86,7 @@ export const bithumbBalanceConverter = (data: IBithumbResponse<IBithumbBalance[]
   return result;
 };
 
-export const depositAddressesConverter = (data: IBithumbResponse<IBithumbDepositAddress>): IDepositAddress => {
+export const bithumbDepositAddressesConverter = (data: IBithumbResponse<IBithumbDepositAddress>): IDepositAddress => {
   const pdata = data.data;
 
   let address = pdata.wallet_address;
@@ -109,50 +106,62 @@ export const depositAddressesConverter = (data: IBithumbResponse<IBithumbDeposit
   };
 };
 
-export const depositHistoryConverter = (data: IBithumbResponse<IBithumbDepositHistory[]>): ExchangeDepositHistory[] => {
+export const bithumbDepositHistoryConverter = (data: IBithumbResponse<IBithumbDepositHistory[]>): IDepositWithdrawHistory[] => {
   const pdata = data.data;
-  console.log(pdata);
+  console.log(data);
   return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
     return {
-      type: DepositWithdrawalType.DEPOSIT,
-      txId: "",
-      currency: order_currency,
+      type: depositWithdrawType.deposit,
+      txId: null,
+      currency: order_currency.toUpperCase(),
+      network: null,
       amount: toBigNumberString(amount),
       fee: toBigNumberString(fee),
-      state: WithdrawState.DONE.toString(),
+      state: depsoitWithdrawState.accepted,
+      fromAddress: null,
+      toAddress: null,
+      toAddressTag: null,
       createdAt: transfer_date,
       confirmedAt: null,
     };
   });
 };
 
-export const withdrawHistoryConverter = (data: IBithumbResponse<IBithumbWithdrawHistory[]>): ExchangeWithdrawHistory[] => {
+export const bithumbWithdrawHistoryConverter = (data: IBithumbResponse<IBithumbWithdrawHistory[]>): IDepositWithdrawHistory[] => {
   const pdata = data.data;
 
   return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
     return {
-      type: DepositWithdrawalType.WITHDRAWAL,
-      txId: "",
-      currency: order_currency,
+      type: depositWithdrawType.withdraw,
+      txId: null,
+      currency: order_currency.toUpperCase(),
+      network: null,
       amount: toBigNumberString(amount),
       fee: toBigNumberString(fee),
-      state: WithdrawState.DONE.toString(),
+      state: depsoitWithdrawState.accepted,
+      fromAddress: null,
+      toAddress: null,
+      toAddressTag: null,
       createdAt: transfer_date,
       confirmedAt: null,
     };
   });
 };
 
-export const orderHistoryConverter = (data: IBithumbResponse<IBithumbOrderHistory[]>): IOrderHistory[] => {
+export const bithumbOrderHistoryConverter = (data: IBithumbResponse<IBithumbOrderHistory[]>): IOrderHistory[] => {
   const pdata = data.data;
 
-  return pdata.map(({ order_currency, payment_currency, order_date, type, price, units }) => {
+  return pdata.map(({ order_id, order_currency, payment_currency, order_date, type, price, units, units_remaining }) => {
     return {
-      currency: order_currency,
-      unit: payment_currency,
+      id: order_id,
+      type: null,
+      side: type == "bid" ? orderSide.bid : orderSide.ask,
+      state: null,
+      currency: order_currency.toUpperCase(),
+      unit: payment_currency.toUpperCase(),
       price: toBigNumberString(price),
-      amount: toBigNumberString(units),
-      side: type,
+      orderAmount: toBigNumberString(units),
+      excutedAmount: sub(units, units_remaining).toString(),
       fee: null,
       createdAt: parseInt(order_date),
     };

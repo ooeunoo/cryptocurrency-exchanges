@@ -4,6 +4,7 @@ import { add, isGreaterThan, toBigNumberString } from "@utils/number";
 
 export const coinoneTickerConverter = (res: ICoinoneTicker): ITicker[] => {
   const data = res.tickers;
+
   return data.map(({ quote_currency, target_currency, high, low, first, last }) => {
     return {
       currency: target_currency.toUpperCase(),
