@@ -1,3 +1,4 @@
+import { DataConverter } from "@utils/type";
 import * as WebSocket from "ws";
 
 export interface WebSocketSubscription {
@@ -6,20 +7,16 @@ export interface WebSocketSubscription {
   onClose?: () => void;
 }
 
-export class WebSocketClient {
+export class WebSocketClient<O, T> {
   public ws;
 
-  baseUrl: string;
-  data: any;
-
-  alive: boolean;
-  queueSize: number = 1000;
-  queue: any[] = [];
-  converter: any;
+  private data: Record<string, any>;
+  private alive: boolean;
+  private converter?: DataConverter<O, T>;
   private subscriptions: WebSocketSubscription[] = [];
 
-  constructor(baseUrl: string, data: any, converter: any) {
-    this.ws = new WebSocket(baseUrl);
+  constructor(baseUrl: string, headers: any, data: Record<string, any>, converter: DataConverter<O, T>) {
+    this.ws = new WebSocket(baseUrl, { headers });
 
     this.data = data;
     this.alive = false;
@@ -53,6 +50,7 @@ export class WebSocketClient {
   }
 
   unsubscribe(subscription: WebSocketSubscription) {
+    this.terminate();
     const index = this.subscriptions.indexOf(subscription);
     if (index !== -1) {
       this.subscriptions.splice(index, 1);
@@ -60,9 +58,8 @@ export class WebSocketClient {
   }
 
   private handleMessage(data: WebSocket.Data) {
-    const receiveData = JSON.parse(data.toString("utf-8"));
-    const convertedData = this.converter(receiveData);
-    // TODO:
+    const receiveData: O = JSON.parse(data.toString("utf-8"));
+    const convertedData = this.converter ? this.converter(receiveData) : receiveData;
     this.subscriptions.forEach((subscription) => {
       subscription.onData(convertedData);
     });

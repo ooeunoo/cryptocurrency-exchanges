@@ -8,6 +8,7 @@ import { Exchange } from "@exchange/exchange";
 import {
   UPBIT_BASE_URL,
   UPBIT_PRIVATE_ENDPOINT,
+  UPBIT_PRIVATE_STREAM_DATA_TYPE,
   UPBIT_PUBLIC_ENDPOINT,
   UPBIT_PUBLIC_STREAM_DATA_TYPE,
   UPBIT_WEBSOCKET_URL,
@@ -17,6 +18,9 @@ import {
   upbitDepositAddressesConverter,
   upbitDepositHistoryConverter,
   upbitOrderHistoryConverter,
+  upbitSubscribeAllTradeConverter,
+  upbitSubscribeMyTradeConverter,
+  upbitSubscribeOrderbookConverter,
   upbitSubscribeTickerConverter,
   upbitTickerConverter,
   upbitWalletStatusConverter,
@@ -27,12 +31,13 @@ import {
   IUpbitDepositAddress,
   IUpbitDepositHistory,
   IUpbitOrderHistory,
+  IUpbitSubscribeTicker,
   IUpbitTicker,
   IUpbitWalletStatus,
   IUpbitWithdrawHistory,
 } from "@upbit/upbit.interface";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
-import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ITicker } from "@exchange/exchange.interface";
+import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ISubscribeTicker, ITicker } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
 import { sortBy } from "@utils/array";
@@ -185,40 +190,29 @@ export class Upbit extends Exchange {
     );
     return sortBy(results, "createdAt");
   }
-  getPriceStreamer(sendMsg?: string): { open; close; stream } {
-    const ws = new WebSocket(UPBIT_WEBSOCKET_URL);
-
-    const open = (callback) =>
-      ws.on("open", () => {
-        console.log("open");
-        ws.send(sendMsg);
-        callback();
-      });
-
-    const close = (callback) =>
-      ws.on("close", () => {
-        callback();
-      });
-
-    const stream = (callback) =>
-      ws.on("message", (data: Buffer) => {
-        callback(data);
-      });
-
-    return { open, close, stream };
-  }
 
   public async subscribePublicData(type: UPBIT_PUBLIC_STREAM_DATA_TYPE) {
     const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
     const data = [{ ticket: uuidv4() }, { type, codes: marketResponse.map(({ market }) => market.trim()), isOnlyRealtime: true }];
     let converter;
     if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker) converter = upbitSubscribeTickerConverter;
-    const ws = new WebSocketClient(UPBIT_WEBSOCKET_URL, data, converter);
+    if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.trade) converter = upbitSubscribeAllTradeConverter;
+    if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.orderbook) converter = upbitSubscribeOrderbookConverter;
+    const ws = new WebSocketClient(UPBIT_WEBSOCKET_URL, null, data, converter);
+    return ws;
+  }
+
+  @upbitPrivate
+  public async subscribePrivateData(type: UPBIT_PRIVATE_STREAM_DATA_TYPE = UPBIT_PRIVATE_STREAM_DATA_TYPE.myTrade) {
+    const data = [{ ticket: uuidv4() }, { type }];
+    let converter;
+    if (type == UPBIT_PRIVATE_STREAM_DATA_TYPE.myTrade) converter = upbitSubscribeMyTradeConverter;
+    const ws = new WebSocketClient(UPBIT_WEBSOCKET_URL, this._header(), data, converter);
     return ws;
   }
 
   /* -----------------헤더------------------ */
-  private _header(params?: any): RawAxiosRequestHeaders {
+  private _header(params?: any): any {
     const payload: any = {
       access_key: this.accessKey,
       nonce: uuidv4(),

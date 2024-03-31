@@ -84,5 +84,33 @@ export interface ISubscribeTicker {
   accTradeVolume24h; // 24시간 누적 거래량	Double
   accTradePrice; // 누적 거래대금(UTC 0시 기준)	Double
   accTradePrice24h; // 24시간 누적 거래대금
-  timestamp: string; // 타임스탬프
+  timestamp: number; // 타임스탬프
+}
+
+export interface ISubscribeAllTrade {
+  currency: string;
+  unit: string;
+  price: string; // 가격
+  amount: string; // 수량
+  side: orderSide; // 사이드 - 매수 / 매도
+  timestamp: number; // 타임스탬프
+}
+
+export interface ISubscribeOrderbook {
+  currency: string;
+  unit: string;
+  orderbooks: {
+    ask: { price: string; amount: string }[];
+    bid: { price: string; amount: string }[];
+  };
+  timestamp: number;
+}
+
+export interface ISubscribeMyTrade {
+  currency: string;
+  unit: string;
+  side: orderSide;
+  price: string;
+  amount: string;
+  timestamp: number;
 }

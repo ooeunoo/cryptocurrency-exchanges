@@ -1,11 +1,25 @@
 import { toBigNumberString } from "@utils/number";
-import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ITicker, IWalletStatus } from "@exchange/exchange.interface";
+import {
+  IBalance,
+  IDepositAddress,
+  IDepositWithdrawHistory,
+  IOrderHistory,
+  ISubscribeAllTrade,
+  ISubscribeMyTrade,
+  ISubscribeOrderbook,
+  ISubscribeTicker,
+  ITicker,
+  IWalletStatus,
+} from "@exchange/exchange.interface";
 import {
   IUpbitBalance,
   IUpbitDepositAddress,
   IUpbitDepositHistory,
   IUpbitOrderHistory,
+  IUpbitSubscribeMyTrade,
+  IUpbitSubscribeOrderbook,
   IUpbitSubscribeTicker,
+  IUpbitSubscribeTrade,
   IUpbitTicker,
   IUpbitWalletStatus,
   IUpbitWithdrawHistory,
@@ -198,7 +212,7 @@ export const upbitOrderHistoryConverter = (data: IUpbitOrderHistory[]): IOrderHi
   });
 };
 
-export const upbitSubscribeTickerConverter = (data: IUpbitSubscribeTicker) => {
+export const upbitSubscribeTickerConverter = (data: IUpbitSubscribeTicker): ISubscribeTicker => {
   const [unit, currency] = data.code.split("-");
   const convertChange = (change) => {
     switch (change) {
@@ -221,9 +235,54 @@ export const upbitSubscribeTickerConverter = (data: IUpbitSubscribeTicker) => {
     last: toBigNumberString(data.trade_price),
     change: convertChange(data.change),
     accTradeVolume: toBigNumberString(data.acc_trade_volume),
-    accTradeVolume24: toBigNumberString(data.acc_trade_price_24h),
+    accTradeVolume24h: toBigNumberString(data.acc_trade_price_24h),
     accTradePrice: toBigNumberString(data.acc_trade_price),
-    accTradePrice24: toBigNumberString(data.acc_trade_price_24h),
+    accTradePrice24h: toBigNumberString(data.acc_trade_price_24h),
     timestamp: data.timestamp,
+  };
+};
+
+export const upbitSubscribeAllTradeConverter = (data: IUpbitSubscribeTrade): ISubscribeAllTrade => {
+  const [unit, currency] = data.code.split("-");
+  return {
+    currency: currency.toUpperCase(),
+    unit: unit.toUpperCase(),
+    price: toBigNumberString(data.trade_price),
+    amount: toBigNumberString(data.trade_volume),
+    side: data.ask_bid == "ASK" ? orderSide.ask : orderSide.bid,
+    timestamp: data.trade_timestamp,
+  };
+};
+
+export const upbitSubscribeOrderbookConverter = (data: IUpbitSubscribeOrderbook): ISubscribeOrderbook => {
+  const [unit, currency] = data.code.split("-");
+  const orderbooks = {
+    ask: [],
+    bid: [],
+  };
+
+  data.orderbook_units.map(({ ask_price, bid_price, ask_size, bid_size }) => {
+    orderbooks.ask.push({ price: ask_price, amount: ask_size });
+    orderbooks.bid.push({ price: bid_price, amount: bid_size });
+  });
+
+  return {
+    currency: currency.toUpperCase(),
+    unit: unit.toUpperCase(),
+    orderbooks,
+    timestamp: data.timestamp,
+  };
+};
+
+export const upbitSubscribeMyTradeConverter = (data: IUpbitSubscribeMyTrade): ISubscribeMyTrade => {
+  const [unit, currency] = data.code.split("-");
+
+  return {
+    currency: currency.toUpperCase(),
+    unit: unit.toUpperCase(),
+    side: data.ask_bid == "ASK" ? orderSide.ask : orderSide.bid,
+    price: toBigNumberString(data.price),
+    amount: toBigNumberString(data.volume),
+    timestamp: data.trade_timestamp,
   };
 };
