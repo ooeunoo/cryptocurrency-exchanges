@@ -10,13 +10,13 @@ import {
   withdrawHistoryConverter,
 } from "@bithumb/bithumb.converter";
 import {
-  BithumbBalance,
-  BithumbDepositAddress,
-  BithumbDepositHistory,
-  BithumbOrderHistory,
-  BithumbTicker,
-  BithumbWalletStatus,
-  BithumbWithdrawHistory,
+  IBithumbBalance,
+  IBithumbDepositAddress,
+  IBithumbDepositHistory,
+  IBithumbOrderHistory,
+  IBithumbTicker,
+  IBithumbWalletStatus,
+  IBithumbWithdrawHistory,
   IBithumbResponse,
 } from "@bithumb/bithumb.interface";
 import * as queystring from "querystring";
@@ -24,13 +24,13 @@ import * as crypto from "crypto";
 import { Exchange } from "@exchange/exchange";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
 import {
-  ExchangeBalance,
-  ExchangeDepositAddress,
+  IBalance,
+  IDepositAddress,
   ExchangeDepositHistory,
-  ExchangeMarket,
-  ExchangeMarketPrice,
-  ExchangeOrderHistory,
-  ExchangeTicker,
+  IMarket,
+  IMarketPrice,
+  IOrderHistory,
+  ITicker,
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
@@ -47,8 +47,8 @@ export class Bithumb extends Exchange {
   }
 
   /* ------------------마켓 조회-------------------- */
-  public async fetchTickers(): Promise<ExchangeTicker[]> {
-    const resultkrw = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+  public async fetchTickers(): Promise<ITicker[]> {
+    const resultkrw = await requestPublic<IBithumbResponse<IBithumbTicker[]>>(
       Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_KRW",
@@ -56,7 +56,7 @@ export class Bithumb extends Exchange {
       null,
       bithumbMarketTickerConverterKRW,
     );
-    const resultbtc = await requestPublic<IBithumbResponse<BithumbTicker[]>>(
+    const resultbtc = await requestPublic<IBithumbResponse<IBithumbTicker[]>>(
       Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.ticker + "/ALL_BTC",
@@ -69,7 +69,7 @@ export class Bithumb extends Exchange {
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
   public async fetchWalletStatus(): Promise<any[]> {
-    return requestPublic<IBithumbResponse<BithumbWalletStatus[]>>(
+    return requestPublic<IBithumbResponse<IBithumbWalletStatus[]>>(
       Method.GET,
       BITHUMB_BASE_URL,
       BITHUMB_PUBLIC_DOMAIN.support_networks,
@@ -81,9 +81,9 @@ export class Bithumb extends Exchange {
 
   /* ------------------잔액 조회-------------------- */
   @bithumbPrivate
-  public async fetchBalances(): Promise<ExchangeBalance[]> {
+  public async fetchBalances(): Promise<IBalance[]> {
     const params = { currency: "ALL" };
-    return requestSign<IBithumbResponse<BithumbBalance[]>>(
+    return requestSign<IBithumbResponse<IBithumbBalance[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
       BITHUMB_PRIVATE_DOMAIN.balance,
@@ -96,14 +96,14 @@ export class Bithumb extends Exchange {
 
   /* ------------------입금 주소 조회-------------------- */
   @bithumbPrivate
-  public async fetchDepositAddresses(): Promise<ExchangeDepositAddress[]> {
+  public async fetchDepositAddresses(): Promise<IDepositAddress[]> {
     const supports = await requestPublic(Method.GET, BITHUMB_BASE_URL, BITHUMB_PUBLIC_DOMAIN.support_networks, null, null);
 
     const requests = [];
     supports.data.forEach(async ({ currency, net_type }) => {
       const params = { currency, net_type };
       requests.push(
-        requestSign<IBithumbResponse<BithumbDepositAddress>>(
+        requestSign<IBithumbResponse<IBithumbDepositAddress>>(
           Method.POST,
           BITHUMB_BASE_URL,
           BITHUMB_PRIVATE_DOMAIN.deposit_address,
@@ -130,7 +130,7 @@ export class Bithumb extends Exchange {
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeDepositHistory[]> {
     const params = { searchGb: 4, order_currency: currency, offset: page - 1, count: limit };
-    return requestSign<IBithumbResponse<BithumbDepositHistory[]>>(
+    return requestSign<IBithumbResponse<IBithumbDepositHistory[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
       BITHUMB_PRIVATE_DOMAIN.info_user_transactions,
@@ -148,7 +148,7 @@ export class Bithumb extends Exchange {
     limit: number = DEFAULT_PAGE_LIMIT,
   ): Promise<ExchangeWithdrawHistory[]> {
     const params = { searchGb: 5, order_currency: currency, offset: page, count: limit };
-    return requestSign<IBithumbResponse<BithumbWithdrawHistory[]>>(
+    return requestSign<IBithumbResponse<IBithumbWithdrawHistory[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
       BITHUMB_PRIVATE_DOMAIN.info_user_transactions,
@@ -160,13 +160,9 @@ export class Bithumb extends Exchange {
   }
   /* ------------------주문 내역 조회-------------------- */
   @bithumbPrivate
-  public async fetchOrderHistory(
-    currency: string,
-    page: number = DEFAULT_PAGE_NUMBER,
-    limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeOrderHistory[]> {
+  public async fetchOrderHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
     const params = { searchGb: 5, order_currency: currency, offset: page, count: limit };
-    return requestSign<IBithumbResponse<BithumbOrderHistory[]>>(
+    return requestSign<IBithumbResponse<IBithumbOrderHistory[]>>(
       Method.POST,
       BITHUMB_BASE_URL,
       BITHUMB_PRIVATE_DOMAIN.info_user_transactions,

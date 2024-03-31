@@ -1,8 +1,8 @@
-import { ExchangeBalance, ExchangeTicker, ExchangeWalletStatus } from "@exchange/exchange.interface";
-import { CoinoneBalance, CoinoneTicker, CoinoneWalletStatus } from "./coinone.interface";
+import { IBalance, ITicker, IWalletStatus } from "@exchange/exchange.interface";
+import { ICoinoneBalance, ICoinoneTicker, ICoinoneWalletStatus } from "./coinone.interface";
 import { add, isGreaterThan, toBigNumberString } from "@utils/number";
 
-export const coinoneTickerConverter = (res: CoinoneTicker): ExchangeTicker[] => {
+export const coinoneTickerConverter = (res: ICoinoneTicker): ITicker[] => {
   const data = res.tickers;
   return data.map(({ quote_currency, target_currency, high, low, first, last }) => {
     return {
@@ -16,7 +16,7 @@ export const coinoneTickerConverter = (res: CoinoneTicker): ExchangeTicker[] => 
   });
 };
 
-export const coinoneWalletStatusConvereter = (res: CoinoneWalletStatus): ExchangeWalletStatus[] => {
+export const coinoneWalletStatusConvereter = (res: ICoinoneWalletStatus): IWalletStatus[] => {
   const data = res.currencies;
   return data.map(({ symbol, deposit_status, withdraw_status, withdrawal_fee, withdrawal_min_amount }) => {
     return {
@@ -30,9 +30,9 @@ export const coinoneWalletStatusConvereter = (res: CoinoneWalletStatus): Exchang
   });
 };
 
-export const coinoneBalanceConverter = (res: CoinoneBalance): ExchangeBalance[] => {
+export const coinoneBalanceConverter = (res: ICoinoneBalance): IBalance[] => {
   const data = res.balances;
-  const result: ExchangeBalance[] = [];
+  const result: IBalance[] = [];
   data.forEach(({ currency, available, limit, average_price }) => {
     if (isGreaterThan(add(available, limit), 0)) {
       result.push({

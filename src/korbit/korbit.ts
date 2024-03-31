@@ -1,16 +1,16 @@
 import {
-  ExchangeMarket,
-  ExchangeMarketPrice,
-  ExchangeBalance,
-  ExchangeDepositAddress,
-  ExchangeOrderHistory,
+  IMarket,
+  IMarketPrice,
+  IBalance,
+  IDepositAddress,
+  IOrderHistory,
   ExchangeDepositHistory,
   ExchangeWithdrawHistory,
-  ExchangeTicker,
+  ITicker,
 } from "@exchange/exchange.interface";
 import { KORBIT_AUTH_DOMAIN, KORBIT_BASE_URL, KORBIT_PRIVATE_DOMAIN, KORBIT_PUBLIC_DOMAIN } from "@korbit/korbit.constant";
 import axios, { AxiosResponse } from "axios";
-import { KorbitMyAddresses, KorbitOAuth, KorbitOAuthData, KorbitTicker } from "@korbit/koribt.interface";
+import { IKorbitMyAddresses, IKorbitOAuth, IKorbitOAuthData, IKorbitTicker } from "@korbit/koribt.interface";
 import { balanceConverter, depositAddressesConverter, korbitTickerConverter } from "@korbit/korbit.converter";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
@@ -30,8 +30,8 @@ export class Korbit {
   }
 
   /* ------------------티커 조회-------------------- */
-  public async fetchTickers(): Promise<ExchangeTicker[]> {
-    return requestPublic<KorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, korbitTickerConverter);
+  public async fetchTickers(): Promise<ITicker[]> {
+    return requestPublic<IKorbitTicker[]>(Method.GET, KORBIT_BASE_URL, KORBIT_PUBLIC_DOMAIN.ticker, null, null, korbitTickerConverter);
   }
 
   /* ------------------잔액 조회-------------------- */
@@ -42,8 +42,8 @@ export class Korbit {
 
   /* ------------------입금 주소 조회-------------------- */
   @korbitPrivate
-  public async fetchDepositAddress(): Promise<ExchangeDepositAddress[]> {
-    return requestSign<KorbitMyAddresses>(
+  public async fetchDepositAddress(): Promise<IDepositAddress[]> {
+    return requestSign<IKorbitMyAddresses>(
       Method.GET,
       KORBIT_BASE_URL,
       KORBIT_PRIVATE_DOMAIN.deposit_address,
@@ -62,7 +62,7 @@ export class Korbit {
     return { Authorization: `Bearer ${this.accessToken}` };
   }
   private async _refreshAccessToken() {
-    const data: KorbitOAuthData = {
+    const data: IKorbitOAuthData = {
       client_id: this.apiKey,
       client_secret: this.secretKey,
       grant_type: "client_credentials",
@@ -72,7 +72,7 @@ export class Korbit {
       data.grant_type = "refresh_token";
       data.refresh_token = this.refresehToken;
     }
-    const { access_token, expires_in, refresh_token } = await requestPublic<KorbitOAuth>(
+    const { access_token, expires_in, refresh_token } = await requestPublic<IKorbitOAuth>(
       Method.POST,
       KORBIT_BASE_URL,
       KORBIT_AUTH_DOMAIN.oauth2,

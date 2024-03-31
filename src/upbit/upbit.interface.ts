@@ -1,4 +1,4 @@
-export interface UpbitTicker {
+export interface IUpbitTicker {
   market: string; // "KRW-BTC";
   trade_date: string; // "20180418";
   trade_time: string; // "102340";
@@ -27,7 +27,7 @@ export interface UpbitTicker {
   timestamp: number; // 1524047026072;
 }
 
-export interface UpbitWalletStatus {
+export interface IUpbitWalletStatus {
   currency: string; // "NEO";
   wallet_state: string; //"working";
   block_state: string; //"normal";
@@ -38,7 +38,7 @@ export interface UpbitWalletStatus {
   network_name: string; //"NEO N3";
 }
 
-export interface UpbitBalance {
+export interface IUpbitBalance {
   currency: string; // "KRW";
   balance: string; //"1000000.0";
   locked: string; //"0.0";
@@ -47,7 +47,7 @@ export interface UpbitBalance {
   unit_currency: string; // "KRW";
 }
 
-export interface UpbitDepositHistory {
+export interface IUpbitDepositHistory {
   type: string; //"deposit";
   uuid: string; //"94332e99-3a87-4a35-ad98-28b0c969f830";
   currency: string; //"KRW";
@@ -60,7 +60,7 @@ export interface UpbitDepositHistory {
   transaction_type: string; // "default";
 }
 
-export interface UpbitWithdrawHistory {
+export interface IUpbitWithdrawHistory {
   type: string; //"withdraw";
   uuid: string; //"35a4f1dc-1db5-4d6b-89b5-7ec137875956";
   currency: string; //"XRP";
@@ -73,7 +73,7 @@ export interface UpbitWithdrawHistory {
   transaction_type: string; // "default";
 }
 
-export interface UpbitOrderHistory {
+export interface IUpbitOrderHistory {
   uuid: string; //"9ca023a5-851b-4fec-9f0a-48cd83c2eaae";
   side: string; // "ask";
   ord_type: string; //"limit";
@@ -91,9 +91,45 @@ export interface UpbitOrderHistory {
   trades_count: number; // 1;
 }
 
-export interface UpbitDepositAddress {
+export interface IUpbitDepositAddress {
   currency: string; // "BTC";
   net_type: string; // 'BTC';
   deposit_address: string; //"3EusRwybuZUhVDeHL7gh3HSLmbhLcy7NqD";
   secondary_address?: string; // null;
+}
+
+export interface IUpbitSubscribeTicker {
+  type: string; // "ticker";
+  code: string; // "KRW-POLYX";
+  opening_price: number; // 860.1;
+  high_price: number; //902.7;
+  low_price: number; //826.4;
+  trade_price: number; //853.5;
+  prev_closing_price: number; //860.1;
+  acc_trade_price: number; //217685190700.73276;
+  change: string; // "FALL";
+  change_price: number; //6.6;
+  signed_change_price: number; // -6.6;
+  change_rate: number; //0.0076735263;
+  signed_change_rate: number; //-0.0076735263;
+  ask_bid: string; // "ASK";
+  trade_volume: number; //3013.0261604;
+  acc_trade_volume: number; //250849319.96210873;
+  trade_date: string; // "20240331";
+  trade_time: string; // "091210";
+  trade_timestamp: number; // 1711876330041;
+  acc_ask_volume: number; //140908831.97408295;
+  acc_bid_volume: number; // 109940487.98802578;
+  highest_52_week_price: number; //951.5;
+  highest_52_week_date: string; // "2024-03-26";
+  lowest_52_week_price: number; //125;
+  lowest_52_week_date: string; // "2023-06-10";
+  market_state: string; // "ACTIVE";
+  is_trading_suspended: false;
+  delisting_date: null;
+  market_warning: string; // "NONE";
+  timestamp: number; //1711876330072;
+  acc_trade_price_24h: number; // 480514756644.073;
+  acc_trade_volume_24h: number; //547306522.6313522;
+  stream_type: string; // "REALTIME";
 }

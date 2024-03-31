@@ -3,7 +3,7 @@ export interface IBithumbResponse<T> {
   data?: T;
 }
 
-interface BithumbTickerData {
+interface IBithumbTickerData {
   opening_price: string;
   closing_price: string;
   min_price: string;
@@ -17,22 +17,22 @@ interface BithumbTickerData {
   fluctate_rate_24H: string;
 }
 
-export interface BithumbTicker {
-  [currency: string]: BithumbTickerData | string; // date 필드
+export interface IBithumbTicker {
+  [currency: string]: IBithumbTickerData | string; // date 필드
 }
 
-export interface BithumbWalletStatus {
+export interface IBithumbWalletStatus {
   currency: string; // "BTC";
   net_type: string; //"BTC";
   deposit_status: number; // 1;
   withdrawal_status: number; //1;
 }
 
-export interface BithumbBalance {
+export interface IBithumbBalance {
   [key: string]: string;
 }
 
-export interface BithumbDepositHistory {
+export interface IBithumbDepositHistory {
   search: string; // "1";
   transfer_date: number; // 1572252297148997;
   order_currency: string; // "BTC";
@@ -46,7 +46,7 @@ export interface BithumbDepositHistory {
   payment_balance: string; // "1140499718";
 }
 
-export interface BithumbWithdrawHistory {
+export interface IBithumbWithdrawHistory {
   search: string; // "1";
   transfer_date: number; // 1572252297148997;
   order_currency: string; // "BTC";
@@ -60,7 +60,7 @@ export interface BithumbWithdrawHistory {
   payment_balance: string; // "1140499718";
 }
 
-export interface BithumbOrderHistory {
+export interface IBithumbOrderHistory {
   order_currency: string; // "BTC";
   payment_currency: string; // "KRW";
   order_id: string; // "C0101000007408440032";
@@ -71,7 +71,7 @@ export interface BithumbOrderHistory {
   price: string; // "501000";
 }
 
-export interface BithumbDepositAddress {
+export interface IBithumbDepositAddress {
   wallet_address: string; // "1H7WL8Lb8mxCTwpL1RN8yckL2gcPLgqtqD";
   currency: string; //  "BTC";
   net_type: string; //  "Bitcoina";

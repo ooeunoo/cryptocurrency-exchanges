@@ -1,8 +1,8 @@
-import { ExchangeBalance, ExchangeDepositAddress, ExchangeMarket, ExchangeMarketPrice, ExchangeTicker } from "@exchange/exchange.interface";
-import { KorbitBalance, KorbitMyAddresses, KorbitTicker } from "@korbit/koribt.interface";
+import { IBalance, IDepositAddress, IMarket, IMarketPrice, ITicker } from "@exchange/exchange.interface";
+import { IKorbitBalance, IKorbitMyAddresses, IKorbitTicker } from "@korbit/koribt.interface";
 import { add, toBigNumberString } from "@utils/number";
 
-export const korbitTickerConverter = (data: KorbitTicker[]): ExchangeTicker[] => {
+export const korbitTickerConverter = (data: IKorbitTicker[]): ITicker[] => {
   return Object.keys(data).map((market) => {
     const target = data[market];
     const [currency, unit] = market.split("_");
@@ -18,7 +18,7 @@ export const korbitTickerConverter = (data: KorbitTicker[]): ExchangeTicker[] =>
   });
 };
 
-export const balanceConverter = (data: KorbitBalance): ExchangeBalance[] => {
+export const balanceConverter = (data: IKorbitBalance): IBalance[] => {
   return Object.keys(data).map((currency) => {
     const targetCurrency = data[currency];
     return {
@@ -30,7 +30,7 @@ export const balanceConverter = (data: KorbitBalance): ExchangeBalance[] => {
   });
 };
 
-export const depositAddressesConverter = (data: KorbitMyAddresses): ExchangeDepositAddress[] => {
+export const depositAddressesConverter = (data: IKorbitMyAddresses): IDepositAddress[] => {
   const depositAddresses = data.deposit;
   delete depositAddresses.krw;
 

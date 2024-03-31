@@ -4,14 +4,14 @@ import { v4 as uuidv4 } from "uuid";
 import { Exchange } from "@exchange/exchange";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
 import {
-  ExchangeBalance,
-  ExchangeDepositAddress,
+  IBalance,
+  IDepositAddress,
   ExchangeDepositHistory,
-  ExchangeMarket,
-  ExchangeMarketPrice,
-  ExchangeOrderHistory,
-  ExchangeTicker,
-  ExchangeWalletStatus,
+  IMarket,
+  IMarketPrice,
+  IOrderHistory,
+  ITicker,
+  IWalletStatus,
   ExchangeWithdrawHistory,
 } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
@@ -30,12 +30,12 @@ export class Coinone {
   }
 
   /* ------------------마켓 조회-------------------- */
-  public async fetchTickers(): Promise<ExchangeTicker[]> {
+  public async fetchTickers(): Promise<ITicker[]> {
     return requestPublic(Method.GET, COINONE_BASE_URL, COINONE_PUBLIC_ENDPOINT.ticker, null, null, coinoneTickerConverter);
   }
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
-  public async fetchWalletStatus(): Promise<ExchangeWalletStatus[]> {
+  public async fetchWalletStatus(): Promise<IWalletStatus[]> {
     return requestPublic(Method.GET, COINONE_BASE_URL, COINONE_PUBLIC_ENDPOINT.wallet_status, null, null, coinoneWalletStatusConvereter);
   }
 

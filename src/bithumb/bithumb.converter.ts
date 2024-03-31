@@ -1,30 +1,30 @@
 import {
   DepositWithdrawalType,
   DepsoitState,
-  ExchangeBalance,
-  ExchangeDepositAddress,
+  IBalance,
+  IDepositAddress,
   ExchangeDepositHistory,
-  ExchangeMarket,
-  ExchangeMarketPrice,
-  ExchangeOrderHistory,
-  ExchangeTicker,
-  ExchangeWalletStatus,
+  IMarket,
+  IMarketPrice,
+  IOrderHistory,
+  ITicker,
+  IWalletStatus,
   ExchangeWithdrawHistory,
   WithdrawState,
 } from "@exchange/exchange.interface";
 import {
-  BithumbBalance,
-  BithumbDepositAddress,
-  BithumbDepositHistory,
-  BithumbOrderHistory,
-  BithumbTicker,
-  BithumbWalletStatus,
-  BithumbWithdrawHistory,
+  IBithumbBalance,
+  IBithumbDepositAddress,
+  IBithumbDepositHistory,
+  IBithumbOrderHistory,
+  IBithumbTicker,
+  IBithumbWalletStatus,
+  IBithumbWithdrawHistory,
   IBithumbResponse,
 } from "@bithumb/bithumb.interface";
 import { toBigNumberString } from "@utils/number";
 
-export const bithumbMarketTickerConverterKRW = (res: IBithumbResponse<BithumbTicker[]>): ExchangeTicker[] => {
+export const bithumbMarketTickerConverterKRW = (res: IBithumbResponse<IBithumbTicker[]>): ITicker[] => {
   const data = res.data;
   delete data["date"];
   return Object.keys(data).map((currency) => {
@@ -40,7 +40,7 @@ export const bithumbMarketTickerConverterKRW = (res: IBithumbResponse<BithumbTic
   });
 };
 
-export const bithumbMarketTickerConverterBTC = (res: IBithumbResponse<BithumbTicker[]>): ExchangeTicker[] => {
+export const bithumbMarketTickerConverterBTC = (res: IBithumbResponse<IBithumbTicker[]>): ITicker[] => {
   const data = res.data;
   delete data["date"];
   return Object.keys(data).map((currency) => {
@@ -56,7 +56,7 @@ export const bithumbMarketTickerConverterBTC = (res: IBithumbResponse<BithumbTic
   });
 };
 
-export const bithumbWalletStatusConverter = (data: IBithumbResponse<BithumbWalletStatus[]>): ExchangeWalletStatus[] => {
+export const bithumbWalletStatusConverter = (data: IBithumbResponse<IBithumbWalletStatus[]>): IWalletStatus[] => {
   const pdata = data.data;
   return pdata.map(({ currency, net_type, deposit_status, withdrawal_status }) => {
     return {
@@ -68,9 +68,9 @@ export const bithumbWalletStatusConverter = (data: IBithumbResponse<BithumbWalle
   });
 };
 
-export const bithumbBalanceConverter = (data: IBithumbResponse<BithumbBalance[]>): ExchangeBalance[] => {
+export const bithumbBalanceConverter = (data: IBithumbResponse<IBithumbBalance[]>): IBalance[] => {
   const pdata = data.data;
-  const result: ExchangeBalance[] = [];
+  const result: IBalance[] = [];
   Object.keys(pdata).forEach((key) => {
     if (key.startsWith("total_")) {
       const balance = pdata[key];
@@ -89,7 +89,7 @@ export const bithumbBalanceConverter = (data: IBithumbResponse<BithumbBalance[]>
   return result;
 };
 
-export const depositAddressesConverter = (data: IBithumbResponse<BithumbDepositAddress>): ExchangeDepositAddress => {
+export const depositAddressesConverter = (data: IBithumbResponse<IBithumbDepositAddress>): IDepositAddress => {
   const pdata = data.data;
 
   let address = pdata.wallet_address;
@@ -109,7 +109,7 @@ export const depositAddressesConverter = (data: IBithumbResponse<BithumbDepositA
   };
 };
 
-export const depositHistoryConverter = (data: IBithumbResponse<BithumbDepositHistory[]>): ExchangeDepositHistory[] => {
+export const depositHistoryConverter = (data: IBithumbResponse<IBithumbDepositHistory[]>): ExchangeDepositHistory[] => {
   const pdata = data.data;
   console.log(pdata);
   return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
@@ -126,7 +126,7 @@ export const depositHistoryConverter = (data: IBithumbResponse<BithumbDepositHis
   });
 };
 
-export const withdrawHistoryConverter = (data: IBithumbResponse<BithumbWithdrawHistory[]>): ExchangeWithdrawHistory[] => {
+export const withdrawHistoryConverter = (data: IBithumbResponse<IBithumbWithdrawHistory[]>): ExchangeWithdrawHistory[] => {
   const pdata = data.data;
 
   return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
@@ -143,7 +143,7 @@ export const withdrawHistoryConverter = (data: IBithumbResponse<BithumbWithdrawH
   });
 };
 
-export const orderHistoryConverter = (data: IBithumbResponse<BithumbOrderHistory[]>): ExchangeOrderHistory[] => {
+export const orderHistoryConverter = (data: IBithumbResponse<IBithumbOrderHistory[]>): IOrderHistory[] => {
   const pdata = data.data;
 
   return pdata.map(({ order_currency, payment_currency, order_date, type, price, units }) => {

@@ -1,44 +1,11 @@
-export enum depsoitWithdrawState {
-  canceled = "canceled", // 취소
-  waiting = "waiting", // 대기
-  processing = "processing", // 진행
-  accepted = "accepted", // 확정
-  rejected = "rejected", // 거절
-  failed = "failed", // 실패
-  travel_rule_suspected = "travel_rule_suspected", // 트래블룰 의심
-  refunded = "refunded", // 환불
-}
+import { TickerChange, depositWithdrawType, depsoitWithdrawState, orderSide, orderState, orderType } from "./exchange.enum";
 
-export enum orderState {
-  wait = "wait",
-  watch = "watch",
-  done = "done",
-  cancel = "cancel",
-}
-
-export enum orderType {
-  limit = "limit",
-  market = "market",
-  stop_limit = "stop_limit",
-  best = "best",
-}
-
-export enum orderSide {
-  ask = "ask",
-  bid = "bid",
-}
-
-export enum depositWithdrawType {
-  deposit = "deposit",
-  withdraw = "withdraw",
-}
-
-export interface ExchangeMarket {
+export interface IMarket {
   currency: string; // 통화 화폐
   unit: string; // 마켓
 }
 
-export interface ExchangeTicker {
+export interface ITicker {
   currency: string; // base
   unit: string; // quote
   high: string; //	고가 (24시간 기준)
@@ -47,7 +14,7 @@ export interface ExchangeTicker {
   last: string; // 종가 (24시간 기준)
 }
 
-export interface ExchangeWalletStatus {
+export interface IWalletStatus {
   currency: string; // 통화
   network: string; // 네트워크
   deposit: boolean; // 입금 가능 여부
@@ -56,21 +23,21 @@ export interface ExchangeWalletStatus {
   withdrawFee?: string; // 출금 수수료
 }
 
-export interface ExchangeBalance {
+export interface IBalance {
   currency: string; // 통화
   balance: string; // 유동 수량
   lockedBalance: string; // 잠긴 수량
   avgBuyPrice: string; // 평단가
 }
 
-export interface ExchangeDepositAddress {
+export interface IDepositAddress {
   currency: string; // 통화 화폐
   network: string; // 네트워크
   address: string; // 주소
   memo: string; // 메모 (태그) ex) 리플
 }
 
-export interface ExchangeDepositWithdrawHistory {
+export interface IDepositWithdrawHistory {
   type: depositWithdrawType; // 타입 - 입금 / 출금
   txId: string; // 트랜잭션 아이디
   currency: string; // 통화 화폐
@@ -85,10 +52,11 @@ export interface ExchangeDepositWithdrawHistory {
   confirmedAt: number; // 확정 일시
 }
 
-export interface ExchangeOrderHistory {
+export interface IOrderHistory {
   id: string; // 주문 id
   type: orderType; // 타입 - 리밋 / 마켓/ 스탑 리밋
   side: orderSide; // 사이드 - 매수 / 매도
+  state: orderState; // 주문 상태
   currency: string; // 통화
   unit: string; // 단위
   price: string; // 구매가
@@ -98,8 +66,23 @@ export interface ExchangeOrderHistory {
   createdAt: number;
 }
 
-export interface ExchangeMarketPrice {
+export interface IMarketPrice {
   currency: string; // 통화
   unit: string; // 단위
   price: string; // 현재가
+}
+
+export interface ISubscribeTicker {
+  currency: string;
+  unit: string;
+  high: string; //	고가 (24시간 기준)
+  low: string; //	저가 (24시간 기준)
+  first: string; //	시가 (24시간 기준)
+  last: string; // 종가 (24시간 기준)
+  change: TickerChange; // 가격 변화
+  accTradeVolume; // 누적 거래량(UTC 0시 기준)	Double
+  accTradeVolume24h; // 24시간 누적 거래량	Double
+  accTradePrice; // 누적 거래대금(UTC 0시 기준)	Double
+  accTradePrice24h; // 24시간 누적 거래대금
+  timestamp: string; // 타임스탬프
 }

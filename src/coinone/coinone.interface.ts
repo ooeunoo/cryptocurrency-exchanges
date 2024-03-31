@@ -1,4 +1,4 @@
-export interface CoinoneTicker {
+export interface ICoinoneTicker {
   result: string; // "success";
   error_code: string; // "0";
   server_time: number; //1416895635000;
@@ -30,7 +30,7 @@ export interface CoinoneTicker {
   ];
 }
 
-export interface CoinoneWalletStatus {
+export interface ICoinoneWalletStatus {
   result: string; // "success";
   error_code: string; // "0";
   server_time: number; // 1644541746590;
@@ -49,7 +49,7 @@ export interface CoinoneWalletStatus {
   ];
 }
 
-export interface CoinoneBalance {
+export interface ICoinoneBalance {
   result: string; //"success";
   error_code: string; //"0";
   balances: [

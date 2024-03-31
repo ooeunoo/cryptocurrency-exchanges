@@ -3,36 +3,40 @@ import { v4 as uuidv4 } from "uuid";
 import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
 import * as crypto from "crypto";
+import * as WebSocket from "ws";
 import { Exchange } from "@exchange/exchange";
-import { UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT, UPBIT_PUBLIC_ENDPOINT } from "@upbit/upbit.constant";
 import {
-  balanceConverter,
-  depositAddressesConverter,
-  depositHistoryConverter,
-  orderHistoryConverter,
+  UPBIT_BASE_URL,
+  UPBIT_PRIVATE_ENDPOINT,
+  UPBIT_PUBLIC_ENDPOINT,
+  UPBIT_PUBLIC_STREAM_DATA_TYPE,
+  UPBIT_WEBSOCKET_URL,
+} from "@upbit/upbit.constant";
+import {
+  upbitBalanceConverter,
+  upbitDepositAddressesConverter,
+  upbitDepositHistoryConverter,
+  upbitOrderHistoryConverter,
+  upbitSubscribeTickerConverter,
   upbitTickerConverter,
   upbitWalletStatusConverter,
-  withdrawHistoryConverter,
+  upbitWithdrawHistoryConverter,
 } from "@upbit/upbit.converter";
 import {
-  UpbitBalance,
-  UpbitDepositAddress,
-  UpbitDepositHistory,
-  UpbitOrderHistory,
-  UpbitTicker,
-  UpbitWalletStatus,
-  UpbitWithdrawHistory,
+  IUpbitBalance,
+  IUpbitDepositAddress,
+  IUpbitDepositHistory,
+  IUpbitOrderHistory,
+  IUpbitTicker,
+  IUpbitWalletStatus,
+  IUpbitWithdrawHistory,
 } from "@upbit/upbit.interface";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
-import {
-  ExchangeBalance,
-  ExchangeDepositAddress,
-  ExchangeDepositWithdrawHistory,
-  ExchangeOrderHistory,
-  ExchangeTicker,
-} from "@exchange/exchange.interface";
+import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ITicker } from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
+import { sortBy } from "@utils/array";
+import { WebSocketClient } from "@exchange/exchange.socket";
 
 export class Upbit extends Exchange {
   private accessKey: string;
@@ -45,9 +49,9 @@ export class Upbit extends Exchange {
   }
 
   /* ------------------티커 조회-------------------- */
-  public async fetchTickers(): Promise<ExchangeTicker[]> {
+  public async fetchTickers(): Promise<ITicker[]> {
     const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
-    return requestPublic<UpbitTicker[]>(
+    return requestPublic<IUpbitTicker[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PUBLIC_ENDPOINT.ticker,
@@ -60,7 +64,7 @@ export class Upbit extends Exchange {
   /* ------------------지갑 입출금 상태 조회-------------------- */
   @upbitPrivate
   public async fetchWalletStatus(): Promise<any> {
-    return requestSign<UpbitWalletStatus[]>(
+    return requestSign<IUpbitWalletStatus[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PUBLIC_ENDPOINT.wallet_status,
@@ -73,21 +77,29 @@ export class Upbit extends Exchange {
 
   /* ------------------잔액 조회-------------------- */
   @upbitPrivate
-  public async fetchBalances(): Promise<ExchangeBalance[]> {
-    return requestSign<UpbitBalance[]>(Method.GET, UPBIT_BASE_URL, UPBIT_PRIVATE_ENDPOINT.balance, this._header(), null, null, balanceConverter);
+  public async fetchBalances(): Promise<IBalance[]> {
+    return requestSign<IUpbitBalance[]>(
+      Method.GET,
+      UPBIT_BASE_URL,
+      UPBIT_PRIVATE_ENDPOINT.balance,
+      this._header(),
+      null,
+      null,
+      upbitBalanceConverter,
+    );
   }
 
   /* ------------------입금 주소 조회-------------------- */
   @upbitPrivate
-  public async fetchDepositAddresses(): Promise<ExchangeDepositAddress[]> {
-    return requestSign<UpbitDepositAddress[]>(
+  public async fetchDepositAddresses(): Promise<IDepositAddress[]> {
+    return requestSign<IUpbitDepositAddress[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.deposit_addresses,
       this._header(),
       null,
       null,
-      depositAddressesConverter,
+      upbitDepositAddressesConverter,
     );
   }
   /* ------------------입금 내역 조회-------------------- */
@@ -96,16 +108,16 @@ export class Upbit extends Exchange {
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeDepositWithdrawHistory[]> {
+  ): Promise<IDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
-    return requestSign<UpbitDepositHistory[]>(
+    return requestSign<IUpbitDepositHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.deposits,
       this._header(params),
       null,
       params,
-      depositHistoryConverter,
+      upbitDepositHistoryConverter,
     );
   }
   /* ------------------출금 내역 조회-------------------- */
@@ -114,16 +126,16 @@ export class Upbit extends Exchange {
     currency: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeDepositWithdrawHistory[]> {
+  ): Promise<IDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
-    return requestSign<UpbitWithdrawHistory[]>(
+    return requestSign<IUpbitWithdrawHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.withdraws,
       this._header(params),
       null,
       params,
-      withdrawHistoryConverter,
+      upbitWithdrawHistoryConverter,
     );
   }
   /* ------------------주문 내역 조회-------------------- */
@@ -133,17 +145,76 @@ export class Upbit extends Exchange {
     unit: string,
     page: number = DEFAULT_PAGE_NUMBER,
     limit: number = DEFAULT_PAGE_LIMIT,
-  ): Promise<ExchangeOrderHistory[]> {
+  ): Promise<IOrderHistory[]> {
     const params = { states: ["done", "cancel"] };
-    return requestSign<UpbitOrderHistory[]>(
+    return requestSign<IUpbitOrderHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PRIVATE_ENDPOINT.order,
       this._header(params),
       null,
       params,
-      orderHistoryConverter,
+      // upbitOrderHistoryConverter,
     );
+  }
+  @upbitPrivate
+  public async fetchAllOrderHistory(): Promise<any> {
+    const results = [];
+    await Promise.all(
+      ["done", "watch", "wait", "cancel"].map(async (state) => {
+        const params: any = { state, limit: 100, page: 1 };
+
+        while (true) {
+          const result = await requestSign(
+            Method.GET,
+            UPBIT_BASE_URL,
+            UPBIT_PRIVATE_ENDPOINT.order,
+            this._header(params),
+            null,
+            params,
+            upbitOrderHistoryConverter,
+          );
+          if (result.length == 0) {
+            break;
+          } else {
+            results.push(...result);
+          }
+          params.page += 1;
+        }
+      }),
+    );
+    return sortBy(results, "createdAt");
+  }
+  getPriceStreamer(sendMsg?: string): { open; close; stream } {
+    const ws = new WebSocket(UPBIT_WEBSOCKET_URL);
+
+    const open = (callback) =>
+      ws.on("open", () => {
+        console.log("open");
+        ws.send(sendMsg);
+        callback();
+      });
+
+    const close = (callback) =>
+      ws.on("close", () => {
+        callback();
+      });
+
+    const stream = (callback) =>
+      ws.on("message", (data: Buffer) => {
+        callback(data);
+      });
+
+    return { open, close, stream };
+  }
+
+  public async subscribePublicData(type: UPBIT_PUBLIC_STREAM_DATA_TYPE) {
+    const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
+    const data = [{ ticket: uuidv4() }, { type, codes: marketResponse.map(({ market }) => market.trim()), isOnlyRealtime: true }];
+    let converter;
+    if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker) converter = upbitSubscribeTickerConverter;
+    const ws = new WebSocketClient(UPBIT_WEBSOCKET_URL, data, converter);
+    return ws;
   }
 
   /* -----------------헤더------------------ */

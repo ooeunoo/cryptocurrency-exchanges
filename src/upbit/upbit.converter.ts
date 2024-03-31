@@ -1,28 +1,19 @@
 import { toBigNumberString } from "@utils/number";
+import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ITicker, IWalletStatus } from "@exchange/exchange.interface";
 import {
-  ExchangeBalance,
-  ExchangeDepositAddress,
-  ExchangeDepositWithdrawHistory,
-  ExchangeOrderHistory,
-  ExchangeTicker,
-  ExchangeWalletStatus,
-  depositWithdrawType,
-  depsoitWithdrawState,
-  orderSide,
-  orderType,
-} from "@exchange/exchange.interface";
-import {
-  UpbitBalance,
-  UpbitDepositAddress,
-  UpbitDepositHistory,
-  UpbitOrderHistory,
-  UpbitTicker,
-  UpbitWalletStatus,
-  UpbitWithdrawHistory,
+  IUpbitBalance,
+  IUpbitDepositAddress,
+  IUpbitDepositHistory,
+  IUpbitOrderHistory,
+  IUpbitSubscribeTicker,
+  IUpbitTicker,
+  IUpbitWalletStatus,
+  IUpbitWithdrawHistory,
 } from "@upbit/upbit.interface";
 import { toTimestamp } from "@utils/time";
+import { TickerChange, depositWithdrawType, depsoitWithdrawState, orderSide, orderState, orderType } from "@exchange/exchange.enum";
 
-export const upbitTickerConverter = (data: UpbitTicker[]): ExchangeTicker[] => {
+export const upbitTickerConverter = (data: IUpbitTicker[]): ITicker[] => {
   return data.map(({ market, opening_price, high_price, low_price, trade_price }) => {
     const [unit, currency] = market.split("-");
 
@@ -37,7 +28,7 @@ export const upbitTickerConverter = (data: UpbitTicker[]): ExchangeTicker[] => {
   });
 };
 
-export const upbitWalletStatusConverter = (data: UpbitWalletStatus[]): ExchangeWalletStatus[] => {
+export const upbitWalletStatusConverter = (data: IUpbitWalletStatus[]): IWalletStatus[] => {
   return data.map(({ currency, wallet_state, net_type }) => {
     let deposit = false;
     let withdraw = false;
@@ -67,7 +58,7 @@ export const upbitWalletStatusConverter = (data: UpbitWalletStatus[]): ExchangeW
   });
 };
 
-export const balanceConverter = (data: UpbitBalance[]): ExchangeBalance[] => {
+export const upbitBalanceConverter = (data: IUpbitBalance[]): IBalance[] => {
   return data.map(({ currency, balance, locked, avg_buy_price }) => {
     return {
       currency,
@@ -78,7 +69,7 @@ export const balanceConverter = (data: UpbitBalance[]): ExchangeBalance[] => {
   });
 };
 
-export const depositAddressesConverter = (data: UpbitDepositAddress[]): ExchangeDepositAddress[] => {
+export const upbitDepositAddressesConverter = (data: IUpbitDepositAddress[]): IDepositAddress[] => {
   return data.map(({ currency, net_type, deposit_address, secondary_address }) => {
     return {
       currency: currency.toUpperCase(),
@@ -89,7 +80,7 @@ export const depositAddressesConverter = (data: UpbitDepositAddress[]): Exchange
   });
 };
 
-export const depositHistoryConverter = (data: UpbitDepositHistory[]): ExchangeDepositWithdrawHistory[] => {
+export const upbitDepositHistoryConverter = (data: IUpbitDepositHistory[]): IDepositWithdrawHistory[] => {
   const convertState = (state) => {
     switch (state) {
       case "PROCESSING": // 입금진행
@@ -126,7 +117,7 @@ export const depositHistoryConverter = (data: UpbitDepositHistory[]): ExchangeDe
   });
 };
 
-export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): ExchangeDepositWithdrawHistory[] => {
+export const upbitWithdrawHistoryConverter = (data: IUpbitWithdrawHistory[]): IDepositWithdrawHistory[] => {
   const convertState = (state) => {
     switch (state) {
       case "WAITING": // 입금진행
@@ -161,7 +152,7 @@ export const withdrawHistoryConverter = (data: UpbitWithdrawHistory[]): Exchange
   });
 };
 
-export const orderHistoryConverter = (data: UpbitOrderHistory[]): ExchangeOrderHistory[] => {
+export const upbitOrderHistoryConverter = (data: IUpbitOrderHistory[]): IOrderHistory[] => {
   const convertorderType = (type) => {
     switch (type) {
       case "limit":
@@ -175,14 +166,28 @@ export const orderHistoryConverter = (data: UpbitOrderHistory[]): ExchangeOrderH
         return orderType.stop_limit;
     }
   };
-  return data.map(({ uuid, market, ord_type, price, side, volume, executed_volume, created_at, paid_fee }) => {
+  const convertState = (state) => {
+    switch (state) {
+      case "wait":
+        return orderState.wait;
+      case "watch":
+        return orderState.wait;
+      case "done":
+        return orderState.done;
+      case "cancel":
+        return orderState.cancel;
+      default:
+        return orderState.unknown;
+    }
+  };
+  return data.map(({ uuid, market, ord_type, price, side, volume, executed_volume, state, created_at, paid_fee }) => {
     const [unit, currency] = market.split("-");
-
     return {
       id: uuid,
       type: convertorderType(ord_type),
       side: side == "ask" ? orderSide.ask : orderSide.bid,
-      currency,
+      state: convertState(state),
+      currency: currency.toUpperCase(),
       unit,
       price: toBigNumberString(price),
       orderAmount: toBigNumberString(volume),
@@ -191,4 +196,34 @@ export const orderHistoryConverter = (data: UpbitOrderHistory[]): ExchangeOrderH
       createdAt: toTimestamp(created_at),
     };
   });
+};
+
+export const upbitSubscribeTickerConverter = (data: IUpbitSubscribeTicker) => {
+  const [unit, currency] = data.code.split("-");
+  const convertChange = (change) => {
+    switch (change) {
+      case "FALL":
+        return TickerChange.fall;
+      case "RISE":
+        return TickerChange.rise;
+      case "EVEN":
+        return TickerChange.even;
+      default:
+        return null;
+    }
+  };
+  return {
+    currency: currency.toUpperCase(),
+    unit: unit.toUpperCase(),
+    high: toBigNumberString(data.high_price),
+    low: toBigNumberString(data.low_price),
+    first: toBigNumberString(data.opening_price),
+    last: toBigNumberString(data.trade_price),
+    change: convertChange(data.change),
+    accTradeVolume: toBigNumberString(data.acc_trade_volume),
+    accTradeVolume24: toBigNumberString(data.acc_trade_price_24h),
+    accTradePrice: toBigNumberString(data.acc_trade_price),
+    accTradePrice24: toBigNumberString(data.acc_trade_price_24h),
+    timestamp: data.timestamp,
+  };
 };
