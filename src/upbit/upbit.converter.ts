@@ -3,6 +3,7 @@ import {
   IBalance,
   IDepositAddress,
   IDepositWithdrawHistory,
+  IMarket,
   IOrderHistory,
   ISubscribeAllTrade,
   ISubscribeMyTrade,
@@ -15,6 +16,7 @@ import {
   IUpbitBalance,
   IUpbitDepositAddress,
   IUpbitDepositHistory,
+  IUpbitMarket,
   IUpbitOrderHistory,
   IUpbitSubscribeMyTrade,
   IUpbitSubscribeOrderbook,
@@ -26,6 +28,12 @@ import {
 } from "@upbit/upbit.interface";
 import { toTimestamp } from "@utils/time";
 import { TickerChange, depositWithdrawType, depsoitWithdrawState, orderSide, orderState, orderType } from "@exchange/exchange.enum";
+
+export const upbitMarketsConverter = (data: IUpbitMarket[]): string[] => {
+  const markets = [];
+  data.forEach(({ market }) => markets.push(market));
+  return markets;
+};
 
 export const upbitTickerConverter = (data: IUpbitTicker[]): ITicker[] => {
   return data.map(({ market, opening_price, high_price, low_price, trade_price }) => {

@@ -15,6 +15,7 @@ import {
   upbitBalanceConverter,
   upbitDepositAddressesConverter,
   upbitDepositHistoryConverter,
+  upbitMarketsConverter,
   upbitOrderHistoryConverter,
   upbitSubscribeAllTradeConverter,
   upbitSubscribeMyTradeConverter,
@@ -35,7 +36,16 @@ import {
   IUpbitWithdrawHistory,
 } from "@upbit/upbit.interface";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@exchange/exchange.constant";
-import { IBalance, IDepositAddress, IDepositWithdrawHistory, IOrderHistory, ISubscribeTicker, ITicker } from "@exchange/exchange.interface";
+import {
+  IBalance,
+  IDepositAddress,
+  IDepositWithdrawHistory,
+  IMarket,
+  IOrderHistory,
+  ISubscribeTicker,
+  ITicker,
+  IWalletStatus,
+} from "@exchange/exchange.interface";
 import { Method, requestPublic, requestSign } from "@common/requests";
 import { CREDENTITAL_NOT_SETTED } from "@common/error";
 import { sortBy } from "@utils/array";
@@ -51,14 +61,18 @@ export class Upbit extends Exchange {
     this.secretKey = secretKey;
   }
 
+  public async fetchMarkets(): Promise<string[]> {
+    return requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market, null, null, upbitMarketsConverter);
+  }
+
   /* ------------------티커 조회-------------------- */
   public async fetchTickers(): Promise<ITicker[]> {
-    const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
+    const markets = await this.fetchMarkets();
     return requestPublic<IUpbitTicker[]>(
       Method.GET,
       UPBIT_BASE_URL,
       UPBIT_PUBLIC_ENDPOINT.ticker,
-      { markets: marketResponse.map(({ market }) => market).join(",") },
+      { markets: markets.join(",") },
       null,
       upbitTickerConverter,
     );
@@ -66,7 +80,7 @@ export class Upbit extends Exchange {
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
   @upbitPrivate
-  public async fetchWalletStatus(): Promise<any> {
+  public async fetchWalletStatus(): Promise<IWalletStatus[]> {
     return requestSign<IUpbitWalletStatus[]>(
       Method.GET,
       UPBIT_BASE_URL,
@@ -123,6 +137,7 @@ export class Upbit extends Exchange {
       upbitDepositHistoryConverter,
     );
   }
+
   /* ------------------출금 내역 조회-------------------- */
   @upbitPrivate
   public async fetchWithdrawHistory(
@@ -144,7 +159,7 @@ export class Upbit extends Exchange {
   /* ------------------주문 내역 조회-------------------- */
   @upbitPrivate
   public async fetchOrderHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
-    const params = { states: ["done", "cancel"] };
+    const params = { currency, page, limit, states: ["done", "cancel"] };
     return requestSign<IUpbitOrderHistory[]>(
       Method.GET,
       UPBIT_BASE_URL,
@@ -152,43 +167,14 @@ export class Upbit extends Exchange {
       this._header(params),
       null,
       params,
-      // upbitOrderHistoryConverter,
+      upbitOrderHistoryConverter,
     );
-  }
-  /* ------------------모든 주문 내역 조회-------------------- */
-  @upbitPrivate
-  public async fetchAllOrderHistory(): Promise<any> {
-    const results = [];
-    await Promise.all(
-      ["done", "watch", "wait", "cancel"].map(async (state) => {
-        const params: any = { state, limit: 100, page: 1 };
-
-        while (true) {
-          const result = await requestSign(
-            Method.GET,
-            UPBIT_BASE_URL,
-            UPBIT_PRIVATE_ENDPOINT.order,
-            this._header(params),
-            null,
-            params,
-            upbitOrderHistoryConverter,
-          );
-          if (result.length == 0) {
-            break;
-          } else {
-            results.push(...result);
-          }
-          params.page += 1;
-        }
-      }),
-    );
-    return sortBy(results, "createdAt");
   }
 
   /* ------------------공개 데이터 구독-------------------- */
   public async subscribePublicData(type: UPBIT_PUBLIC_STREAM_DATA_TYPE) {
-    const marketResponse = await requestPublic(Method.GET, UPBIT_BASE_URL, UPBIT_PUBLIC_ENDPOINT.market_all, null, null);
-    const data = [{ ticket: uuidv4() }, { type, codes: marketResponse.map(({ market }) => market.trim()), isOnlyRealtime: true }];
+    const markets = this.fetchMarkets();
+    const data = [{ ticket: uuidv4() }, { type, codes: markets, isOnlyRealtime: true }];
     let converter;
     if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker) converter = upbitSubscribeTickerConverter;
     if (type == UPBIT_PUBLIC_STREAM_DATA_TYPE.trade) converter = upbitSubscribeAllTradeConverter;

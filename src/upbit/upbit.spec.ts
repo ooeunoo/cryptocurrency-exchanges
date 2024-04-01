@@ -52,11 +52,6 @@ describe("UPBIT", () => {
     console.log(result);
   });
 
-  it("8. Fetch All Order History", async () => {
-    const result = await upbit.fetchAllOrderHistory();
-    console.log(result);
-  });
-
   it("9Subscribe Public Data", async () => {
     const ws = await upbit.subscribePublicData(UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker);
 

@@ -1,3 +1,7 @@
+export interface IUpbitMarket {
+  market: "KRW-BTC";
+}
+
 export interface IUpbitTicker {
   market: string; // "KRW-BTC";
   trade_date: string; // "20180418";

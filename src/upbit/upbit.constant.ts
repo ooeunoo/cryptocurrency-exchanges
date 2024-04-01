@@ -2,7 +2,7 @@ export const UPBIT_BASE_URL = "https://api.upbit.com/v1";
 export const UPBIT_WEBSOCKET_URL = "wss://api.upbit.com/websocket/v1";
 
 export enum UPBIT_PUBLIC_ENDPOINT {
-  market_all = "/market/all",
+  market = "/market/all",
   ticker = "/ticker",
   wallet_status = "/status/wallet",
 }

@@ -1,8 +1,7 @@
 import { TickerChange, depositWithdrawType, depsoitWithdrawState, orderSide, orderState, orderType } from "./exchange.enum";
 
 export interface IMarket {
-  currency: string; // 통화 화폐
-  unit: string; // 마켓
+  markets: string; // 마켓
 }
 
 export interface ITicker {
