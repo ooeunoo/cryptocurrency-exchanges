@@ -1,10 +1,8 @@
 import { Upbit } from "./upbit";
 import * as dotenv from "dotenv";
 import * as path from "path";
-import * as fs from "fs";
-import { UPBIT_PRIVATE_STREAM_DATA_TYPE, UPBIT_PUBLIC_STREAM_DATA_TYPE, UPBIT_WEBSOCKET_URL } from "./upbit.constant";
-import { WebSocketClient, WebSocketSubscription } from "@exchange/exchange.socket";
-import { upbitSubscribeTickerConverter } from "./upbit.converter";
+import { WebSocketSubscription } from "@common/websocket";
+import { subscribeType } from "@common/enum";
 
 describe("UPBIT", () => {
   let upbit: Upbit;
@@ -17,43 +15,53 @@ describe("UPBIT", () => {
     upbit = new Upbit(env.UPBIT_ACCESS_KEY, env.UPBIT_SECRET_KEY);
   });
 
-  it("Fetch Tickers", async () => {
-    const result = await upbit.fetchTickers();
+  it("Markets", async () => {
+    const result = await upbit.public.fetchMarkets();
     console.log(result);
   });
 
-  it("2. Fetch Wallet Status", async () => {
-    const result = await upbit.fetchWalletStatus();
+  it("Tickers", async () => {
+    const result = await upbit.public.fetchTickers();
     console.log(result);
   });
 
-  it("3. Fetch Balances", async () => {
-    const result = await upbit.fetchBalances();
+  it("Wallet Status", async () => {
+    const result = await upbit.private.fetchWalletStatus();
     console.log(result);
   });
 
-  it("4. Fetch Deposit Histories", async () => {
-    const result = await upbit.fetchDepositHistory("ETH");
+  it("Balances", async () => {
+    const result = await upbit.private.fetchBalance();
     console.log(result);
   });
 
-  it("5. Fetch Withdraw History", async () => {
-    const result = await upbit.fetchWithdrawHistory("TRX");
+  it("Deposit Histories", async () => {
+    const result = await upbit.private.fetchDepositHistory("TRX");
     console.log(result);
   });
 
-  it("6. Fetch Deposit Addresses", async () => {
-    const result = await upbit.fetchDepositAddresses();
+  it("Withdraw History", async () => {
+    const result = await upbit.private.fetchWithdrawHistory("TRX");
     console.log(result);
   });
 
-  it("7. Fetch Order History", async () => {
-    const result = await upbit.fetchOrderHistory("TRX");
+  it("Deposit Addresses", async () => {
+    const result = await upbit.private.fetchDepositAddress();
     console.log(result);
   });
 
-  it("9Subscribe Public Data", async () => {
-    const ws = await upbit.subscribePublicData(UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker);
+  it("Completed Order History", async () => {
+    const result = await upbit.private.fetchCompletedOrderHistory();
+    console.log(result);
+  });
+
+  it("Uncompleted Order History", async () => {
+    const result = await upbit.private.fetchUnCompletedOrderHistory();
+    console.log(result);
+  });
+
+  it("Subscribe Data", async () => {
+    const client = await upbit.subscribe.client(subscribeType.orderbook);
 
     const subscription: WebSocketSubscription = {
       onData: (receivedData) => {
@@ -67,24 +75,6 @@ describe("UPBIT", () => {
       },
     };
 
-    ws.subscribe(subscription);
-  });
-
-  it("10. Subscribe Private Data", async () => {
-    const ws = await upbit.subscribePrivateData(UPBIT_PRIVATE_STREAM_DATA_TYPE.myTrade);
-
-    const subscription: WebSocketSubscription = {
-      onData: (receivedData) => {
-        console.log("Received data:", JSON.stringify(receivedData));
-      },
-      onError: (error) => {
-        console.log("error", error);
-      },
-      onClose: () => {
-        console.log("close");
-      },
-    };
-
-    ws.subscribe(subscription);
+    client.subscribe(subscription);
   });
 });

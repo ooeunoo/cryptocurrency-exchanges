@@ -1,58 +1,62 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { Coinone } from "./coinone";
+import { subscribeType } from "@common/enum";
 
-describe("COINONE", () => {
-  describe("PUBLIC", () => {
-    let coinone: Coinone;
-    beforeAll(async () => {
-      coinone = new Coinone();
-    });
-
-    it("Fetch Tickers", async () => {
-      const result = await coinone.fetchTickers();
-      console.log(result);
-    });
-
-    it("Fetch Wallet Status", async () => {
-      const result = await coinone.fetchWalletStatus();
-      console.log(result);
-    });
+describe("coinone", () => {
+  let coinone: Coinone;
+  beforeAll(async () => {
+    const env = dotenv.config({
+      path: path.join(__dirname, "..", "..", ".env"),
+    }).parsed;
+    coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);
   });
 
-  describe("PRIVATE", () => {
-    let coinone: Coinone;
+  it("Fetch Markets", async () => {
+    const result = await coinone.public.fetchMarkets();
+    console.log(result);
+  });
+  it("Fetch Tickers", async () => {
+    const result = await coinone.public.fetchTickers();
+    console.log(result);
+  });
+  it("Fetch Balances", async () => {
+    const result = await coinone.private.fetchBalance();
+    console.log(result);
+  });
+  it("Fetch Wallet Status", async () => {
+    const result = await coinone.private.fetchWalletStatus();
+    console.log(result);
+  });
+  it("Fetch Deposit Addresses", async () => {
+    const result = await coinone.private.fetchDepositAddress();
+    console.log(result);
+  });
+  it("Fetch Deposit Histories", async () => {
+    const result = await coinone.private.fetchDepositHistory("BTC");
+    console.log(result);
+  });
+  it("Fetch Withdraw History", async () => {
+    const result = await coinone.private.fetchWithdrawHistory("BTC");
+    console.log(result);
+  });
 
-    beforeAll(async () => {
-      const env = dotenv.config({
-        path: path.join(__dirname, "..", "..", ".env"),
-      }).parsed;
-      coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);
+  it("Fetch Completeted Order History", async () => {
+    const result = await coinone.private.fetchCompletedOrderHistory();
+    console.log(result);
+  });
+
+  it("Fetch UnCompleteted Order History", async () => {
+    const result = await coinone.private.fetchUnCompletedOrderHistory();
+    console.log(result);
+  });
+
+  it("Subscribe public data", async () => {
+    const ws = await coinone.subscribe.client(subscribeType.ticker, "BTC", "KRW");
+    ws.subscribe({
+      onData: (data) => {
+        console.log(data);
+      },
     });
-
-    it("Fetch Balances", async () => {
-      const result = await coinone.fetchBalances();
-      console.log(result);
-    });
-
-    // it("Fetch Deposit Addresses", async () => {
-    //   const result = await korbit.fetchDepositAddress();
-    //   console.log(result);
-    // });
-
-    // it("Fetch Deposit Histories", async () => {
-    //   const result = await upbit.fetchDepositHistory("BTC");
-    //   console.log(result);
-    // });
-
-    // it("Fetch Withdraw History", async () => {
-    //   const result = await upbit.fetchWithdrawHistory("BTC");
-    //   console.log(result);
-    // });
-
-    // it("Fetch Order History", async () => {
-    //   const result = await upbit.fetchOrderHistory("BTC");
-    //   console.log(result);
-    // });
   });
 });

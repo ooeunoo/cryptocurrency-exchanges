@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { Korbit } from "./korbit";
+import { subscribeType } from "@common/enum";
 
 describe("KORBIT", () => {
   let korbit: Korbit;
@@ -12,33 +13,47 @@ describe("KORBIT", () => {
     korbit = new Korbit(env.KORBIT_API_KEY, env.KORBIT_SECRET_KEY);
   });
 
-  it("Fetch Market", async () => {
-    const result = await korbit.fetchTickers();
+  it("Fetch Markets", async () => {
+    const result = await korbit.public.fetchMarkets();
     console.log(result);
   });
-
+  it("Fetch Tickers", async () => {
+    const result = await korbit.public.fetchTickers();
+    console.log(result);
+  });
   it("Fetch Balances", async () => {
-    const result = await korbit.fetchBalances();
+    const result = await korbit.private.fetchBalance();
     console.log(result);
   });
-
   it("Fetch Deposit Addresses", async () => {
-    const result = await korbit.fetchDepositAddresses();
+    const result = await korbit.private.fetchDepositAddress();
     console.log(result);
   });
-
   it("Fetch Deposit Histories", async () => {
-    const result = await korbit.fetchDepositHistory("BTC");
+    const result = await korbit.private.fetchDepositHistory("BTC");
+    console.log(result);
+  });
+  it("Fetch Withdraw History", async () => {
+    const result = await korbit.private.fetchWithdrawHistory("BTC");
     console.log(result);
   });
 
-  // it("Fetch Withdraw History", async () => {
-  //   const result = await upbit.fetchWithdrawHistory("BTC");
-  //   console.log(result);
-  // });
+  it("Fetch Completeted Order History", async () => {
+    const result = await korbit.private.fetchCompletedOrderHistory();
+    console.log(result);
+  });
 
-  // it("Fetch Order History", async () => {
-  //   const result = await upbit.fetchOrderHistory("BTC");
-  //   console.log(result);
-  // });
+  it("Fetch UnCompleteted Order History", async () => {
+    const result = await korbit.private.fetchUnCompletedOrderHistory();
+    console.log(result);
+  });
+
+  it("Subscribe public data", async () => {
+    const ws = await korbit.subscribe.client(subscribeType.ticker, "BTC", "KRW");
+    ws.subscribe({
+      onData: (data) => {
+        console.log(data);
+      },
+    });
+  });
 });

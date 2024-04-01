@@ -1,49 +1,58 @@
 import axios, { AxiosHeaders, AxiosResponse, RawAxiosRequestHeaders } from "axios";
 
-export enum Method {
-  "GET" = "GET",
-  "POST" = "POST",
+export enum method {
+  "get" = "GET",
+  "post" = "POST",
 }
 
-export const requestPublic = async <T>(method: Method, baseUrl: string, endpoint: string, params: any, data: any, converter?: any) => {
+export const request = async <T>(
+  method: method,
+  baseUrl: string,
+  endpoint: string,
+  options?: {
+    params?: any;
+    data?: any;
+    converter?: any;
+  },
+) => {
   try {
     const response: AxiosResponse<T> = await axios({
       method,
       url: `${baseUrl}${endpoint}`,
-      params: params,
-      data,
+      params: options?.params,
+      data: options?.data,
     });
 
-    return converter ? converter(response.data) : response.data;
+    return options?.converter ? options.converter(response.data) : response.data;
   } catch (e) {
-    // TODO: error handling
-    console.log(e.response.data);
+    console.log(e.response);
     throw new Error(e);
   }
 };
 
-export const requestSign = async <T>(
-  method: Method,
+export const requestAuth = async <T>(
+  method: method,
   baseUrl: string,
   endpoint: string,
   headers: RawAxiosRequestHeaders,
-  data: any,
-  params: any,
-  converter?: any,
+  options?: {
+    data?: any;
+    params?: any;
+    converter?: any;
+  },
 ) => {
   try {
     const response: AxiosResponse<T> = await axios({
       method,
       url: `${baseUrl}${endpoint}`,
       headers,
-      params,
-      data,
+      params: options?.params,
+      data: options?.data,
     });
 
-    return converter ? converter(response.data) : response.data;
+    return options?.converter ? options.converter(response.data) : response.data;
   } catch (e) {
     console.log(e.response);
-
     throw new Error(e);
   }
 };
