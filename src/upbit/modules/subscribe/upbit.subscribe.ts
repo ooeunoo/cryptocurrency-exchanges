@@ -36,7 +36,7 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
         break;
     }
 
-    const data = [{ ticket: uuidv4() }, { type, codes: `${unit}-${currency}`, isOnlyRealtime: true }];
+    const data = [{ ticket: uuidv4() }, { type, codes: [`${unit}-${currency}`], isOnlyRealtime: true }];
 
     const ws = new WebSocketClient(constants.websocketUrl, header, data, convert!);
     return ws;

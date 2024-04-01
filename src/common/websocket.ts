@@ -56,6 +56,8 @@ export class WebSocketClient {
 
   private handleMessage(data: WebSocket.Data) {
     const receiveData = JSON.parse(data.toString("utf-8"));
+    console.log(receiveData);
+
     const convertedData = this.converter ? this.converter(receiveData) : receiveData;
     if (this.subscription) {
       this.subscription.onData(convertedData);

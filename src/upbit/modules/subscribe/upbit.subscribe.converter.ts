@@ -14,7 +14,7 @@ import { orderSide, tickerChange } from "../../../common/enum";
 import { toBigNumberString } from "../../../utils/number";
 
 export const converter = {
-  subscribeTicker: (data: IUpbitSubscribeTicker): ISubscribeTicker => {
+  subscribeTicker: (data: IUpbitSubscribeTicker): ISubscribeTicker | null => {
     const [unit, currency] = data.code.split("-");
     const convertChange = (change: string) => {
       switch (change) {
@@ -43,7 +43,7 @@ export const converter = {
       timestamp: data.timestamp,
     };
   },
-  subscribeTransaction: (data: IUpbitSubscribeTransaction): ISubscribeTransaction => {
+  subscribeTransaction: (data: IUpbitSubscribeTransaction): ISubscribeTransaction | null => {
     const [unit, currency] = data.code.split("-");
     return {
       currency: currency.toUpperCase(),
@@ -54,7 +54,7 @@ export const converter = {
       timestamp: data.trade_timestamp,
     };
   },
-  subscribeOrderbook: (data: IUpbitSubscribeOrderbook): ISubscribeOrderbook => {
+  subscribeOrderbook: (data: IUpbitSubscribeOrderbook): ISubscribeOrderbook | null => {
     const [unit, currency] = data.code.split("-");
     const orderbooks: any = {
       ask: [],
@@ -73,7 +73,7 @@ export const converter = {
       timestamp: data.timestamp,
     };
   },
-  subscribeMyTransaction: (data: IUpbitSubscribeMyTransaction): ISubscribeMyTransaction => {
+  subscribeMyTransaction: (data: IUpbitSubscribeMyTransaction): ISubscribeMyTransaction | null => {
     const [unit, currency] = data.code.split("-");
 
     return {
