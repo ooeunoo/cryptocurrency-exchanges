@@ -8,7 +8,8 @@ import { upbitSubscribeTickerConverter } from "./upbit.converter";
 
 describe("UPBIT", () => {
   let upbit: Upbit;
-  beforeAll(async () => {
+
+  beforeAll(() => {
     const env = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
@@ -16,7 +17,7 @@ describe("UPBIT", () => {
     upbit = new Upbit(env.UPBIT_ACCESS_KEY, env.UPBIT_SECRET_KEY);
   });
 
-  it("1. Fetch Tickers", async () => {
+  it("Fetch Tickers", async () => {
     const result = await upbit.fetchTickers();
     console.log(result);
   });
@@ -56,8 +57,8 @@ describe("UPBIT", () => {
     console.log(result);
   });
 
-  it("9. Subscribe Public Data", async () => {
-    const ws = await upbit.subscribePublicData(UPBIT_PUBLIC_STREAM_DATA_TYPE.orderbook);
+  it("9Subscribe Public Data", async () => {
+    const ws = await upbit.subscribePublicData(UPBIT_PUBLIC_STREAM_DATA_TYPE.ticker);
 
     const subscription: WebSocketSubscription = {
       onData: (receivedData) => {
@@ -74,7 +75,7 @@ describe("UPBIT", () => {
     ws.subscribe(subscription);
   });
 
-  it("10. Subscribe Private Data", async (done) => {
+  it("10. Subscribe Private Data", async () => {
     const ws = await upbit.subscribePrivateData(UPBIT_PRIVATE_STREAM_DATA_TYPE.myTrade);
 
     const subscription: WebSocketSubscription = {
@@ -90,6 +91,5 @@ describe("UPBIT", () => {
     };
 
     ws.subscribe(subscription);
-    done();
   });
 });

@@ -5,7 +5,7 @@ import * as path from "path";
 describe("Bithumb", () => {
   let bithumb: Bithumb;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     const env = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;

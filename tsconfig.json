@@ -23,6 +23,7 @@
       "@upbit/*": ["upbit/*"],
       "@korbit/*": ["korbit/*"],
       "@common/*": ["common/*"],
+      "@coinone/*": ["coinone/*"],
       "@utils/*": ["utils/*"]
     }
   }

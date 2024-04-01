@@ -82,6 +82,7 @@
       "^@upbit/(.*)$": "<rootDir>/upbit/$1",
       "^@common/(.*)$": "<rootDir>/common/$1",
       "^@korbit/(.*)$": "<rootDir>/korbit/$1",
+      "^@coinone/(.*)$": "<rootDir>/coinone/$1",
       "^@utils/(.*)$": "<rootDir>/utils/$1"
     }
   }

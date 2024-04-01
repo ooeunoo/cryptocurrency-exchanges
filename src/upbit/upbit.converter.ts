@@ -123,6 +123,7 @@ export const upbitDepositHistoryConverter = (data: IUpbitDepositHistory[]): IDep
       fee: toBigNumberString(fee),
       state: convertState(state),
       fromAddress: null,
+      fromAddressTag: null,
       toAddress: null,
       toAddressTag: null,
       createdAt: toTimestamp(created_at),

@@ -13,7 +13,7 @@ export class WebSocketClient<O, T> {
   private data: Record<string, any>;
   private alive: boolean;
   private converter?: DataConverter<O, T>;
-  private subscriptions: WebSocketSubscription[] = [];
+  private subscription: WebSocketSubscription | null = null;
 
   constructor(baseUrl: string, headers: any, data: Record<string, any>, converter: DataConverter<O, T>) {
     this.ws = new WebSocket(baseUrl, { headers });
@@ -41,7 +41,7 @@ export class WebSocketClient<O, T> {
   }
 
   subscribe(subscription: WebSocketSubscription) {
-    this.subscriptions.push(subscription);
+    this.subscription = subscription;
 
     if (!this.alive) {
       this.run();
@@ -51,33 +51,26 @@ export class WebSocketClient<O, T> {
 
   unsubscribe(subscription: WebSocketSubscription) {
     this.terminate();
-    const index = this.subscriptions.indexOf(subscription);
-    if (index !== -1) {
-      this.subscriptions.splice(index, 1);
-    }
+    this.subscription = null;
   }
 
   private handleMessage(data: WebSocket.Data) {
     const receiveData: O = JSON.parse(data.toString("utf-8"));
     const convertedData = this.converter ? this.converter(receiveData) : receiveData;
-    this.subscriptions.forEach((subscription) => {
-      subscription.onData(convertedData);
-    });
+    if (this.subscription) {
+      this.subscription.onData(convertedData);
+    }
   }
 
   private handleError(error: Error) {
-    this.subscriptions.forEach((subscription) => {
-      if (subscription.onError) {
-        subscription.onError(error);
-      }
-    });
+    if (this.subscription && this.subscription.onError) {
+      this.subscription.onError(error);
+    }
   }
 
   private handleClose() {
-    this.subscriptions.forEach((subscription) => {
-      if (subscription.onClose) {
-        subscription.onClose();
-      }
-    });
+    if (this.subscription && this.subscription.onClose) {
+      this.subscription.onClose();
+    }
   }
 }
