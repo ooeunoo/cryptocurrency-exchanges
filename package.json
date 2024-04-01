@@ -1,15 +1,25 @@
 {
-  "name": "exchanges",
-  "version": "0.0.1",
+  "name": "exchange-api",
+  "version": "0.0.4",
+  "type": "module",
   "description": "",
-  "author": "",
-  "private": true,
+  "author": "ooeunoo",
+  "private": false,
   "license": "UNLICENSED",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "scripts": {
-    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest"
+    "test": "jest",
+    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh"
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
@@ -27,8 +37,11 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^29.5.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.3.1",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.8",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "dotenv": "^16.4.5",
@@ -60,15 +73,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^@exchange/(.*)$": "<rootDir>/exchange/$1",
-      "^@bithumb/(.*)$": "<rootDir>/bithumb/$1",
-      "^@upbit/(.*)$": "<rootDir>/upbit/$1",
-      "^@common/(.*)$": "<rootDir>/common/$1",
-      "^@korbit/(.*)$": "<rootDir>/korbit/$1",
-      "^@coinone/(.*)$": "<rootDir>/coinone/$1",
-      "^@utils/(.*)$": "<rootDir>/utils/$1"
-    }
+    "testEnvironment": "node"
   }
 }

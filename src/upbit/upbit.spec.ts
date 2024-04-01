@@ -1,14 +1,14 @@
 import { Upbit } from "./upbit";
 import * as dotenv from "dotenv";
 import * as path from "path";
-import { WebSocketSubscription } from "@common/websocket";
-import { subscribeType } from "@common/enum";
+import { WebSocketSubscription } from "../common/websocket";
+import { subscribeType } from "../common/enum";
 
 describe("UPBIT", () => {
   let upbit: Upbit;
 
   beforeAll(() => {
-    const env = dotenv.config({
+    const env: any = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
 
@@ -61,7 +61,7 @@ describe("UPBIT", () => {
   });
 
   it("Subscribe Data", async () => {
-    const client = await upbit.subscribe.client(subscribeType.orderbook, 'BTC', 'KRW');
+    const client = await upbit.subscribe.client(subscribeType.orderbook, "BTC", "KRW");
 
     const subscription: WebSocketSubscription = {
       onData: (receivedData) => {

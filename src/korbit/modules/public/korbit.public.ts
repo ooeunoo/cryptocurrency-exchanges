@@ -1,5 +1,5 @@
-import { method, request } from "@common/requests";
-import { IExchangePublic, IMarket, ITicker } from "@common/interfaces/exchange.public.interface";
+import { method, request } from "../../../common/requests";
+import { IExchangePublic, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { KorbitShared } from "../shared/korbit.shared";
 import { converter } from "./korbit.public.converter";
 

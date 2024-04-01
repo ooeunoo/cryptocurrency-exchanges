@@ -1,14 +1,14 @@
-import { orderSide, subscribeType, tickerChange } from "@common/enum";
+import { orderSide, subscribeType, tickerChange } from "../../common/enum";
 
 export interface IExchangeSubscribe {
-  client(type: subscribeType, currency: string, unit: string);
+  client(type: subscribeType, currency: string, unit: string): any;
 }
 
 export interface IExchangeSubscribeConverter {
-  subscribeTicker: (data) => ISubscribeTicker;
-  subscribeTransaction: (data) => ISubscribeTransaction;
-  subscribeOrderbook: (data) => ISubscribeOrderbook;
-  subscribeMyTransaction?: (data) => ISubscribeMyTransaction;
+  subscribeTicker: (data: any) => ISubscribeTicker | null;
+  subscribeTransaction: (data: any) => ISubscribeTransaction | null;
+  subscribeOrderbook: (data: any) => ISubscribeOrderbook | null;
+  subscribeMyTransaction?: (data: any) => ISubscribeMyTransaction | null;
 }
 
 export interface ISubscribeTicker {
@@ -19,10 +19,10 @@ export interface ISubscribeTicker {
   first: string; //	시가 (24시간 기준)
   last: string; // 종가 (24시간 기준)
   change: tickerChange; // 가격 변화
-  accTradeVolume: string; // 누적 거래량(UTC 0시 기준)	Double
-  accTradeVolume24h: string; // 24시간 누적 거래량	Double
-  accTradePrice: string; // 누적 거래대금(UTC 0시 기준)	Double
-  accTradePrice24h: string; // 24시간 누적 거래대금
+  accTradeVolume: string | null; // 누적 거래량(UTC 0시 기준)	Double
+  accTradeVolume24h: string | null; // 24시간 누적 거래량	Double
+  accTradePrice: string | null; // 누적 거래대금(UTC 0시 기준)	Double
+  accTradePrice24h: string | null; // 24시간 누적 거래대금
   timestamp: number; // 타임스탬프
 }
 

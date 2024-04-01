@@ -1,4 +1,4 @@
-import { depositWithdrawType, depsoitWithdrawState } from "@common/enum";
+import { depositWithdrawType, depsoitWithdrawState } from "../../../common/enum";
 import {
   IBalance,
   IDepositAddress,
@@ -6,8 +6,8 @@ import {
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { add, isGreaterThan, toBigNumberString } from "@utils/number";
+} from "../../../common/interfaces/exchange.private.interface";
+import { add, isGreaterThan, toBigNumberString } from "../../../utils/number";
 import {
   ICoinoneBalance,
   ICoinoneDepositAddress,
@@ -48,7 +48,7 @@ export const converter: IExchangePrivateConverter = {
   },
   depositAddress: function (res: ICoinoneDepositAddress): IDepositAddress[] {
     const data = res.walletAddress;
-    const results = [];
+    const results: IDepositAddress[] = [];
 
     for (const currency in data) {
       if (data[currency] == null) continue;
@@ -61,8 +61,8 @@ export const converter: IExchangePrivateConverter = {
         if (existingEntry) {
           existingEntry["memo"] = data[currency];
         } else {
-          const newEntry = { currency: baseCurrency, network: null };
-          newEntry[property] = data[currency];
+          const newEntry: any = { currency: baseCurrency, network: null };
+          newEntry.memo = data[currency];
           results.push(newEntry);
         }
       } else {
@@ -76,7 +76,7 @@ export const converter: IExchangePrivateConverter = {
   depositHistory: function (res: ICoinoneDepositHistory): IDepositWithdrawHistory[] {
     const data = res.transactions;
 
-    const convertState = (state) => {
+    const convertState = (state: string) => {
       switch (state) {
         case "DEPOSIT_WAIT":
           return depsoitWithdrawState.waiting;
@@ -88,6 +88,8 @@ export const converter: IExchangePrivateConverter = {
           return depsoitWithdrawState.refunded;
         case "DEPOSIT_REJECT":
           return depsoitWithdrawState.rejected;
+        default:
+          return depsoitWithdrawState.unknown;
       }
     };
 
@@ -112,7 +114,7 @@ export const converter: IExchangePrivateConverter = {
   withdrawHistory: function (res: ICoinoneWithdrawHistory): IDepositWithdrawHistory[] {
     const data = res.transactions;
 
-    const convertState = (state) => {
+    const convertState = (state: string) => {
       switch (state) {
         case "WITHDRAWAL_REGISTER":
           return depsoitWithdrawState.waiting;
@@ -126,6 +128,8 @@ export const converter: IExchangePrivateConverter = {
           return depsoitWithdrawState.refunded;
         case "WITHDRAWAL_REFUND_FAIL":
           return depsoitWithdrawState.refundFailed;
+        default:
+          return depsoitWithdrawState.unknown;
       }
     };
 

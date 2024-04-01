@@ -1,5 +1,5 @@
-import { IExchangePublicConverter, IMarket, ITicker } from "@common/interfaces/exchange.public.interface";
-import { toBigNumberString } from "@utils/number";
+import { IExchangePublicConverter, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
+import { toBigNumberString } from "../../../utils/number";
 import { IKorbitMarket } from "./korbit.public.interface";
 
 export const converter: IExchangePublicConverter = {

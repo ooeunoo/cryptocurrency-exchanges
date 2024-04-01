@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
 import * as crypto from "crypto";
-import { IExchangeShared, ISharedEndpoint } from "@common/interfaces/exchange.shared.interface";
+import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
 import { IKorbitOAuth, IKorbitOAuthData } from "./korbit.shared.interface";
-import { method, request } from "@common/requests";
+import { method, request } from "../../../common/requests";
 
 export class KorbitShared implements IExchangeShared {
   apiUrl = "https://api.korbit.co.kr/v1";
@@ -49,8 +49,8 @@ export class KorbitShared implements IExchangeShared {
 
   private async _refreshAccessToken() {
     const data: IKorbitOAuthData = {
-      client_id: this.apiKey,
-      client_secret: this.secretKey,
+      client_id: this.apiKey!,
+      client_secret: this.secretKey!,
       grant_type: "client_credentials",
     };
 
@@ -58,7 +58,7 @@ export class KorbitShared implements IExchangeShared {
       data.grant_type = "refresh_token";
       data.refresh_token = this.refresehToken;
     }
-    const { access_token, expires_in, refresh_token } = await request<IKorbitOAuth>(method.post, this.apiUrl, this.endpoints.oauth2, {
+    const { access_token, expires_in, refresh_token } = await request<IKorbitOAuth>(method.post, this.apiUrl, this.endpoints.oauth2!, {
       data: querystring.stringify(data as any),
     });
 

@@ -1,8 +1,9 @@
+import { IExchange } from "common/interfaces/exchange.interface";
 import { KorbitPrivate } from "./modules/private/korbit.private";
 import { KorbitPublic } from "./modules/public/korbit.public";
 import { KorbitSubscribe } from "./modules/subscribe/korbit.subscribe";
 
-export class Korbit {
+export class Korbit implements IExchange {
   public: KorbitPublic;
   private: KorbitPrivate;
   subscribe: KorbitSubscribe;

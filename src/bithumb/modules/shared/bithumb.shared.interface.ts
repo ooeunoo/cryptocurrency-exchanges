@@ -1,4 +1,4 @@
 export interface IBithumbResponse<T> {
   status: string;
-  data?: T;
+  data: T;
 }

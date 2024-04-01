@@ -1,5 +1,5 @@
-import { method, request } from "@common/requests";
-import { IExchangePublic, IMarket, ITicker } from "@common/interfaces/exchange.public.interface";
+import { method, request } from "../../../common/requests";
+import { IExchangePublic, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { BithumbShared } from "../shared/bithumb.shared";
 import { converter } from "./bithumb.public.converter";
 

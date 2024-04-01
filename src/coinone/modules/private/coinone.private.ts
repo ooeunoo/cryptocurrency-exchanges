@@ -6,9 +6,9 @@ import {
   IExchangePrivate,
   IOrderHistory,
   IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { method, request, requestAuth } from "@common/requests";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@common/constant";
+} from "../../../common/interfaces/exchange.private.interface";
+import { method, request, requestAuth } from "../../../common/requests";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { converter } from "./coinone.private.converter";
 import { CoinoneShared } from "../shared/coinone.shared";
 
@@ -16,10 +16,10 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
   constructor(accessKey: string, secretKey: string) {
     super(accessKey, secretKey);
   }
-  fetchCompletedOrderHistory() {
+  fetchCompletedOrderHistory(): Promise<IOrderHistory[]> {
     throw new Error("Method not implemented.");
   }
-  fetchUnCompletedOrderHistory() {
+  fetchUnCompletedOrderHistory(): Promise<IOrderHistory[]> {
     throw new Error("Method not implemented.");
   }
 

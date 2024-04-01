@@ -1,16 +1,16 @@
-import { orderSide, tickerChange } from "@common/enum";
+import { orderSide, tickerChange } from "../../../common/enum";
 import {
   IExchangeSubscribeConverter,
   ISubscribeOrderbook,
   ISubscribeTicker,
   ISubscribeTransaction,
-} from "@common/interfaces/exchange.subscribe.interface";
-import { isGreaterThan, isZero, sub, toBigNumberString } from "@utils/number";
+} from "../../../common/interfaces/exchange.subscribe.interface";
+import { isGreaterThan, isZero, sub, toBigNumberString } from "../../../utils/number";
 import { ICoinoneSubscribeOrderbook, ICoinoneSubscribeTicker, ICoinoneSubscribeTransaction } from "./coinone.subscribe.interface";
 
 export const converter: IExchangeSubscribeConverter = {
-  subscribeTicker: function (res: ICoinoneSubscribeTicker): ISubscribeTicker {
-    if (res.response_type != "DATA") return;
+  subscribeTicker: function (res: ICoinoneSubscribeTicker): ISubscribeTicker | null {
+    if (res.response_type != "DATA") return null;
     const data = res.data;
 
     const change = isGreaterThan(data.yesterday_last, data.last)

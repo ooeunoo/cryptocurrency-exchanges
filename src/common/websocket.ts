@@ -1,5 +1,5 @@
-import { DataConverter } from "@utils/type";
-import * as WebSocket from "ws";
+import { DataConverter } from "../utils/type";
+import WebSocket from "ws";
 
 export interface WebSocketSubscription {
   onData: (data: any) => void;

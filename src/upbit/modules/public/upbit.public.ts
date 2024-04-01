@@ -1,6 +1,6 @@
-import { method, request } from "@common/requests";
+import { method, request } from "../../../common/requests";
 import { UpbitShared } from "../shared/upbit.shared";
-import { IExchangePublic, IMarket, ITicker } from "@common/interfaces/exchange.public.interface";
+import { IExchangePublic, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { converter } from "./upbit.public.converter";
 
 export class UpbitPublic extends UpbitShared implements IExchangePublic {

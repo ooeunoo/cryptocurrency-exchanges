@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { IExchangeSubscribe } from "@common/interfaces/exchange.subscribe.interface";
-import { subscribeType } from "@common/enum";
-import { WebSocketClient } from "@common/websocket";
+import { IExchangeSubscribe } from "../../../common/interfaces/exchange.subscribe.interface";
+import { subscribeType } from "../../../common/enum";
+import { WebSocketClient } from "../../../common/websocket";
 import { converter } from "./coinone.subscribe.converter";
 import { CoinonePublic } from "../public/coinone.public";
 
@@ -38,7 +38,7 @@ export class CoinoneSubscribe extends CoinonePublic implements IExchangeSubscrib
       },
     };
     console.log(data);
-    const ws = new WebSocketClient(this.websocketUrl, null, data, convert);
+    const ws = new WebSocketClient(this.websocketUrl, null, data, convert!);
     return ws;
   }
 }

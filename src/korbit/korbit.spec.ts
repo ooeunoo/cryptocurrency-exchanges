@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { Korbit } from "./korbit";
-import { subscribeType } from "@common/enum";
+import { subscribeType } from "../common/enum";
 
 describe("KORBIT", () => {
   let korbit: Korbit;
   beforeAll(async () => {
-    const env = dotenv.config({
+    const env: any = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
 

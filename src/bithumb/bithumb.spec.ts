@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { Bithumb } from "./bithumb";
-import { subscribeType } from "@common/enum";
+import { subscribeType } from "../common/enum";
 
 describe("bithumb", () => {
   let bithumb: Bithumb;
   beforeAll(async () => {
-    const env = dotenv.config({
+    const env: any = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
     bithumb = new Bithumb(env.BITHUMB_CONNECT_KEY, env.BITHUMB_SECRET_KEY);

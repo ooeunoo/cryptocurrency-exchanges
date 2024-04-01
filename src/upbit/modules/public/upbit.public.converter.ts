@@ -1,6 +1,6 @@
-import { IMarket, ITicker } from "@common/interfaces/exchange.public.interface";
+import { IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { IUpbitMarket, IUpbitTicker } from "./upbit.public.interface";
-import { toBigNumberString } from "@utils/number";
+import { toBigNumberString } from "../../../utils/number";
 
 export const converter = {
   markets: (data: IUpbitMarket[]): IMarket[] => {

@@ -4,7 +4,7 @@ export interface IExchangeShared {
   endpoints: ISharedEndpoint;
   subscribeType: ISharedSubscribeType;
 
-  header(options?: any);
+  header(options?: any): any;
 }
 
 export interface ISharedEndpoint {

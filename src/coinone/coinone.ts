@@ -1,8 +1,9 @@
+import { IExchange } from "common/interfaces/exchange.interface";
 import { CoinonePrivate } from "./modules/private/coinone.private";
 import { CoinonePublic } from "./modules/public/coinone.public";
 import { CoinoneSubscribe } from "./modules/subscribe/coinone.subscribe";
 
-export class Coinone {
+export class Coinone implements IExchange {
   public: CoinonePublic;
   private: CoinonePrivate;
   subscribe: CoinoneSubscribe;

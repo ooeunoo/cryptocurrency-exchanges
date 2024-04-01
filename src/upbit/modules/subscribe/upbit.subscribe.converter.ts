@@ -3,20 +3,20 @@ import {
   ISubscribeTicker,
   ISubscribeOrderbook,
   ISubscribeMyTransaction,
-} from "@common/interfaces/exchange.subscribe.interface";
+} from "../../../common/interfaces/exchange.subscribe.interface";
 import {
   IUpbitSubscribeTransaction,
   IUpbitSubscribeTicker,
   IUpbitSubscribeOrderbook,
   IUpbitSubscribeMyTransaction,
 } from "./upbit.subscribe.interface";
-import { orderSide, tickerChange } from "@common/enum";
-import { toBigNumberString } from "@utils/number";
+import { orderSide, tickerChange } from "../../../common/enum";
+import { toBigNumberString } from "../../../utils/number";
 
 export const converter = {
   subscribeTicker: (data: IUpbitSubscribeTicker): ISubscribeTicker => {
     const [unit, currency] = data.code.split("-");
-    const convertChange = (change) => {
+    const convertChange = (change: string) => {
       switch (change) {
         case "FALL":
           return tickerChange.fall;
@@ -25,7 +25,7 @@ export const converter = {
         case "EVEN":
           return tickerChange.even;
         default:
-          return null;
+          return tickerChange.unknown;
       }
     };
     return {
@@ -56,14 +56,14 @@ export const converter = {
   },
   subscribeOrderbook: (data: IUpbitSubscribeOrderbook): ISubscribeOrderbook => {
     const [unit, currency] = data.code.split("-");
-    const orderbooks = {
+    const orderbooks: any = {
       ask: [],
       bid: [],
     };
 
     data.orderbook_units.map(({ ask_price, bid_price, ask_size, bid_size }) => {
-      orderbooks.ask.push({ price: ask_price, amount: ask_size });
-      orderbooks.bid.push({ price: bid_price, amount: bid_size });
+      orderbooks.ask.push({ price: toBigNumberString(ask_price), amount: toBigNumberString(ask_size) });
+      orderbooks.bid.push({ price: toBigNumberString(bid_price), amount: toBigNumberString(bid_size) });
     });
 
     return {

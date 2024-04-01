@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import * as queystring from "querystring";
-import { IExchangeShared, ISharedEndpoint } from "@common/interfaces/exchange.shared.interface";
+import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
 
 export class BithumbShared implements IExchangeShared {
   apiUrl = "https://api.bithumb.com";
@@ -24,8 +24,8 @@ export class BithumbShared implements IExchangeShared {
     orderbook: "orderbookdepth",
   };
 
-  private connectKey: string;
-  private secretKey: string;
+  private connectKey?: string;
+  private secretKey?: string;
 
   constructor(connectKey?: string, secretKey?: string) {
     this.connectKey = connectKey;
@@ -36,7 +36,7 @@ export class BithumbShared implements IExchangeShared {
     const { endpoint, parameters } = options;
     const nonce = new Date().getTime();
     const requestSignature = `${endpoint}${String.fromCharCode(0)}${queystring.stringify(parameters)}${String.fromCharCode(0)}${nonce}`;
-    const hmacSignature = Buffer.from(crypto.createHmac("sha512", this.secretKey).update(requestSignature).digest("hex")).toString("base64");
+    const hmacSignature = Buffer.from(crypto.createHmac("sha512", this.secretKey!).update(requestSignature).digest("hex")).toString("base64");
 
     return {
       "Api-Key": this.connectKey,

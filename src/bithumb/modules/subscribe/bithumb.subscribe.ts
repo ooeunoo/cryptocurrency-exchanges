@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import { IExchangeSubscribe } from "@common/interfaces/exchange.subscribe.interface";
-import { subscribeType } from "@common/enum";
-import { WebSocketClient } from "@common/websocket";
+import { IExchangeSubscribe } from "../../../common/interfaces/exchange.subscribe.interface";
+import { subscribeType } from "../../../common/enum";
+import { WebSocketClient } from "../../../common/websocket";
 import { converter } from "./bithumb.subscribe.converter";
 import { BithumbPublic } from "../public/bithumb.public";
 
@@ -34,7 +33,7 @@ export class BithumbSubscribe extends BithumbPublic implements IExchangeSubscrib
       symbols: [`${currency}_${unit}`],
     };
 
-    const ws = new WebSocketClient(this.websocketUrl, null, data, convert);
+    const ws = new WebSocketClient(this.websocketUrl, null, data, convert!);
     return ws;
   }
 }

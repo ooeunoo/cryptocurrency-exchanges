@@ -13,6 +13,7 @@ export enum depsoitWithdrawState {
   travelRuleSuspected = "travelRuleSuspected", // 트래블룰 의심
   refunded = "refunded", // 환불
   refundFailed = "refundFailed", // 환불 실패
+  unknown = "unknown",
 }
 
 export enum orderState {
@@ -27,17 +28,20 @@ export enum orderType {
   market = "market",
   stop_limit = "stop_limit",
   best = "best",
+  unknown = "unknown",
 }
 
 export enum orderSide {
   ask = "ask",
   bid = "bid",
+  unknown = "unknown",
 }
 
 export enum tickerChange {
   rise = "rise", // 상승
   even = "even", // 보합
   fall = "fall", // 하락
+  unknown = "unknown",
 }
 
 export enum subscribeType {
@@ -45,4 +49,5 @@ export enum subscribeType {
   transaction = "transaction",
   orderbook = "orderbook",
   myTransaction = "myTransaction",
+  unknown = "unknown",
 }

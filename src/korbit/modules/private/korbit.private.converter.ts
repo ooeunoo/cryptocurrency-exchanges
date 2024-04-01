@@ -1,4 +1,4 @@
-import { depositWithdrawType, depsoitWithdrawState } from "@common/enum";
+import { depositWithdrawType, depsoitWithdrawState } from "../../../common/enum";
 import {
   IBalance,
   IDepositAddress,
@@ -6,8 +6,8 @@ import {
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { add, isGreaterThan, toBigNumberString } from "@utils/number";
+} from "../../../common/interfaces/exchange.private.interface";
+import { add, isGreaterThan, toBigNumberString } from "../../../utils/number";
 import { IKorbitBalance, IKorbitDepositAddress, IKorbitHistory } from "./korbit.private.interface";
 
 export const converter: IExchangePrivateConverter = {
@@ -47,13 +47,14 @@ export const converter: IExchangePrivateConverter = {
     });
   },
   depositHistory: function (data: IKorbitHistory[]): IDepositWithdrawHistory[] {
-    const convertState = (state) => {
+    const convertState = (state: string) => {
       switch (state) {
         case "filled":
           return depsoitWithdrawState.accepted;
         case "requested":
           return depsoitWithdrawState.processing;
-        // TODO:
+        default:
+          return depsoitWithdrawState.unknown;
       }
     };
 
@@ -66,8 +67,8 @@ export const converter: IExchangePrivateConverter = {
         amount: toBigNumberString(amount),
         fee: null,
         state: convertState(status),
-        fromAddress: details?.address,
-        fromAddressTag: details?.destination_tag,
+        fromAddress: details?.address ?? null,
+        fromAddressTag: details?.destination_tag ?? null,
         toAddress: null,
         toAddressTag: null,
         createdAt: created_at,
@@ -75,14 +76,15 @@ export const converter: IExchangePrivateConverter = {
       };
     });
   },
-  withdrawHistory: function (data: any): IDepositWithdrawHistory[] {
-    const convertState = (state) => {
+  withdrawHistory: function (data: IKorbitHistory[]): IDepositWithdrawHistory[] {
+    const convertState = (state: string) => {
       switch (state) {
         case "filled":
           return depsoitWithdrawState.accepted;
         case "requested":
           return depsoitWithdrawState.processing;
-        // TODO:
+        default:
+          return depsoitWithdrawState.unknown;
       }
     };
 
@@ -97,8 +99,8 @@ export const converter: IExchangePrivateConverter = {
         state: convertState(status),
         fromAddress: null,
         fromAddressTag: null,
-        toAddress: details?.address,
-        toAddressTag: details?.destination_tag,
+        toAddress: details?.address ?? null,
+        toAddressTag: details?.destination_tag ?? null,
         createdAt: created_at,
         confirmedAt: completed_at,
       };

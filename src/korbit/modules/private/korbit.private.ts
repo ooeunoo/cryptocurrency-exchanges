@@ -5,9 +5,9 @@ import {
   IExchangePrivate,
   IOrderHistory,
   IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { method, requestAuth } from "@common/requests";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@common/constant";
+} from "../../../common/interfaces/exchange.private.interface";
+import { method, requestAuth } from "../../../common/requests";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { KorbitShared } from "../shared/korbit.shared";
 import { converter } from "./korbit.private.converter";
 

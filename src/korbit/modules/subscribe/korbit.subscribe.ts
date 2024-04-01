@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { IExchangeSubscribe } from "@common/interfaces/exchange.subscribe.interface";
-import { subscribeType } from "@common/enum";
-import { WebSocketClient } from "@common/websocket";
+import { IExchangeSubscribe } from "../../../common/interfaces/exchange.subscribe.interface";
+import { subscribeType } from "../../../common/enum";
+import { WebSocketClient } from "../../../common/websocket";
 import { KorbitPublic } from "../public/korbit.public";
 import { converter } from "./korbit.subscribe.converter";
 import { KorbitShared } from "../shared/korbit.shared";
@@ -40,8 +40,7 @@ export class KorbitSubscribe extends KorbitShared implements IExchangeSubscribe 
         channels: [`${type}:${currency.toLowerCase()}_${unit.toLowerCase()}`],
       },
     };
-    console.log(data);
-    const ws = new WebSocketClient(this.websocketUrl, null, data, convert);
+    const ws = new WebSocketClient(this.websocketUrl, null, data, convert!);
     return ws;
   }
 }

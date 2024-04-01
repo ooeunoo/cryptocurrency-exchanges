@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { IExchangeShared, ISharedEndpoint } from "@common/interfaces/exchange.shared.interface";
+import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
 
 export class CoinoneShared implements IExchangeShared {
   apiUrl = "https://api.coinone.co.kr";
@@ -23,8 +23,8 @@ export class CoinoneShared implements IExchangeShared {
     orderbook: "ORDERBOOK",
   };
 
-  protected accessKey: string;
-  private secretKey: string;
+  protected accessKey?: string;
+  private secretKey?: string;
 
   constructor(accessKey?: string, secretKey?: string) {
     this.accessKey = accessKey;
@@ -34,7 +34,7 @@ export class CoinoneShared implements IExchangeShared {
   header(options?: any) {
     const payload = options.payload;
     const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64");
-    const signature = crypto.createHmac("sha512", this.secretKey).update(encodedPayload).digest("hex");
+    const signature = crypto.createHmac("sha512", this.secretKey!).update(encodedPayload).digest("hex");
     return {
       "Content-type": "application/json",
       "X-COINONE-PAYLOAD": encodedPayload,

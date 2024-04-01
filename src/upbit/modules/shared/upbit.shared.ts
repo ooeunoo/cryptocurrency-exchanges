@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
 import * as crypto from "crypto";
-import { IExchangeShared } from "@common/interfaces/exchange.shared.interface";
+import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
 
 export class UpbitShared implements IExchangeShared {
   apiUrl = "https://api.upbit.com/v1";
@@ -25,15 +25,15 @@ export class UpbitShared implements IExchangeShared {
     myTransaction: "myTrade",
   };
 
-  private accessKey: string;
-  private secretKey: string;
+  private accessKey?: string;
+  private secretKey?: string;
 
   constructor(accessKey?: string, secretKey?: string) {
     this.accessKey = accessKey;
     this.secretKey = secretKey;
   }
 
-  header(options?: { params: any }) {
+  header(options?: { params?: any }) {
     const payload: any = {
       access_key: this.accessKey,
       nonce: uuidv4(),
@@ -41,14 +41,13 @@ export class UpbitShared implements IExchangeShared {
 
     let query: string = "";
 
-    const { params } = options;
-
-    if (params && Object.keys(params).length != 0) {
+    if (options?.params && Object.keys(options?.params).length != 0) {
+      const { params } = options;
       let nonArrayQuery = null;
       let arrayQuery = null;
 
-      const arrayParams = {};
-      const nonArrayParams = {};
+      const arrayParams: any = {};
+      const nonArrayParams: any = {};
 
       // Array 값을 가진 파라미터와 아닌 파라미터 분리
       for (const key in params) {
@@ -68,7 +67,7 @@ export class UpbitShared implements IExchangeShared {
         arrayQuery = Object.keys(arrayParams)
           .map((key) => {
             const values = arrayParams[key];
-            return values.map((value) => `${key}[]=${value}`).join("&");
+            return values.map((value: string) => `${key}[]=${value}`).join("&");
           })
           .join("&");
       }
@@ -88,7 +87,7 @@ export class UpbitShared implements IExchangeShared {
       payload.query_hash_alg = "SHA512";
     }
 
-    const token = sign(payload, this.secretKey);
+    const token = sign(payload, this.secretKey!);
     return { Authorization: `Bearer ${token}` };
   }
 }

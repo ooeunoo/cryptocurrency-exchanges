@@ -57,14 +57,12 @@ export interface IUpbitSubscribeOrderbook {
   timestamp: number; // 1704867306396;
   total_ask_size: number; // 7.3262086;
   total_bid_size: number; // 29.27948667;
-  orderbook_units: [
-    {
-      ask_price: number; // 61820000;
-      bid_price: number; // 61800000;
-      ask_size: number; // 1.44125174;
-      bid_size: number; // 8.95463042;
-    },
-  ];
+  orderbook_units: {
+    ask_price: number; // 61820000;
+    bid_price: number; // 61800000;
+    ask_size: number; // 1.44125174;
+    bid_size: number; // 8.95463042;
+  }[];
 }
 
 export interface IUpbitSubscribeMyTransaction {

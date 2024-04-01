@@ -1,4 +1,4 @@
-import { depositWithdrawType, depsoitWithdrawState, orderSide } from "@common/enum";
+import { depositWithdrawType, depsoitWithdrawState, orderSide } from "../../../common/enum";
 import {
   IBalance,
   IDepositAddress,
@@ -6,8 +6,8 @@ import {
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { add, isGreaterThan, sub, toBigNumberString } from "@utils/number";
+} from "../../../common/interfaces/exchange.private.interface";
+import { sub, toBigNumberString } from "../../../utils/number";
 import {
   IBithumbBalance,
   IBithumbDepositAddress,
@@ -27,11 +27,13 @@ export const converter: IExchangePrivateConverter = {
         network: net_type.toUpperCase(),
         deposit: deposit_status == 1,
         withdraw: withdrawal_status == 1,
+        withdrawMin: null,
+        withdrawFee: null,
       };
     });
   },
   balance: function (data: IBithumbResponse<IBithumbBalance[]>): IBalance[] {
-    const pdata = data.data;
+    const pdata: any = data.data;
     const result: IBalance[] = [];
     Object.keys(pdata).forEach((key) => {
       if (key.startsWith("total_")) {

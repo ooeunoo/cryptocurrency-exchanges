@@ -1,16 +1,16 @@
-import { orderSide, tickerChange } from "@common/enum";
+import { orderSide, tickerChange } from "../../../common/enum";
 import {
   IExchangeSubscribeConverter,
   ISubscribeOrderbook,
   ISubscribeTicker,
   ISubscribeTransaction,
-} from "@common/interfaces/exchange.subscribe.interface";
-import { isGreaterThan, isZero, toBigNumberString } from "@utils/number";
+} from "../../../common/interfaces/exchange.subscribe.interface";
+import { isGreaterThan, isZero, toBigNumberString } from "../../../utils/number";
 import { IKorbitSubscribeOrderbook, IKorbitSubscribeTicker, IKorbitSubscribeTransaction } from "./korbit.subscribe.interface";
 
 export const converter: IExchangeSubscribeConverter = {
-  subscribeTicker: function (res: IKorbitSubscribeTicker): ISubscribeTicker {
-    if (res.event != "korbit:push-ticker") return;
+  subscribeTicker: function (res: IKorbitSubscribeTicker): ISubscribeTicker | null {
+    if (res.event != "korbit:push-ticker") return null;
 
     const data = res.data;
     const [currency, unit] = data.currency_pair.split("_");
@@ -30,8 +30,8 @@ export const converter: IExchangeSubscribeConverter = {
       timestamp: data.timestamp,
     };
   },
-  subscribeTransaction: function (res: IKorbitSubscribeTransaction): ISubscribeTransaction {
-    if (res.event != "korbit:push-transaction") return;
+  subscribeTransaction: function (res: IKorbitSubscribeTransaction): ISubscribeTransaction | null {
+    if (res.event != "korbit:push-transaction") return null;
 
     const data = res.data;
     const [currency, unit] = data.currency_pair.split("_");
@@ -44,8 +44,8 @@ export const converter: IExchangeSubscribeConverter = {
       timestamp: data.timestamp,
     };
   },
-  subscribeOrderbook: function (res: IKorbitSubscribeOrderbook): ISubscribeOrderbook {
-    if (res.event != "korbit:push-orderbook") return;
+  subscribeOrderbook: function (res: IKorbitSubscribeOrderbook): ISubscribeOrderbook | null {
+    if (res.event != "korbit:push-orderbook") return null;
 
     const data = res.data;
     const [currency, unit] = data.currency_pair.split("_");

@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { Coinone } from "./coinone";
-import { subscribeType } from "@common/enum";
+import { subscribeType } from "../common/enum";
 
 describe("coinone", () => {
   let coinone: Coinone;
   beforeAll(async () => {
-    const env = dotenv.config({
+    const env: any = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
     coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);

@@ -5,10 +5,9 @@ import {
   IDepositWithdrawHistory,
   IExchangePrivate,
   IOrderHistory,
-  IWalletStatus,
-} from "@common/interfaces/exchange.private.interface";
-import { method, request, requestAuth } from "@common/requests";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "@common/constant";
+} from "../../../common/interfaces/exchange.private.interface";
+import { method, request, requestAuth } from "../../../common/requests";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { converter } from "./bithumb.private.converter";
 import { BithumbShared } from "../shared/bithumb.shared";
 
@@ -16,10 +15,10 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
   constructor(connectKey: string, secretKey: string) {
     super(connectKey, secretKey);
   }
-  fetchCompletedOrderHistory() {
+  fetchCompletedOrderHistory(): Promise<IOrderHistory[]> {
     throw new Error("Method not implemented.");
   }
-  fetchUnCompletedOrderHistory() {
+  fetchUnCompletedOrderHistory(): Promise<IOrderHistory[]> {
     throw new Error("Method not implemented.");
   }
 
@@ -39,10 +38,9 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
 
   /* ------------------입금 주소 조회-------------------- */
   public async fetchDepositAddress(): Promise<IDepositAddress[]> {
-    const supports = await request(method.get, this.apiUrl, this.endpoints.walletStatus);
-    console.log(supports);
-    const requests = [];
-    supports.data.forEach(async ({ currency, net_type, deposit_status, withdrawal_status }) => {
+    const supports: any = await request(method.get, this.apiUrl, this.endpoints.walletStatus);
+    const requests: any = [];
+    supports.data.forEach(async ({ currency, net_type, deposit_status, withdrawal_status }: any) => {
       if (deposit_status == 1 && withdrawal_status == 1) {
         const params = { currency, net_type };
         requests.push(
