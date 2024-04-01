@@ -28,7 +28,7 @@ export class UpbitPrivate extends UpbitShared implements IExchangePrivate {
 
   fetchDepositHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT) {
     const params = { currency, page, limit };
-    return requestAuth(method.get, this.apiUrl, this.endpoints.depositHistory, this.header(params), {
+    return requestAuth(method.get, this.apiUrl, this.endpoints.depositHistory, this.header({ params }), {
       params,
       converter: converter.depositHistory,
     });
@@ -36,7 +36,7 @@ export class UpbitPrivate extends UpbitShared implements IExchangePrivate {
 
   fetchWithdrawHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT) {
     const params = { currency, page, limit };
-    return requestAuth(method.get, this.apiUrl, this.endpoints.withdrawHistory, this.header(params), {
+    return requestAuth(method.get, this.apiUrl, this.endpoints.withdrawHistory, this.header({ params }), {
       params,
       converter: converter.withdrawHistory,
     });
@@ -44,14 +44,14 @@ export class UpbitPrivate extends UpbitShared implements IExchangePrivate {
 
   public fetchCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT) {
     const params = { page, limit, states: ["done", "cancel"] };
-    return requestAuth(method.get, this.apiUrl, this.endpoints.completedOrderHistory, this.header(params), {
+    return requestAuth(method.get, this.apiUrl, this.endpoints.completedOrderHistory, this.header({ params }), {
       params,
       converter: converter.completedOrderHistory,
     });
   }
   public fetchUnCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
     const params = { page, limit, states: ["wait", "watch"] };
-    return requestAuth(method.get, this.apiUrl, this.endpoints.unCompletedOrderHistory, this.header(params), {
+    return requestAuth(method.get, this.apiUrl, this.endpoints.unCompletedOrderHistory, this.header({ params }), {
       params,
       converter: converter.unCompletedOrderHistory,
     });

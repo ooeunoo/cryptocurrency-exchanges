@@ -33,15 +33,17 @@ export class UpbitShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  header(options?: any): any {
+  header(options?: { params: any }) {
     const payload: any = {
       access_key: this.accessKey,
       nonce: uuidv4(),
     };
 
     let query: string = "";
-    if (options?.params && Object.keys(options?.params).length != 0) {
-      const params = options.params;
+
+    const { params } = options;
+
+    if (params && Object.keys(params).length != 0) {
       let nonArrayQuery = null;
       let arrayQuery = null;
 

@@ -25,6 +25,7 @@ export const request = async <T>(
 
     return options?.converter ? options.converter(response.data) : response.data;
   } catch (e) {
+    // TODO: 에러처리
     console.log(e.response);
     throw new Error(e);
   }
@@ -52,6 +53,7 @@ export const requestAuth = async <T>(
 
     return options?.converter ? options.converter(response.data) : response.data;
   } catch (e) {
+    // TODO: 에러처리
     console.log(e.response);
     throw new Error(e);
   }

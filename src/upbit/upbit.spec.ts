@@ -61,7 +61,7 @@ describe("UPBIT", () => {
   });
 
   it("Subscribe Data", async () => {
-    const client = await upbit.subscribe.client(subscribeType.orderbook);
+    const client = await upbit.subscribe.client(subscribeType.orderbook, 'BTC', 'KRW');
 
     const subscription: WebSocketSubscription = {
       onData: (receivedData) => {
