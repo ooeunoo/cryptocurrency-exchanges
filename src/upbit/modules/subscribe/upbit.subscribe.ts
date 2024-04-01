@@ -4,6 +4,7 @@ import { subscribeType } from "../../../common/enum";
 import { UpbitPublic } from "../public/upbit.public";
 import { converter } from "./upbit.subscribe.converter";
 import { WebSocketClient } from "../../../common/websocket";
+import { constants } from "../../upbit.constants";
 
 export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
   constructor(accessKey: string, secretKey: string) {
@@ -17,19 +18,19 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
 
     switch (subscribe) {
       case subscribeType.ticker:
-        type = this.subscribeType.ticker;
+        type = constants.subscribeType.ticker;
         convert = converter.subscribeTicker;
         break;
       case subscribeType.transaction:
-        type = this.subscribeType.transaction;
+        type = constants.subscribeType.transaction;
         convert = converter.subscribeTransaction;
         break;
       case subscribeType.orderbook:
-        type = this.subscribeType.orderbook;
+        type = constants.subscribeType.orderbook;
         convert = converter.subscribeOrderbook;
         break;
       case subscribeType.myTransaction:
-        type = this.subscribeType.myTransaction;
+        type = constants.subscribeType.myTransaction;
         convert = converter.subscribeMyTransaction;
         header = this.header();
         break;
@@ -37,7 +38,7 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
 
     const data = [{ ticket: uuidv4() }, { type, codes: `${unit}-${currency}`, isOnlyRealtime: true }];
 
-    const ws = new WebSocketClient(this.websocketUrl, header, data, convert!);
+    const ws = new WebSocketClient(constants.websocketUrl, header, data, convert!);
     return ws;
   }
 }

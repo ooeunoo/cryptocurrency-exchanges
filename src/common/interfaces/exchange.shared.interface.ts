@@ -1,10 +1,5 @@
 export interface IExchangeShared {
-  apiUrl: string;
-  websocketUrl: string;
-  endpoints: ISharedEndpoint;
-  subscribeType: ISharedSubscribeType;
-
-  header(options?: any): any;
+  // header(options?: any): any;
 }
 
 export interface ISharedEndpoint {

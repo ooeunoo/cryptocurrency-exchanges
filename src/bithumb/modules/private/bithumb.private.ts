@@ -10,6 +10,7 @@ import { method, request, requestAuth } from "../../../common/requests";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { converter } from "./bithumb.private.converter";
 import { BithumbShared } from "../shared/bithumb.shared";
+import { constants } from "../../bithumb.constant";
 
 export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
   constructor(connectKey: string, secretKey: string) {
@@ -24,21 +25,27 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
   public async fetchWalletStatus(): Promise<any[]> {
-    return request(method.get, this.apiUrl, this.endpoints.walletStatus, { converter: converter.walletStatus });
+    return request(method.get, constants.apiUrl, constants.endpoints.walletStatus, { converter: converter.walletStatus });
   }
 
   /* ------------------잔액 조회-------------------- */
   public async fetchBalance(): Promise<IBalance[]> {
     const params = { currency: "ALL" };
-    return requestAuth(method.post, this.apiUrl, this.endpoints.balance, this.header({ endpoint: this.endpoints.balance, parameters: params }), {
-      data: queystring.stringify(params),
-      converter: converter.balance,
-    });
+    return requestAuth(
+      method.post,
+      constants.apiUrl,
+      constants.endpoints.balance,
+      this.header({ endpoint: constants.endpoints.balance, parameters: params }),
+      {
+        data: queystring.stringify(params),
+        converter: converter.balance,
+      },
+    );
   }
 
   /* ------------------입금 주소 조회-------------------- */
   public async fetchDepositAddress(): Promise<IDepositAddress[]> {
-    const supports: any = await request(method.get, this.apiUrl, this.endpoints.walletStatus);
+    const supports: any = await request(method.get, constants.apiUrl, constants.endpoints.walletStatus);
     const requests: any = [];
     supports.data.forEach(async ({ currency, net_type, deposit_status, withdrawal_status }: any) => {
       if (deposit_status == 1 && withdrawal_status == 1) {
@@ -46,9 +53,9 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
         requests.push(
           requestAuth(
             method.post,
-            this.apiUrl,
-            this.endpoints.depositAddress,
-            this.header({ endpoint: this.endpoints.depositAddress, parameters: params }),
+            constants.apiUrl,
+            constants.endpoints.depositAddress,
+            this.header({ endpoint: constants.endpoints.depositAddress, parameters: params }),
             {
               data: queystring.stringify(params),
               converter: converter.depositAddress,
@@ -74,9 +81,9 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
     const params = { searchGb: 0, order_currency: currency, payment_currency: "KRW", offset: page - 1, count: limit };
     return requestAuth(
       method.post,
-      this.apiUrl,
-      this.endpoints.depositHistory,
-      this.header({ endpoint: this.endpoints.depositHistory, parameters: params }),
+      constants.apiUrl,
+      constants.endpoints.depositHistory,
+      this.header({ endpoint: constants.endpoints.depositHistory, parameters: params }),
       {
         data: queystring.stringify(params),
         converter: converter.depositHistory,
@@ -93,9 +100,9 @@ export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
     const params = { searchGb: 5, order_currency: currency, offset: page, count: limit };
     return requestAuth(
       method.post,
-      this.apiUrl,
-      this.endpoints.withdrawHistory,
-      this.header({ endpoint: this.endpoints.withdrawHistory, parameters: params }),
+      constants.apiUrl,
+      constants.endpoints.withdrawHistory,
+      this.header({ endpoint: constants.endpoints.withdrawHistory, parameters: params }),
       {
         data: queystring.stringify(params),
         converter: converter.withdrawHistory,

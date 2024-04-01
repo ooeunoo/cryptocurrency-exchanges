@@ -11,6 +11,7 @@ import { method, request, requestAuth } from "../../../common/requests";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { converter } from "./coinone.private.converter";
 import { CoinoneShared } from "../shared/coinone.shared";
+import { constants } from "../../coinone.constants";
 
 export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
   constructor(accessKey: string, secretKey: string) {
@@ -25,7 +26,7 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
   public async fetchWalletStatus(): Promise<IWalletStatus[]> {
-    return request(method.get, this.apiUrl, this.endpoints.walletStatus, {
+    return request(method.get, constants.apiUrl, constants.endpoints.walletStatus, {
       converter: converter.walletStatus,
     });
   }
@@ -36,7 +37,7 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
       access_token: this.accessKey,
       nonce: uuidv4(),
     };
-    return requestAuth(method.post, this.apiUrl, this.endpoints.balance, this.header({ payload: data }), {
+    return requestAuth(method.post, constants.apiUrl, constants.endpoints.balance, this.header({ payload: data }), {
       data: JSON.stringify(data),
       converter: converter.balance,
     });
@@ -48,7 +49,7 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
       access_token: this.accessKey,
       nonce: new Date().getTime(),
     };
-    return requestAuth(method.post, this.apiUrl, this.endpoints.depositAddress, this.header({ payload: data }), {
+    return requestAuth(method.post, constants.apiUrl, constants.endpoints.depositAddress, this.header({ payload: data }), {
       data: JSON.stringify(data),
       converter: converter.depositAddress,
     });
@@ -74,7 +75,7 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
     let latestResult = null;
 
     while (quotient > 0) {
-      latestResult = await requestAuth(method.post, this.apiUrl, this.endpoints.depositHistory, this.header({ payload: data }), {
+      latestResult = await requestAuth(method.post, constants.apiUrl, constants.endpoints.depositHistory, this.header({ payload: data }), {
         data: JSON.stringify(data),
         converter: converter.depositHistory,
       });
@@ -108,7 +109,7 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
     let latestResult = null;
 
     while (quotient > 0) {
-      latestResult = await requestAuth(method.post, this.apiUrl, this.endpoints.withdrawHistory, this.header({ payload: data }), {
+      latestResult = await requestAuth(method.post, constants.apiUrl, constants.endpoints.withdrawHistory, this.header({ payload: data }), {
         data: JSON.stringify(data),
         converter: converter.withdrawHistory,
       });

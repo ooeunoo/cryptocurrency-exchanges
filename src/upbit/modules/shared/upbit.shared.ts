@@ -5,26 +5,6 @@ import * as crypto from "crypto";
 import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
 
 export class UpbitShared implements IExchangeShared {
-  apiUrl = "https://api.upbit.com/v1";
-  websocketUrl = "wss://api.upbit.com/websocket/v1";
-  endpoints = {
-    market: "/market/all",
-    ticker: "/ticker",
-    walletStatus: "/status/wallet",
-    balance: "/accounts",
-    depositAddress: "/deposits/coin_addresses",
-    depositHistory: "/deposits",
-    withdrawHistory: "/withdraws",
-    completedOrderHistory: "/orders",
-    unCompletedOrderHistory: "/orders",
-  };
-  subscribeType = {
-    ticker: "ticker",
-    transaction: "trade",
-    orderbook: "orderbook",
-    myTransaction: "myTrade",
-  };
-
   private accessKey?: string;
   private secretKey?: string;
 
@@ -33,7 +13,7 @@ export class UpbitShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  header(options?: { params?: any }) {
+  protected header(options?: { params?: any }) {
     const payload: any = {
       access_key: this.accessKey,
       nonce: uuidv4(),

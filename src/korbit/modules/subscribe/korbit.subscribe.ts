@@ -5,6 +5,7 @@ import { WebSocketClient } from "../../../common/websocket";
 import { KorbitPublic } from "../public/korbit.public";
 import { converter } from "./korbit.subscribe.converter";
 import { KorbitShared } from "../shared/korbit.shared";
+import { constants } from "../../korbit.constants";
 
 export class KorbitSubscribe extends KorbitShared implements IExchangeSubscribe {
   constructor(accessKey: string, secretKey: string) {
@@ -19,15 +20,15 @@ export class KorbitSubscribe extends KorbitShared implements IExchangeSubscribe 
 
     switch (subscribe) {
       case subscribeType.ticker:
-        type = this.subscribeType.ticker;
+        type = constants.subscribeType.ticker;
         convert = converter.subscribeTicker;
         break;
       case subscribeType.transaction:
-        type = this.subscribeType.transaction;
+        type = constants.subscribeType.transaction;
         convert = converter.subscribeTransaction;
         break;
       case subscribeType.orderbook:
-        type = this.subscribeType.orderbook;
+        type = constants.subscribeType.orderbook;
         convert = converter.subscribeOrderbook;
         break;
     }
@@ -40,7 +41,7 @@ export class KorbitSubscribe extends KorbitShared implements IExchangeSubscribe 
         channels: [`${type}:${currency.toLowerCase()}_${unit.toLowerCase()}`],
       },
     };
-    const ws = new WebSocketClient(this.websocketUrl, null, data, convert!);
+    const ws = new WebSocketClient(constants.websocketUrl, null, data, convert!);
     return ws;
   }
 }
