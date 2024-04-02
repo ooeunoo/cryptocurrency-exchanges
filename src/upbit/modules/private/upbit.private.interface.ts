@@ -20,7 +20,7 @@ export interface IUpbitBalance {
 
 export interface IUpbitDepositAddress {
   currency: string; // "BTC";
-  net_type: string; // 'BTC';
+  net_type: string; // "BTC";
   deposit_address: string; //"3EusRwybuZUhVDeHL7gh3HSLmbhLcy7NqD";
   secondary_address?: string; // null;
 }
@@ -29,6 +29,7 @@ export interface IUpbitDepositHistory {
   type: string; //"deposit";
   uuid: string; //"94332e99-3a87-4a35-ad98-28b0c969f830";
   currency: string; //"KRW";
+  net_type: string;
   txid: string; //"9e37c537-6849-4c8b-a134-57313f5dfc5a";
   state: string; //"ACCEPTED";
   created_at: string; //"2017-12-08T15:38:02+09:00";
@@ -51,7 +52,25 @@ export interface IUpbitWithdrawHistory {
   transaction_type: string; // "default";
 }
 
-export interface IUpbitOrderHistory {
+export interface IUpbitCompletedOrderHistory {
+  uuid: string; //"9ca023a5-851b-4fec-9f0a-48cd83c2eaae";
+  side: string; //"ask";
+  ord_type: string; //"limit";
+  price: string; //"4280000.0";
+  state: string; //"done";
+  market: string; //"KRW-BTC";
+  created_at: string; //"2019-01-04T13:48:09+09:00";
+  volume: string; //"1.0";
+  remaining_volume: string; // "0.0";
+  reserved_fee: string; //"0.0";
+  remaining_fee: string; //"0.0";
+  paid_fee: string; //"2140.0";
+  locked: string; //"0.0";
+  executed_volume: string; //"1.0";
+  trades_count: number; // 1;
+}
+
+export interface IUpbitUnCompletedOrderHistory {
   uuid: string; //"9ca023a5-851b-4fec-9f0a-48cd83c2eaae";
   side: string; //"ask";
   ord_type: string; //"limit";

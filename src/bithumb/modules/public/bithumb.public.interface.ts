@@ -1,4 +1,4 @@
-interface IBithumbTickerData {
+export interface IBithumbTickerData {
   opening_price: string;
   closing_price: string;
   min_price: string;

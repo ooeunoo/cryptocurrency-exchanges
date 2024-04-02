@@ -1,8 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
 import { IExchangeSubscribe } from "../../../common/interfaces/exchange.subscribe.interface";
 import { subscribeType } from "../../../common/enum";
 import { WebSocketClient } from "../../../common/websocket";
-import { KorbitPublic } from "../public/korbit.public";
 import { converter } from "./korbit.subscribe.converter";
 import { KorbitShared } from "../shared/korbit.shared";
 import { constants } from "../../korbit.constants";
@@ -12,7 +10,7 @@ export class KorbitSubscribe extends KorbitShared implements IExchangeSubscribe 
     super(accessKey, secretKey);
   }
 
-  async client(subscribe: subscribeType, currency: string, unit: string) {
+  async client(subscribe: subscribeType, currency: string, unit: string): Promise<WebSocketClient> {
     await this.header();
 
     let type = null;

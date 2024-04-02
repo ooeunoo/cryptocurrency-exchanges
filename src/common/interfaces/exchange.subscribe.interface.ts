@@ -1,14 +1,15 @@
 import { orderSide, subscribeType, tickerChange } from "../../common/enum";
+import { WebSocketClient } from "../websocket";
 
 export interface IExchangeSubscribe {
-  client(type: subscribeType, currency: string, unit: string): any;
+  client(type: subscribeType, currency: string, unit: string): Promise<WebSocketClient>;
 }
 
 export interface IExchangeSubscribeConverter {
-  subscribeTicker: (data: any) => ISubscribeTicker | null;
-  subscribeTransaction: (data: any) => ISubscribeTransaction | null;
-  subscribeOrderbook: (data: any) => ISubscribeOrderbook | null;
-  subscribeMyTransaction?: (data: any) => ISubscribeMyTransaction | null;
+  subscribeTicker: (data: unknown) => ISubscribeTicker | null;
+  subscribeTransaction: (data: unknown) => ISubscribeTransaction | null;
+  subscribeOrderbook: (data: unknown) => ISubscribeOrderbook | null;
+  subscribeMyTransaction?: (data: unknown) => ISubscribeMyTransaction | null;
 }
 
 export interface ISubscribeTicker {
@@ -35,13 +36,20 @@ export interface ISubscribeTransaction {
   timestamp: number; // 타임스탬프
 }
 
+export interface IOrderBook {
+  ask: IOrderBookData[];
+  bid: IOrderBookData[];
+}
+
+export interface IOrderBookData {
+  price: string;
+  amount: string;
+}
+
 export interface ISubscribeOrderbook {
   currency: string;
   unit: string;
-  orderbooks: {
-    ask: { price: string; amount: string }[];
-    bid: { price: string; amount: string }[];
-  };
+  orderbooks: IOrderBook;
   timestamp: number;
 }
 

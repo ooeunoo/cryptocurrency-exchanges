@@ -8,7 +8,7 @@ describe("UPBIT", () => {
   let upbit: Upbit;
 
   beforeAll(() => {
-    const env: any = dotenv.config({
+    const env: dotenv.DotenvParseOutput = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
 
@@ -35,6 +35,11 @@ describe("UPBIT", () => {
     console.log(result);
   });
 
+  it("Deposit Addresses", async () => {
+    const result = await upbit.private.fetchDepositAddress("BTC", "BTC");
+    console.log(result);
+  });
+
   it("Deposit Histories", async () => {
     const result = await upbit.private.fetchDepositHistory("TRX");
     console.log(result);
@@ -42,11 +47,6 @@ describe("UPBIT", () => {
 
   it("Withdraw History", async () => {
     const result = await upbit.private.fetchWithdrawHistory("TRX");
-    console.log(result);
-  });
-
-  it("Deposit Addresses", async () => {
-    const result = await upbit.private.fetchDepositAddress();
     console.log(result);
   });
 

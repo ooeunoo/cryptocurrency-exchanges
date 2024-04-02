@@ -4,14 +4,14 @@ export interface IExchangePublic {
 }
 
 export interface IExchangePublicConverter {
-  markets: (data: any) => IMarket[];
-  tickers: (data: any) => ITicker[];
+  markets: (data: unknown) => IMarket[];
+  tickers: (data: unknown) => ITicker[];
 
   // for bithumb
-  marketskrw?: (data: any) => IMarket[];
-  marketsbtc?: (data: any) => IMarket[];
-  tickerskrw?: (data: any) => ITicker[];
-  tickersbtc?: (data: any) => ITicker[];
+  marketskrw?: (data: unknown) => IMarket[];
+  marketsbtc?: (data: unknown) => IMarket[];
+  tickerskrw?: (data: unknown) => ITicker[];
+  tickersbtc?: (data: unknown) => ITicker[];
 }
 
 export interface IMarket {

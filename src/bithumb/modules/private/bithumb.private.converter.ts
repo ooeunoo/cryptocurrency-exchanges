@@ -33,7 +33,7 @@ export const converter: IExchangePrivateConverter = {
     });
   },
   balance: function (data: IBithumbResponse<IBithumbBalance[]>): IBalance[] {
-    const pdata: any = data.data;
+    const pdata: unknown = data.data;
     const result: IBalance[] = [];
     Object.keys(pdata).forEach((key) => {
       if (key.startsWith("total_")) {
@@ -92,6 +92,8 @@ export const converter: IExchangePrivateConverter = {
     });
   },
   withdrawHistory: function (data: IBithumbResponse<IBithumbWithdrawHistory[]>): IDepositWithdrawHistory[] {
+    console.log(data);
+
     const pdata = data.data;
 
     return pdata.map(({ order_currency, fee, amount, transfer_date }) => {

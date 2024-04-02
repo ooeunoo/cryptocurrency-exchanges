@@ -2,7 +2,7 @@ import { DataConverter } from "../utils/type";
 import WebSocket from "ws";
 
 export interface WebSocketSubscription {
-  onData: (data: any) => void;
+  onData: (data: unknown) => void;
   onError?: (error: Error) => void;
   onClose?: () => void;
 }
@@ -10,12 +10,17 @@ export interface WebSocketSubscription {
 export class WebSocketClient {
   public ws;
 
-  private data: Record<string, any>;
+  private data: Record<string, unknown> | Record<string, unknown>[];
   private alive: boolean;
   private converter?: DataConverter;
   private subscription: WebSocketSubscription | null = null;
 
-  constructor(baseUrl: string, headers: any, data: Record<string, any>, converter?: DataConverter) {
+  constructor(
+    baseUrl: string,
+    headers: Record<string, string>,
+    data: Record<string, unknown> | Record<string, unknown>[],
+    converter?: DataConverter,
+  ) {
     this.ws = new WebSocket(baseUrl, { headers });
 
     this.data = data;
@@ -27,20 +32,20 @@ export class WebSocketClient {
     this.ws.on("close", this.handleClose.bind(this));
   }
 
-  run() {
+  run(): void {
     this.ws.on("open", () => {
       this.ws.send(JSON.stringify(this.data));
     });
   }
 
-  terminate() {
+  terminate(): void {
     this.alive = false;
     if (this.ws) {
       this.ws.terminate();
     }
   }
 
-  subscribe(subscription: WebSocketSubscription) {
+  subscribe(subscription: WebSocketSubscription): void {
     this.subscription = subscription;
 
     if (!this.alive) {
@@ -49,14 +54,13 @@ export class WebSocketClient {
     }
   }
 
-  unsubscribe(subscription: WebSocketSubscription) {
+  unsubscribe(): void {
     this.terminate();
     this.subscription = null;
   }
 
-  private handleMessage(data: WebSocket.Data) {
+  private handleMessage(data: WebSocket.Data): void {
     const receiveData = JSON.parse(data.toString("utf-8"));
-    console.log(receiveData);
 
     const convertedData = this.converter ? this.converter(receiveData) : receiveData;
     if (this.subscription) {
@@ -64,13 +68,13 @@ export class WebSocketClient {
     }
   }
 
-  private handleError(error: Error) {
+  private handleError(error: Error): void {
     if (this.subscription && this.subscription.onError) {
       this.subscription.onError(error);
     }
   }
 
-  private handleClose() {
+  private handleClose(): void {
     if (this.subscription && this.subscription.onClose) {
       this.subscription.onClose();
     }

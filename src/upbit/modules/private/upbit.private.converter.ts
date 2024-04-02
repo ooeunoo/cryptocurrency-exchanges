@@ -8,9 +8,10 @@ import {
 import { toBigNumberString } from "../../../utils/number";
 import {
   IUpbitBalance,
+  IUpbitCompletedOrderHistory,
   IUpbitDepositAddress,
   IUpbitDepositHistory,
-  IUpbitOrderHistory,
+  IUpbitUnCompletedOrderHistory,
   IUpbitWalletStatus,
   IUpbitWithdrawHistory,
 } from "./upbit.private.interface";
@@ -59,18 +60,16 @@ export const converter = {
       };
     });
   },
-  depositAddress: (data: IUpbitDepositAddress[]): IDepositAddress[] => {
-    return data.map(({ currency, net_type, deposit_address, secondary_address }) => {
-      return {
-        currency: currency.toUpperCase(),
-        network: net_type.toUpperCase(),
-        address: deposit_address,
-        memo: secondary_address ?? null,
-      };
-    });
+  depositAddress: (data: IUpbitDepositAddress): IDepositAddress => {
+    return {
+      currency: data.currency.toUpperCase(),
+      network: data.net_type.toUpperCase(),
+      address: data.deposit_address,
+      memo: data.secondary_address ?? null,
+    };
   },
   depositHistory: (data: IUpbitDepositHistory[]): IDepositWithdrawHistory[] => {
-    const convertState = (state: string) => {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "PROCESSING":
           return depsoitWithdrawState.processing;
@@ -90,12 +89,12 @@ export const converter = {
           return depsoitWithdrawState.unknown;
       }
     };
-    return data.map(({ currency, txid, state, created_at, done_at, amount, fee }) => {
+    return data.map(({ currency, net_type, txid, state, created_at, done_at, amount, fee }) => {
       return {
         type: depositWithdrawType.deposit,
         txId: txid,
         currency: currency.toUpperCase(),
-        network: null,
+        network: net_type.toUpperCase() ?? null,
         amount: toBigNumberString(amount),
         fee: toBigNumberString(fee),
         state: convertState(state),
@@ -109,7 +108,7 @@ export const converter = {
     });
   },
   withdrawHistory: (data: IUpbitWithdrawHistory[]): IDepositWithdrawHistory[] => {
-    const convertState = (state: string) => {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "WAITING": // 입금진행
           return depsoitWithdrawState.waiting;
@@ -145,8 +144,8 @@ export const converter = {
       };
     });
   },
-  completedOrderHistory: (data: IUpbitOrderHistory[]): IOrderHistory[] => {
-    const convertorderType = (type: string) => {
+  completedOrderHistory: (data: IUpbitCompletedOrderHistory[]): IOrderHistory[] => {
+    const convertorderType = (type: string): orderType => {
       switch (type) {
         case "limit":
           return orderType.limit;
@@ -161,7 +160,7 @@ export const converter = {
           return orderType.unknown;
       }
     };
-    const convertState = (state: string) => {
+    const convertState = (state: string): orderState => {
       switch (state) {
         case "wait":
           return orderState.undone;
@@ -192,8 +191,8 @@ export const converter = {
       };
     });
   },
-  unCompletedOrderHistory: (data: IUpbitOrderHistory[]): IOrderHistory[] => {
-    const convertorderType = (type: string) => {
+  unCompletedOrderHistory: (data: IUpbitUnCompletedOrderHistory[]): IOrderHistory[] => {
+    const convertorderType = (type: string): orderType => {
       switch (type) {
         case "limit":
           return orderType.limit;
@@ -208,7 +207,7 @@ export const converter = {
           return orderType.unknown;
       }
     };
-    const convertState = (state: string) => {
+    const convertState = (state: string): orderState => {
       switch (state) {
         case "wait":
           return orderState.undone;

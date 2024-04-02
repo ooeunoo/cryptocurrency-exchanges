@@ -6,7 +6,7 @@ import { subscribeType } from "../common/enum";
 describe("KORBIT", () => {
   let korbit: Korbit;
   beforeAll(async () => {
-    const env: any = dotenv.config({
+    const env: dotenv.DotenvParseOutput = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
 
@@ -26,7 +26,7 @@ describe("KORBIT", () => {
     console.log(result);
   });
   it("Fetch Deposit Addresses", async () => {
-    const result = await korbit.private.fetchDepositAddress();
+    const result = await korbit.private.fetchDepositAddress("BTC");
     console.log(result);
   });
   it("Fetch Deposit Histories", async () => {

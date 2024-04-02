@@ -1,21 +1,23 @@
-import { method, request } from "../../../common/requests";
+import { method, request } from "../../../common/request/request";
 import { UpbitShared } from "../shared/upbit.shared";
 import { IExchangePublic, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { converter } from "./upbit.public.converter";
 import { constants } from "../../upbit.constants";
+import { IUpbitMarket, IUpbitTicker } from "./upbit.public.interface";
 
 export class UpbitPublic extends UpbitShared implements IExchangePublic {
   public async fetchMarkets(): Promise<IMarket[]> {
-    return request(method.get, constants.apiUrl, constants.endpoints.market, { converter: converter.markets });
+    const result = await request<IUpbitMarket[]>(method.get, constants.apiUrl, constants.endpoints.market);
+    return converter.markets(result);
   }
 
   public async fetchTickers(): Promise<ITicker[]> {
     const markets = await this.fetchMarkets();
     const marketString = markets.map(({ currency, unit }) => `${unit}-${currency}`).join(",");
 
-    return request(method.get, constants.apiUrl, constants.endpoints.ticker, {
+    const result = await request<IUpbitTicker[]>(method.get, constants.apiUrl, constants.endpoints.ticker, {
       params: { markets: marketString },
-      converter: converter.tickers,
     });
+    return converter.tickers(result);
   }
 }

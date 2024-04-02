@@ -6,7 +6,7 @@ import { subscribeType } from "../common/enum";
 describe("coinone", () => {
   let coinone: Coinone;
   beforeAll(async () => {
-    const env: any = dotenv.config({
+    const env: dotenv.DotenvParseOutput = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
     coinone = new Coinone(env.COINONE_ACCESS_KEY, env.COINONE_SECRET_KEY);
@@ -29,7 +29,7 @@ describe("coinone", () => {
     console.log(result);
   });
   it("Fetch Deposit Addresses", async () => {
-    const result = await coinone.private.fetchDepositAddress();
+    const result = await coinone.private.fetchDepositAddress("XRP");
     console.log(result);
   });
   it("Fetch Deposit Histories", async () => {

@@ -10,7 +10,7 @@ export class CoinoneSubscribe extends CoinonePublic implements IExchangeSubscrib
     super(accessKey, secretKey);
   }
 
-  async client(subscribe: subscribeType, currency: string, unit: string) {
+  async client(subscribe: subscribeType, currency: string, unit: string): Promise<WebSocketClient> {
     let type = null;
     let convert = null;
 

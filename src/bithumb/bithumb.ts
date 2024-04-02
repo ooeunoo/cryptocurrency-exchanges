@@ -1,8 +1,9 @@
+import { IExchange } from "../common/interfaces/exchange.interface";
 import { BithumbPrivate } from "./modules/private/bithumb.private";
 import { BithumbPublic } from "./modules/public/bithumb.public";
 import { BithumbSubscribe } from "./modules/subscribe/bithumb.subscribe";
 
-export class Bithumb {
+export class Bithumb implements IExchange {
   public: BithumbPublic;
   private: BithumbPrivate;
   subscribe: BithumbSubscribe;

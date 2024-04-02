@@ -3,6 +3,7 @@ import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
 import * as crypto from "crypto";
 import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
+import { RawAxiosRequestHeaders } from "axios";
 
 export class UpbitShared implements IExchangeShared {
   private accessKey?: string;
@@ -13,8 +14,8 @@ export class UpbitShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  protected header(options?: { params?: any }) {
-    const payload: any = {
+  protected header(options?: { params?: Record<string, unknown> }): RawAxiosRequestHeaders {
+    const payload: Record<string, unknown> = {
       access_key: this.accessKey,
       nonce: uuidv4(),
     };
@@ -26,13 +27,13 @@ export class UpbitShared implements IExchangeShared {
       let nonArrayQuery = null;
       let arrayQuery = null;
 
-      const arrayParams: any = {};
-      const nonArrayParams: any = {};
+      const arrayParams: Record<string, string[]> = {};
+      const nonArrayParams: Record<string, unknown> = {};
 
       // Array 값을 가진 파라미터와 아닌 파라미터 분리
       for (const key in params) {
         if (Array.isArray(params[key])) {
-          arrayParams[key] = params[key];
+          arrayParams[key] = params[key] as string[];
         } else {
           nonArrayParams[key] = params[key];
         }
@@ -40,13 +41,13 @@ export class UpbitShared implements IExchangeShared {
 
       // 각각 다르게 인코딩
       if (Object.keys(nonArrayParams).length != 0) {
-        nonArrayQuery = querystring.encode(nonArrayParams);
+        nonArrayQuery = querystring.encode(nonArrayParams as querystring.ParsedUrlQueryInput);
       }
 
       if (Object.keys(arrayParams).length != 0) {
         arrayQuery = Object.keys(arrayParams)
           .map((key) => {
-            const values = arrayParams[key];
+            const values: string[] = arrayParams[key];
             return values.map((value: string) => `${key}[]=${value}`).join("&");
           })
           .join("&");

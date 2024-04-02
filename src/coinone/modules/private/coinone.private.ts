@@ -7,11 +7,13 @@ import {
   IOrderHistory,
   IWalletStatus,
 } from "../../../common/interfaces/exchange.private.interface";
-import { method, request, requestAuth } from "../../../common/requests";
+import { method, request, requestAuth } from "../../../common/request/request";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { converter } from "./coinone.private.converter";
 import { CoinoneShared } from "../shared/coinone.shared";
 import { constants } from "../../coinone.constants";
+import { ICoinoneBalance, ICoinoneDepositHistory, ICoinoneHistoryTransaction, ICoinoneWalletStatus } from "./coinone.private.interface";
+import { IKorbitDepositAddress } from "../../../korbit/modules/private/korbit.private.interface";
 
 export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
   constructor(accessKey: string, secretKey: string) {
@@ -26,9 +28,8 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
 
   /* ------------------지갑 입출금 상태 조회-------------------- */
   public async fetchWalletStatus(): Promise<IWalletStatus[]> {
-    return request(method.get, constants.apiUrl, constants.endpoints.walletStatus, {
-      converter: converter.walletStatus,
-    });
+    const result = await request<ICoinoneWalletStatus[]>(method.get, constants.apiUrl, constants.endpoints.walletStatus);
+    return converter.walletStatus(result);
   }
 
   /* ------------------잔액 조회-------------------- */
@@ -37,22 +38,30 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
       access_token: this.accessKey,
       nonce: uuidv4(),
     };
-    return requestAuth(method.post, constants.apiUrl, constants.endpoints.balance, this.header({ payload: data }), {
+    const result = await requestAuth<ICoinoneBalance[]>(method.post, constants.apiUrl, constants.endpoints.balance, this.header({ payload: data }), {
       data: JSON.stringify(data),
-      converter: converter.balance,
     });
+    return converter.balance(result);
   }
 
   /* ------------------입금 주소 조회-------------------- */
-  public fetchDepositAddress(): Promise<IDepositAddress[]> {
+  public async fetchDepositAddress(currency: string, network?: string): Promise<IDepositAddress> {
     const data = {
       access_token: this.accessKey,
       nonce: new Date().getTime(),
     };
-    return requestAuth(method.post, constants.apiUrl, constants.endpoints.depositAddress, this.header({ payload: data }), {
-      data: JSON.stringify(data),
-      converter: converter.depositAddress,
-    });
+
+    const result = await requestAuth<IKorbitDepositAddress[]>(
+      method.post,
+      constants.apiUrl,
+      constants.endpoints.depositAddress,
+      this.header({ payload: data }),
+      {
+        data: JSON.stringify(data),
+      },
+    );
+
+    return converter.depositAddress(result, { currency });
   }
 
   /* ------------------입금 내역 조회-------------------- */
@@ -65,29 +74,35 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
     const totals = page * limit;
     const [quotient, remainder] = [Math.floor(totals / DEFAULT_SIZE) + 1, totals % DEFAULT_SIZE];
 
-    const data: any = {
+    const payload: Record<string, unknown> = {
       access_token: this.accessKey,
       nonce: uuidv4(),
       currency,
       is_deposit: true,
       size: DEFAULT_SIZE,
     };
-    let latestResult = null;
+    let latestResult: ICoinoneHistoryTransaction[] = null;
 
     while (quotient > 0) {
-      latestResult = await requestAuth(method.post, constants.apiUrl, constants.endpoints.depositHistory, this.header({ payload: data }), {
-        data: JSON.stringify(data),
-        converter: converter.depositHistory,
-      });
+      const histories: ICoinoneDepositHistory = await requestAuth(
+        method.post,
+        constants.apiUrl,
+        constants.endpoints.depositHistory,
+        this.header({ payload }),
+        {
+          data: JSON.stringify(payload),
+        },
+      );
 
-      if (latestResult.length == 0) {
+      if (histories.transactions.length == 0) {
         return [];
       }
 
-      data.from_ts = latestResult[-1].created_at;
+      latestResult = histories.transactions;
+      payload.from_ts = latestResult[-1].created_at;
     }
 
-    return latestResult.slice(remainder, limit + 1);
+    return converter.depositHistory(latestResult.slice(remainder, limit + 1));
   }
 
   public async fetchWithdrawHistory(
@@ -99,28 +114,34 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
     const totals = page * limit;
     const [quotient, remainder] = [Math.floor(totals / DEFAULT_SIZE) + 1, totals % DEFAULT_SIZE];
 
-    const data: any = {
+    const payload: Record<string, unknown> = {
       access_token: this.accessKey,
       nonce: uuidv4(),
       currency,
       is_deposit: false,
       size: DEFAULT_SIZE,
     };
-    let latestResult = null;
+    let latestResult: ICoinoneHistoryTransaction[] = null;
 
     while (quotient > 0) {
-      latestResult = await requestAuth(method.post, constants.apiUrl, constants.endpoints.withdrawHistory, this.header({ payload: data }), {
-        data: JSON.stringify(data),
-        converter: converter.withdrawHistory,
-      });
+      const histories: ICoinoneDepositHistory = await requestAuth(
+        method.post,
+        constants.apiUrl,
+        constants.endpoints.depositHistory,
+        this.header({ payload }),
+        {
+          data: JSON.stringify(payload),
+        },
+      );
 
-      if (latestResult.length == 0) {
+      if (histories.transactions.length == 0) {
         return [];
       }
 
-      data.from_ts = latestResult[-1].created_at;
+      latestResult = histories.transactions;
+      payload.from_ts = latestResult[-1].created_at;
     }
 
-    return latestResult.slice(remainder, limit + 1);
+    return converter.withdrawHistory(latestResult.slice(remainder, limit + 1));
   }
 }

@@ -7,60 +7,108 @@ import {
   IWalletStatus,
 } from "../../../common/interfaces/exchange.private.interface";
 import { UpbitShared } from "../shared/upbit.shared";
-import { method, requestAuth } from "../../../common/requests";
+import { method, requestAuth } from "../../../common/request/request";
 import { converter } from "./upbit.private.converter";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_NUMBER } from "../../../common/constant";
 import { constants } from "../../upbit.constants";
+import {
+  IUpbitBalance,
+  IUpbitCompletedOrderHistory,
+  IUpbitDepositAddress,
+  IUpbitDepositHistory,
+  IUpbitUnCompletedOrderHistory,
+  IUpbitWalletStatus,
+  IUpbitWithdrawHistory,
+} from "./upbit.private.interface";
 
 export class UpbitPrivate extends UpbitShared implements IExchangePrivate {
   constructor(accessKey: string, secretKey: string) {
     super(accessKey, secretKey);
   }
 
-  fetchWalletStatus(): Promise<IWalletStatus[]> {
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.walletStatus, this.header(), {
-      converter: converter.walletStatus,
-    });
+  async fetchWalletStatus(): Promise<IWalletStatus[]> {
+    const result = await requestAuth<IUpbitWalletStatus[]>(method.get, constants.apiUrl, constants.endpoints.walletStatus, this.header());
+    return converter.walletStatus(result);
   }
 
-  fetchBalance(): Promise<IBalance[]> {
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.balance, this.header(), { converter: converter.balance });
+  async fetchBalance(): Promise<IBalance[]> {
+    const result = await requestAuth<IUpbitBalance[]>(method.get, constants.apiUrl, constants.endpoints.balance, this.header());
+    return converter.balance(result);
   }
 
-  fetchDepositAddress(): Promise<IDepositAddress[]> {
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.depositAddress, this.header(), {
-      converter: converter.depositAddress,
-    });
+  async fetchDepositAddress(currency: string, network: string): Promise<IDepositAddress> {
+    const params: Record<string, string> = { currency, net_type: network };
+    const result = await requestAuth<IUpbitDepositAddress>(
+      method.get,
+      constants.apiUrl,
+      constants.endpoints.depositAddress,
+      this.header({ params }),
+      { params },
+    );
+    console.log(result);
+    return converter.depositAddress(result);
   }
 
-  fetchDepositHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IDepositWithdrawHistory[]> {
+  async fetchDepositHistory(
+    currency: string,
+    page: number = DEFAULT_PAGE_NUMBER,
+    limit: number = DEFAULT_PAGE_LIMIT,
+  ): Promise<IDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.depositHistory, this.header({ params }), {
-      params,
-      converter: converter.depositHistory,
-    });
+    const result = await requestAuth<IUpbitDepositHistory[]>(
+      method.get,
+      constants.apiUrl,
+      constants.endpoints.depositHistory,
+      this.header({ params }),
+      {
+        params,
+      },
+    );
+    return converter.depositHistory(result);
   }
 
-  fetchWithdrawHistory(currency: string, page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IDepositWithdrawHistory[]> {
+  async fetchWithdrawHistory(
+    currency: string,
+    page: number = DEFAULT_PAGE_NUMBER,
+    limit: number = DEFAULT_PAGE_LIMIT,
+  ): Promise<IDepositWithdrawHistory[]> {
     const params = { currency, page, limit };
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.withdrawHistory, this.header({ params }), {
-      params,
-      converter: converter.withdrawHistory,
-    });
+    const result = await requestAuth<IUpbitWithdrawHistory[]>(
+      method.get,
+      constants.apiUrl,
+      constants.endpoints.withdrawHistory,
+      this.header({ params }),
+      {
+        params,
+      },
+    );
+    return converter.withdrawHistory(result);
   }
 
-  public fetchCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
+  public async fetchCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
     const params = { page, limit, states: ["done", "cancel"] };
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.completedOrderHistory, this.header({ params }), {
-      params,
-      converter: converter.completedOrderHistory,
-    });
+    const result = await requestAuth<IUpbitCompletedOrderHistory[]>(
+      method.get,
+      constants.apiUrl,
+      constants.endpoints.completedOrderHistory,
+      this.header({ params }),
+      {
+        params,
+      },
+    );
+    return converter.completedOrderHistory(result);
   }
-  public fetchUnCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
+  public async fetchUnCompletedOrderHistory(page: number = DEFAULT_PAGE_NUMBER, limit: number = DEFAULT_PAGE_LIMIT): Promise<IOrderHistory[]> {
     const params = { page, limit, states: ["wait", "watch"] };
-    return requestAuth(method.get, constants.apiUrl, constants.endpoints.unCompletedOrderHistory, this.header({ params }), {
-      params,
-      converter: converter.unCompletedOrderHistory,
-    });
+    const result = await requestAuth<IUpbitUnCompletedOrderHistory[]>(
+      method.get,
+      constants.apiUrl,
+      constants.endpoints.unCompletedOrderHistory,
+      this.header({ params }),
+      {
+        params,
+      },
+    );
+    return converter.unCompletedOrderHistory(result);
   }
 }

@@ -3,6 +3,7 @@ import {
   ISubscribeTicker,
   ISubscribeOrderbook,
   ISubscribeMyTransaction,
+  IOrderBook,
 } from "../../../common/interfaces/exchange.subscribe.interface";
 import {
   IUpbitSubscribeTransaction,
@@ -16,7 +17,7 @@ import { toBigNumberString } from "../../../utils/number";
 export const converter = {
   subscribeTicker: (data: IUpbitSubscribeTicker): ISubscribeTicker | null => {
     const [unit, currency] = data.code.split("-");
-    const convertChange = (change: string) => {
+    const convertChange = (change: string): tickerChange => {
       switch (change) {
         case "FALL":
           return tickerChange.fall;
@@ -56,7 +57,7 @@ export const converter = {
   },
   subscribeOrderbook: (data: IUpbitSubscribeOrderbook): ISubscribeOrderbook | null => {
     const [unit, currency] = data.code.split("-");
-    const orderbooks: any = {
+    const orderbooks: IOrderBook = {
       ask: [],
       bid: [],
     };

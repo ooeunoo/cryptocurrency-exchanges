@@ -1,3 +1,4 @@
+// eslint.cjs
 module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -19,7 +20,8 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-duplicate-enum-values": "off",
-    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-duplicate-enum-values": "error",
+    "@typescript-eslint/no-namespace": "error",
   },
+  type: "commonjs",
 };

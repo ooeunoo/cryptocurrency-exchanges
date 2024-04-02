@@ -1,4 +1,4 @@
-import { IExchange } from "common/interfaces/exchange.interface";
+import { IExchange } from "../common/interfaces/exchange.interface";
 import { CoinonePrivate } from "./modules/private/coinone.private";
 import { CoinonePublic } from "./modules/public/coinone.public";
 import { CoinoneSubscribe } from "./modules/subscribe/coinone.subscribe";

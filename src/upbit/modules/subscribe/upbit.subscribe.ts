@@ -11,7 +11,7 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
     super(accessKey, secretKey);
   }
 
-  async client(subscribe: subscribeType, currency: string, unit: string) {
+  async client(subscribe: subscribeType, currency: string, unit: string): Promise<WebSocketClient> {
     let type = null;
     let convert = null;
     let header = null;
@@ -36,7 +36,7 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
         break;
     }
 
-    const data = [{ ticket: uuidv4() }, { type, codes: [`${unit}-${currency}`], isOnlyRealtime: true }];
+    const data: Record<string, unknown>[] = [{ ticket: uuidv4() }, { type, codes: [`${unit}-${currency}`], isOnlyRealtime: true }];
 
     const ws = new WebSocketClient(constants.websocketUrl, header, data, convert!);
     return ws;

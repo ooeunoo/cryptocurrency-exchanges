@@ -10,7 +10,7 @@ export class BithumbSubscribe extends BithumbPublic implements IExchangeSubscrib
     super(connectKey, secretKey);
   }
 
-  async client(subscribe: subscribeType, currency: string, unit: string) {
+  async client(subscribe: subscribeType, currency: string, unit: string): Promise<WebSocketClient> {
     let type = null;
     let convert = null;
 

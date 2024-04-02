@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
-import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
+import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
+import { RawAxiosRequestHeaders } from "axios";
 
 export class CoinoneShared implements IExchangeShared {
   protected accessKey?: string;
@@ -10,7 +11,7 @@ export class CoinoneShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  protected header(options?: any) {
+  protected header(options?: Record<string, unknown>): RawAxiosRequestHeaders {
     const payload = options.payload;
     const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64");
     const signature = crypto.createHmac("sha512", this.secretKey!).update(encodedPayload).digest("hex");

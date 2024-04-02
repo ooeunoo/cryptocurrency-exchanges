@@ -1,29 +1,31 @@
 import { IExchangePublicConverter, IMarket, ITicker } from "../../../common/interfaces/exchange.public.interface";
 import { toBigNumberString } from "../../../utils/number";
-import { IBithumbMarket } from "./bithumb.public.interface";
+import { IBithumbMarket, IBithumbTickerData } from "./bithumb.public.interface";
 
 export const converter: IExchangePublicConverter = {
-  markets: (data: any): any => {
+  markets: (): IMarket[] => {
     return [];
   },
-  tickers: (data: any): any => {},
+  tickers: (): ITicker[] => {
+    return [];
+  },
   marketskrw: (res: IBithumbMarket): IMarket[] => {
-    const data: any = res.data;
-    delete data["date"];
+    const data: IBithumbTickerData | string = res.data;
+    delete data["date"]; // string type 제거
     return Object.keys(data).map((currency) => {
       return { currency: currency.toUpperCase(), unit: "KRW" };
     });
   },
   marketsbtc: (res: IBithumbMarket): IMarket[] => {
-    const data: any = res.data;
-    delete data["date"];
+    const data: IBithumbTickerData | string = res.data;
+    delete data["date"]; // string type 제거
     return Object.keys(data).map((currency) => {
       return { currency: currency.toUpperCase(), unit: "BTC" };
     });
   },
   tickerskrw: (res: IBithumbMarket): ITicker[] => {
-    const data: any = res.data;
-    delete data["date"];
+    const data: IBithumbTickerData | string = res.data;
+    delete data["date"]; // string type 제거
     return Object.keys(data).map((currency) => {
       const target = data[currency];
       return {
@@ -37,8 +39,8 @@ export const converter: IExchangePublicConverter = {
     });
   },
   tickersbtc: (res: IBithumbMarket): ITicker[] => {
-    const data: any = res.data;
-    delete data["date"];
+    const data: IBithumbTickerData | string = res.data;
+    delete data["date"]; // string type 제거
     return Object.keys(data).map((currency) => {
       const target = data[currency];
       return {

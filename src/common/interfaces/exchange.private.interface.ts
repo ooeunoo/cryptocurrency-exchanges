@@ -3,7 +3,7 @@ import { depsoitWithdrawState, orderSide, orderState, orderType } from "../../co
 export interface IExchangePrivate {
   fetchWalletStatus(): Promise<IWalletStatus[]>;
   fetchBalance(): Promise<IBalance[]>;
-  fetchDepositAddress(): Promise<IDepositAddress[]>;
+  fetchDepositAddress(currency: string, network?: string): Promise<IDepositAddress | null>;
   fetchDepositHistory(currency: string, page: number, limit: number): Promise<IDepositWithdrawHistory[]>;
   fetchWithdrawHistory(currency: string, page: number, limit: number): Promise<IDepositWithdrawHistory[]>;
   fetchCompletedOrderHistory(): Promise<IOrderHistory[]>;
@@ -11,13 +11,13 @@ export interface IExchangePrivate {
 }
 
 export interface IExchangePrivateConverter {
-  walletStatus: (data: any) => IWalletStatus[];
-  balance: (data: any) => IBalance[];
-  depositAddress: (data: any) => IDepositAddress | IDepositAddress[];
-  depositHistory: (data: any) => IDepositWithdrawHistory[];
-  withdrawHistory: (data: any) => IDepositWithdrawHistory[];
-  completedOrderHistory: (data: any) => IOrderHistory[];
-  unCompletedOrderHistory: (data: any) => IOrderHistory[];
+  walletStatus: (data: unknown) => IWalletStatus[];
+  balance: (data: unknown) => IBalance[];
+  depositAddress: (data: unknown, args?: Record<string, unknown>) => IDepositAddress;
+  depositHistory: (data: unknown) => IDepositWithdrawHistory[];
+  withdrawHistory: (data: unknown) => IDepositWithdrawHistory[];
+  completedOrderHistory: (data: unknown) => IOrderHistory[];
+  unCompletedOrderHistory: (data: unknown) => IOrderHistory[];
 }
 
 export interface IWalletStatus {

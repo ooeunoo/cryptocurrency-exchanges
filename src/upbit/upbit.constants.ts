@@ -6,7 +6,7 @@ export const constants = {
     ticker: "/ticker",
     walletStatus: "/status/wallet",
     balance: "/accounts",
-    depositAddress: "/deposits/coin_addresses",
+    depositAddress: "/deposits/coin_address",
     depositHistory: "/deposits",
     withdrawHistory: "/withdraws",
     completedOrderHistory: "/orders",

@@ -8,10 +8,10 @@ import {
   IWalletStatus,
 } from "../../../common/interfaces/exchange.private.interface";
 import { add, isGreaterThan, toBigNumberString } from "../../../utils/number";
-import { IKorbitBalance, IKorbitDepositAddress, IKorbitHistory } from "./korbit.private.interface";
+import { IKorbitBalance, IKorbitDepositAddress, IKorbitDepositHistory, IKorbitWithdrawHistory } from "./korbit.private.interface";
 
 export const converter: IExchangePrivateConverter = {
-  walletStatus: function (data: any): IWalletStatus[] {
+  walletStatus: function (): IWalletStatus[] {
     throw new Error("Function not implemented.");
   },
   balance: function (data: IKorbitBalance): IBalance[] {
@@ -32,22 +32,23 @@ export const converter: IExchangePrivateConverter = {
     });
     return results;
   },
-  depositAddress: function (data: IKorbitDepositAddress): IDepositAddress[] {
+  depositAddress: function (data: IKorbitDepositAddress, { currency }: { currency: string }): IDepositAddress | null {
     const depositAddresses = data.deposit;
-    delete depositAddresses.krw;
 
-    return Object.keys(depositAddresses).map((currency) => {
-      const targetCurrency = depositAddresses[currency];
-      return {
-        currency: currency.toUpperCase(),
-        network: null,
-        address: targetCurrency.address,
-        memo: targetCurrency?.destination_tag ?? null,
-      };
-    });
+    const target = depositAddresses[currency.toLowerCase()];
+    if (target == undefined) {
+      return null;
+    }
+
+    return {
+      currency: currency,
+      network: null,
+      address: target.address,
+      memo: target?.destination_tag ?? null,
+    };
   },
-  depositHistory: function (data: IKorbitHistory[]): IDepositWithdrawHistory[] {
-    const convertState = (state: string) => {
+  depositHistory: function (data: IKorbitDepositHistory[]): IDepositWithdrawHistory[] {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "filled":
           return depsoitWithdrawState.accepted;
@@ -76,8 +77,8 @@ export const converter: IExchangePrivateConverter = {
       };
     });
   },
-  withdrawHistory: function (data: IKorbitHistory[]): IDepositWithdrawHistory[] {
-    const convertState = (state: string) => {
+  withdrawHistory: function (data: IKorbitWithdrawHistory[]): IDepositWithdrawHistory[] {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "filled":
           return depsoitWithdrawState.accepted;
@@ -106,10 +107,10 @@ export const converter: IExchangePrivateConverter = {
       };
     });
   },
-  completedOrderHistory: function (data: any): IOrderHistory[] {
+  completedOrderHistory: function (): IOrderHistory[] {
     throw new Error("Function not implemented.");
   },
-  unCompletedOrderHistory: function (data: any): IOrderHistory[] {
+  unCompletedOrderHistory: function (): IOrderHistory[] {
     throw new Error("Function not implemented.");
   },
 };

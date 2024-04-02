@@ -6,7 +6,7 @@ import { subscribeType } from "../common/enum";
 describe("bithumb", () => {
   let bithumb: Bithumb;
   beforeAll(async () => {
-    const env: any = dotenv.config({
+    const env: dotenv.DotenvParseOutput = dotenv.config({
       path: path.join(__dirname, "..", "..", ".env"),
     }).parsed;
     bithumb = new Bithumb(env.BITHUMB_CONNECT_KEY, env.BITHUMB_SECRET_KEY);
@@ -29,7 +29,7 @@ describe("bithumb", () => {
     console.log(result);
   });
   it("Fetch Deposit Addresses", async () => {
-    const result = await bithumb.private.fetchDepositAddress();
+    const result = await bithumb.private.fetchDepositAddress("XRP", "BTC");
     console.log(result);
   });
   it("Fetch Deposit Histories", async () => {

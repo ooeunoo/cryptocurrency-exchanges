@@ -46,37 +46,34 @@ export const converter: IExchangePrivateConverter = {
 
     return results;
   },
-  depositAddress: function (res: ICoinoneDepositAddress): IDepositAddress[] {
+  depositAddress: function (res: ICoinoneDepositAddress, { currency }: { currency: string }): IDepositAddress {
     const data = res.walletAddress;
-    const results: IDepositAddress[] = [];
 
-    for (const currency in data) {
-      if (data[currency] == null) continue;
+    const targets = Object.keys(data).filter((key: string) => key.startsWith(currency.toLowerCase()));
 
-      if (currency.includes("_")) {
-        const baseCurrency = currency.split("_")[0];
-        const property = currency.split("_")[1];
-
-        const existingEntry = results.find((entry) => entry.currency === baseCurrency);
-        if (existingEntry) {
-          existingEntry["memo"] = data[currency];
-        } else {
-          const newEntry: any = { currency: baseCurrency, network: null };
-          newEntry.memo = data[currency];
-          results.push(newEntry);
-        }
-      } else {
-        const entry = { currency: currency.toUpperCase(), network: null, address: data[currency], memo: null };
-        results.push(entry);
-      }
+    if (targets.length == 1) {
+      return {
+        currency: currency.toUpperCase(),
+        network: null,
+        address: data[currency.toLowerCase()],
+        memo: null,
+      };
+    } else if (targets.length == 2) {
+      const memoKey = targets.find((t) => t.includes("_"));
+      return {
+        currency: currency.toUpperCase(),
+        network: null,
+        address: data[currency.toLowerCase()],
+        memo: data[memoKey],
+      };
+    } else {
+      return null;
     }
-
-    return results;
   },
   depositHistory: function (res: ICoinoneDepositHistory): IDepositWithdrawHistory[] {
     const data = res.transactions;
 
-    const convertState = (state: string) => {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "DEPOSIT_WAIT":
           return depsoitWithdrawState.waiting;
@@ -114,7 +111,7 @@ export const converter: IExchangePrivateConverter = {
   withdrawHistory: function (res: ICoinoneWithdrawHistory): IDepositWithdrawHistory[] {
     const data = res.transactions;
 
-    const convertState = (state: string) => {
+    const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
         case "WITHDRAWAL_REGISTER":
           return depsoitWithdrawState.waiting;
@@ -151,10 +148,10 @@ export const converter: IExchangePrivateConverter = {
       };
     });
   },
-  completedOrderHistory: function (data: any): IOrderHistory[] {
+  completedOrderHistory: function (): IOrderHistory[] {
     throw new Error("Function not implemented.");
   },
-  unCompletedOrderHistory: function (data: any): IOrderHistory[] {
+  unCompletedOrderHistory: function (): IOrderHistory[] {
     throw new Error("Function not implemented.");
   },
 };

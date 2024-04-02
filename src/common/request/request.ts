@@ -1,4 +1,5 @@
-import axios, { AxiosHeaders, AxiosResponse, RawAxiosRequestHeaders } from "axios";
+import axios, { AxiosResponse, RawAxiosRequestHeaders } from "axios";
+import { TRequestData, TRequestParam } from "./request.interface";
 
 export enum method {
   "get" = "GET",
@@ -10,11 +11,10 @@ export const request = async <T>(
   baseUrl: string,
   endpoint: string,
   options?: {
-    params?: any;
-    data?: any;
-    converter?: any;
+    params?: TRequestParam;
+    data?: TRequestData;
   },
-) => {
+): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios({
       method,
@@ -23,9 +23,8 @@ export const request = async <T>(
       data: options?.data,
     });
 
-    return options?.converter ? options.converter(response.data) : response.data;
-  } catch (e: any) {
-    // TODO: 에러처리
+    return response.data;
+  } catch (e) {
     console.log(e.response);
     throw new Error(e);
   }
@@ -37,11 +36,10 @@ export const requestAuth = async <T>(
   endpoint: string,
   headers: RawAxiosRequestHeaders,
   options?: {
-    data?: any;
-    params?: any;
-    converter?: any;
+    params?: TRequestParam;
+    data?: TRequestData;
   },
-) => {
+): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios({
       method,
@@ -51,8 +49,8 @@ export const requestAuth = async <T>(
       data: options?.data,
     });
 
-    return options?.converter ? options.converter(response.data) : response.data;
-  } catch (e: any) {
+    return response.data;
+  } catch (e) {
     // TODO: 에러처리
     console.log(e.response);
     throw new Error(e);

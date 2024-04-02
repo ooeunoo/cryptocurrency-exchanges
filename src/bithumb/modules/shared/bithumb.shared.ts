@@ -1,6 +1,7 @@
 import * as crypto from "crypto";
 import * as queystring from "querystring";
-import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
+import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
+import { RawAxiosRequestHeaders } from "axios";
 
 export class BithumbShared implements IExchangeShared {
   private connectKey?: string;
@@ -11,10 +12,10 @@ export class BithumbShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  header(options: { endpoint: string; parameters?: any }) {
+  header(options: { endpoint: string; parameters?: Record<string, unknown> }): RawAxiosRequestHeaders {
     const { endpoint, parameters } = options;
     const nonce = new Date().getTime();
-    const requestSignature = `${endpoint}${String.fromCharCode(0)}${queystring.stringify(parameters)}${String.fromCharCode(0)}${nonce}`;
+    const requestSignature = `${endpoint}${String.fromCharCode(0)}${queystring.stringify(parameters as queystring.ParsedUrlQuery)}${String.fromCharCode(0)}${nonce}`;
     const hmacSignature = Buffer.from(crypto.createHmac("sha512", this.secretKey!).update(requestSignature).digest("hex")).toString("base64");
 
     return {

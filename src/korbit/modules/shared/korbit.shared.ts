@@ -1,11 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
-import { sign } from "jsonwebtoken";
 import * as querystring from "querystring";
-import * as crypto from "crypto";
-import { IExchangeShared, ISharedEndpoint } from "../../../common/interfaces/exchange.shared.interface";
+import { IExchangeShared } from "../../../common/interfaces/exchange.shared.interface";
 import { IKorbitOAuth, IKorbitOAuthData } from "./korbit.shared.interface";
-import { method, request } from "../../../common/requests";
+import { method, request } from "../../../common/request/request";
 import { constants } from "../../korbit.constants";
+import { RawAxiosRequestHeaders } from "axios";
 
 export class KorbitShared implements IExchangeShared {
   private apiKey?: string;
@@ -19,7 +17,7 @@ export class KorbitShared implements IExchangeShared {
     this.secretKey = secretKey;
   }
 
-  protected async header(options?: any) {
+  protected async header(): Promise<RawAxiosRequestHeaders> {
     if (this.accessToken == null || this.expiresIn == null || this.expiresIn < new Date().getTime()) {
       await this._refreshAccessToken();
     }
@@ -27,7 +25,7 @@ export class KorbitShared implements IExchangeShared {
     return { Authorization: `Bearer ${this.accessToken}` };
   }
 
-  private async _refreshAccessToken() {
+  private async _refreshAccessToken(): Promise<void> {
     const data: IKorbitOAuthData = {
       client_id: this.apiKey!,
       client_secret: this.secretKey!,
@@ -39,7 +37,7 @@ export class KorbitShared implements IExchangeShared {
       data.refresh_token = this.refresehToken;
     }
     const { access_token, expires_in, refresh_token } = await request<IKorbitOAuth>(method.post, constants.apiUrl, constants.endpoints.oauth2!, {
-      data: querystring.stringify(data as any),
+      data: querystring.stringify(data as unknown as querystring.ParsedUrlQuery),
     });
 
     this.accessToken = access_token;

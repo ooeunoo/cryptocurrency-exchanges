@@ -40,44 +40,32 @@ export interface ICoinoneDepositAddress {
   };
 }
 
+export interface ICoinoneHistoryTransaction {
+  id: string; //"0fec72eb-1e4d-11e9-9ec7-00e04c3600d7";
+  currency: string; // "BTC";
+  txid: string; //"bb1d723751cc4d312c38adc13d9a45b9a16608328d0b9a10f5e3ebc647d64506";
+  type: string; //"WITHDRAWAL";
+  from_address: string; //"muQoJGAySUJsn1c9iaj9GQitdVLJhnQVnL";
+  from_secondary_address: string; //"153214622";
+  to_address: string; //"n4G1hT3egiBQ6uSU5pLkGjiKJ6XGjS5k1P";
+  to_secondary_address: string; //"";
+  confirmations: number; // 3;
+  amount: string; //"0.121";
+  fee: string; //"0.0001";
+  status: string; //"DEPOSIT_SUCCESS";
+  created_at: number; // 1662108602000;
+}
+
 export interface ICoinoneDepositHistory {
   result: string; //"success";
   error_code: string; //"0";
-  transactions: {
-    id: string; //"0fec72eb-1e4d-11e9-9ec7-00e04c3600d7";
-    currency: string; // "BTC";
-    txid: string; //"bb1d723751cc4d312c38adc13d9a45b9a16608328d0b9a10f5e3ebc647d64506";
-    type: string; //"WITHDRAWAL";
-    from_address: string; //"muQoJGAySUJsn1c9iaj9GQitdVLJhnQVnL";
-    from_secondary_address: string; //"153214622";
-    to_address: string; //"n4G1hT3egiBQ6uSU5pLkGjiKJ6XGjS5k1P";
-    to_secondary_address: string; //"";
-    confirmations: number; // 3;
-    amount: string; //"0.121";
-    fee: string; //"0.0001";
-    status: string; //"DEPOSIT_SUCCESS";
-    created_at: number; // 1662108602000;
-  }[];
+  transactions: ICoinoneHistoryTransaction[];
 }
 
 export interface ICoinoneWithdrawHistory {
   result: string; //"success";
   error_code: string; //"0";
-  transactions: {
-    id: string; //"0fec72eb-1e4d-11e9-9ec7-00e04c3600d7";
-    currency: string; // "BTC";
-    txid: string; //"bb1d723751cc4d312c38adc13d9a45b9a16608328d0b9a10f5e3ebc647d64506";
-    type: string; //"WITHDRAWAL";
-    from_address: string; //"muQoJGAySUJsn1c9iaj9GQitdVLJhnQVnL";
-    from_secondary_address: string; //"153214622";
-    to_address: string; //"n4G1hT3egiBQ6uSU5pLkGjiKJ6XGjS5k1P";
-    to_secondary_address: string; //"";
-    confirmations: number; // 3;
-    amount: string; //"0.121";
-    fee: string; //"0.0001";
-    status: string; //"DEPOSIT_SUCCESS";
-    created_at: number; // 1662108602000;
-  }[];
+  transactions: ICoinoneHistoryTransaction[];
 }
 
 export interface ICoinoneCompletedHistory {
