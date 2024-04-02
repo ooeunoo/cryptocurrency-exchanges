@@ -23,5 +23,4 @@ module.exports = {
     "@typescript-eslint/no-duplicate-enum-values": "error",
     "@typescript-eslint/no-namespace": "error",
   },
-  type: "commonjs",
 };

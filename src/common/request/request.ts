@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, RawAxiosRequestHeaders } from "axios";
+import axios, { AxiosError, RawAxiosRequestHeaders } from "axios";
 import { TRequestData, TRequestParam } from "./request.interface";
 
 export enum method {
@@ -15,19 +15,20 @@ export const request = async <T>(
     data?: TRequestData;
   },
 ): Promise<T> => {
-  try {
-    const response: AxiosResponse<T> = await axios({
+  return new Promise((resolve, reject) => {
+    axios({
       method,
       url: `${baseUrl}${endpoint}`,
       params: options?.params,
       data: options?.data,
-    });
-
-    return response.data;
-  } catch (e) {
-    console.log(e.response);
-    throw new Error(e);
-  }
+    })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((e: AxiosError) => {
+        reject(e);
+      });
+  });
 };
 
 export const requestAuth = async <T>(
@@ -40,19 +41,19 @@ export const requestAuth = async <T>(
     data?: TRequestData;
   },
 ): Promise<T> => {
-  try {
-    const response: AxiosResponse<T> = await axios({
+  return new Promise((resolve, reject) => {
+    axios({
       method,
       url: `${baseUrl}${endpoint}`,
       headers,
       params: options?.params,
       data: options?.data,
-    });
-
-    return response.data;
-  } catch (e) {
-    // TODO: 에러처리
-    console.log(e.response);
-    throw new Error(e);
-  }
+    })
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((e: AxiosError) => {
+        reject(e);
+      });
+  });
 };

@@ -13,13 +13,7 @@ import { converter } from "./bithumb.private.converter";
 import { BithumbShared } from "../shared/bithumb.shared";
 import { constants } from "../../bithumb.constant";
 import { IBithumbResponse } from "../shared/bithumb.shared.interface";
-import {
-  IBithumbBalance,
-  IBithumbDepositAddress,
-  IBithumbDepositHistory,
-  IBithumbWalletStatus,
-  IBithumbWithdrawHistory,
-} from "./bithumb.private.interface";
+import { IBithumbBalance, IBithumbDepositHistory, IBithumbWalletStatus, IBithumbWithdrawHistory } from "./bithumb.private.interface";
 
 export class BithumbPrivate extends BithumbShared implements IExchangePrivate {
   constructor(connectKey: string, secretKey: string) {

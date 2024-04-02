@@ -6,8 +6,8 @@ export interface IExchangeSubscribe {
 }
 
 export interface IExchangeSubscribeConverter {
-  subscribeTicker: (data: unknown) => ISubscribeTicker | null;
-  subscribeTransaction: (data: unknown) => ISubscribeTransaction | null;
+  subscribeTicker: (res: unknown) => ISubscribeTicker | null;
+  subscribeTransaction: (res: unknown) => ISubscribeTransaction | null;
   subscribeOrderbook: (data: unknown) => ISubscribeOrderbook | null;
   subscribeMyTransaction?: (data: unknown) => ISubscribeMyTransaction | null;
 }

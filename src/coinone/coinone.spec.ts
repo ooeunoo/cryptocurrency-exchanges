@@ -20,12 +20,12 @@ describe("coinone", () => {
     const result = await coinone.public.fetchTickers();
     console.log(result);
   });
-  it("Fetch Balances", async () => {
-    const result = await coinone.private.fetchBalance();
-    console.log(result);
-  });
   it("Fetch Wallet Status", async () => {
     const result = await coinone.private.fetchWalletStatus();
+    console.log(result);
+  });
+  it("Fetch Balances", async () => {
+    const result = await coinone.private.fetchBalance();
     console.log(result);
   });
   it("Fetch Deposit Addresses", async () => {
@@ -40,17 +40,14 @@ describe("coinone", () => {
     const result = await coinone.private.fetchWithdrawHistory("BTC");
     console.log(result);
   });
-
   it("Fetch Completeted Order History", async () => {
     const result = await coinone.private.fetchCompletedOrderHistory();
     console.log(result);
   });
-
   it("Fetch UnCompleteted Order History", async () => {
     const result = await coinone.private.fetchUnCompletedOrderHistory();
     console.log(result);
   });
-
   it("Subscribe public data", async () => {
     const ws = await coinone.subscribe.client(subscribeType.ticker, "BTC", "KRW");
     ws.subscribe({

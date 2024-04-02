@@ -45,7 +45,6 @@ export class UpbitPrivate extends UpbitShared implements IExchangePrivate {
       this.header({ params }),
       { params },
     );
-    console.log(result);
     return converter.depositAddress(result);
   }
 

@@ -29,23 +29,21 @@ describe("bithumb", () => {
     console.log(result);
   });
   it("Fetch Deposit Addresses", async () => {
-    const result = await bithumb.private.fetchDepositAddress("XRP", "BTC");
+    const result = await bithumb.private.fetchDepositAddress("BTC", "BTC");
     console.log(result);
   });
   it("Fetch Deposit Histories", async () => {
-    const result = await bithumb.private.fetchDepositHistory("BTC");
+    const result = await bithumb.private.fetchDepositHistory("WEMIX");
     console.log(result);
   });
   it("Fetch Withdraw History", async () => {
     const result = await bithumb.private.fetchWithdrawHistory("BTC");
     console.log(result);
   });
-
   it("Fetch Completeted Order History", async () => {
     const result = await bithumb.private.fetchCompletedOrderHistory();
     console.log(result);
   });
-
   it("Fetch UnCompleteted Order History", async () => {
     const result = await bithumb.private.fetchUnCompletedOrderHistory();
     console.log(result);

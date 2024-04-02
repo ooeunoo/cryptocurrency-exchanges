@@ -52,8 +52,9 @@ export const converter: IExchangePrivateConverter = {
     });
     return result;
   },
-  depositAddress: function (data: IBithumbResponse<IBithumbDepositAddress>): IDepositAddress {
+  depositAddress: function (data: IBithumbResponse<IBithumbDepositAddress>): IDepositAddress | null {
     const pdata = data.data;
+    if (pdata == undefined) return null;
 
     let address = pdata.wallet_address;
     let memo = null;

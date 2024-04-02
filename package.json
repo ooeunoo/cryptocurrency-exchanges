@@ -1,22 +1,18 @@
 {
-  "name": "exchange-api",
+  "name": "@ooeunoo/exchange-api",
   "version": "0.0.12",
   "type": "module",
   "description": "",
   "author": "ooeunoo",
   "private": false,
   "license": "UNLICENSED",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
-    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh"
+    "build": "tsc"
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",

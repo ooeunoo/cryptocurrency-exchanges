@@ -46,6 +46,8 @@ export class CoinonePrivate extends CoinoneShared implements IExchangePrivate {
 
   /* ------------------입금 주소 조회-------------------- */
   public async fetchDepositAddress(currency: string, network?: string): Promise<IDepositAddress> {
+    // eslint //
+    network;
     const data = {
       access_token: this.accessKey,
       nonce: new Date().getTime(),

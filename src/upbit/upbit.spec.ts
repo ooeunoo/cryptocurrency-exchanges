@@ -15,7 +15,7 @@ describe("UPBIT", () => {
     upbit = new Upbit(env.UPBIT_ACCESS_KEY, env.UPBIT_SECRET_KEY);
   });
 
-  it("Markets", async () => {
+  it("Fetch Markets", async () => {
     const result = await upbit.public.fetchMarkets();
     console.log(result);
   });
@@ -24,27 +24,22 @@ describe("UPBIT", () => {
     const result = await upbit.public.fetchTickers();
     console.log(result);
   });
-
   it("Wallet Status", async () => {
     const result = await upbit.private.fetchWalletStatus();
     console.log(result);
   });
-
   it("Balances", async () => {
     const result = await upbit.private.fetchBalance();
     console.log(result);
   });
-
   it("Deposit Addresses", async () => {
     const result = await upbit.private.fetchDepositAddress("BTC", "BTC");
     console.log(result);
   });
-
   it("Deposit Histories", async () => {
     const result = await upbit.private.fetchDepositHistory("TRX");
     console.log(result);
   });
-
   it("Withdraw History", async () => {
     const result = await upbit.private.fetchWithdrawHistory("TRX");
     console.log(result);

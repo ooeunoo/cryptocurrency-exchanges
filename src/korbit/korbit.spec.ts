@@ -21,6 +21,10 @@ describe("KORBIT", () => {
     const result = await korbit.public.fetchTickers();
     console.log(result);
   });
+  it("Fetch Wallet Status", async () => {
+    const result = await korbit.private.fetchWalletStatus();
+    console.log(result);
+  });
   it("Fetch Balances", async () => {
     const result = await korbit.private.fetchBalance();
     console.log(result);
@@ -37,17 +41,14 @@ describe("KORBIT", () => {
     const result = await korbit.private.fetchWithdrawHistory("BTC");
     console.log(result);
   });
-
   it("Fetch Completeted Order History", async () => {
     const result = await korbit.private.fetchCompletedOrderHistory();
     console.log(result);
   });
-
   it("Fetch UnCompleteted Order History", async () => {
     const result = await korbit.private.fetchUnCompletedOrderHistory();
     console.log(result);
   });
-
   it("Subscribe public data", async () => {
     const ws = await korbit.subscribe.client(subscribeType.ticker, "BTC", "KRW");
     ws.subscribe({

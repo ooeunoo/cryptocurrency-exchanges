@@ -1,6 +1,6 @@
-export { Coinone } from "./coinone";
-export { Korbit } from "./korbit";
-export { Upbit } from "./upbit";
+export { Coinone } from "./coinone/coinone";
+export { Korbit } from "./korbit/korbit";
+export { Upbit } from "./upbit/upbit";
 
 export { IExchange } from "./common/interfaces/exchange.interface";
 export { IExchangeShared } from "./common/interfaces/exchange.shared.interface";

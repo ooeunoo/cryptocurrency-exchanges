@@ -1,3 +1,10 @@
+export enum Exchange {
+  upbit = "upbit",
+  bithumb = "bithumb",
+  coinone = "coinone",
+  korbit = "korbit",
+}
+
 export enum depositWithdrawType {
   deposit = "deposit",
   withdraw = "withdraw",
