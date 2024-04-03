@@ -35,8 +35,10 @@ const markets = await upbit.public.fetchMarkets()
 ```
 ```
 [
-  { currency: 'BTC', unit: 'KRW' }, 
-  { currency: 'ETH', unit: 'KRW' },
+  { 
+    currency: 'BTC', 
+    unit: 'KRW' 
+  }, 
   ...
 ]
 ```
@@ -51,8 +53,14 @@ const tickers = await upbit.public.fetchTickers()
 ```
 ```
 [
-  { currency: 'BTC', unit: 'KRW', high: '97300000', low: '94682000', first: '96053000', last: '95740000' },
-  { currency: 'ETH', unit: 'KRW', high: '4879000', low: '4701000', first: '4808000', last: '4797000' },
+  { 
+    currency: 'BTC', 
+    unit: 'KRW', 
+    high: '97300000', 
+    low: '94682000', 
+    first: '96053000', 
+    last: '95740000' 
+  },
   ...
 ]
 ```
@@ -67,8 +75,14 @@ const walletStatus = await upbit.private.fetchWalletStatus();
 ```
 ```
 [  
-  { currency: 'BTC', network: 'BTC', deposit: true, withdraw: true, withdrawFee: null, withdrawMin: null },
-  { currency: 'ETH', network: 'ETH', deposit: true, withdraw: true, withdrawFee: null, withdrawMin: null },
+  { 
+    currency: 'BTC', 
+    network: 'BTC', 
+    deposit: true, 
+    withdraw: true, 
+    withdrawFee: null, 
+    withdrawMin: null 
+  },
   ...
 ]
 ```
@@ -83,8 +97,12 @@ const walletStatus = await upbit.private.fetchBalance();
 ```
 ```
 [  
-  { currency: 'KRW', balance: '1000000', lockedBalance: '0', avgBuyPrice: '0' },
-  { currency: 'BTC', balance: '0.322', locedBalance: '0.1', avgBuyPrice: '97300000' },
+  { 
+    currency: 'KRW', 
+    balance: '1000000', 
+    lockedBalance: '0', 
+    avgBuyPrice: '0'
+  },
   ...
 ]
 ```
@@ -129,21 +147,7 @@ const depositAddress = await upbit.private.fetchDepositHistory('TRX');
     createdAt: 1711530114000,
     confirmedAt: 1711530142000
   },
-  {
-    type: 'deposit',
-    txId: 'fd44a0c324f089c48fsdf0f5311b66eddcb01280b86dcbb0930d931c35893888',
-    currency: 'TRX',
-    network: 'TRX',
-    amount: '2170.9259',
-    fee: '0',
-    state: 'accepted',
-    fromAddress: null,
-    fromAddressTag: null,
-    toAddress: null,
-    toAddressTag: null,
-    createdAt: 1705118617000,
-    confirmedAt: 1705118652000
-  }
+  ...
 ]
 ```
 
@@ -176,21 +180,7 @@ const depositAddress = await upbit.private.fetchWithdrawHistory('TRX');
     createdAt: 1693584391000,
     confirmedAt: 1693584623000
   },
-  {
-    type: 'withdraw',
-    txId: '8311093590e007af10f59asdf0c7cf5ac4417db888f7b56ab027cca208e9b757',
-    currency: 'TRX',
-    network: null,
-    amount: '19000',
-    fee: '1',
-    state: 'accepted',
-    fromAddress: null,
-    fromAddressTag: null,
-    toAddress: null,
-    toAddressTag: null,
-    createdAt: 1693199728000,
-    confirmedAt: 1693199948000
-  },
+  ...
 ]
 ```
 
@@ -206,7 +196,7 @@ const client = await upbit.private.subscribe('ticker', 'BTC', 'KRW');
 
 const subscription =  {
   onData: function (data)  {
-    console.log('on ticker data: ', data)
+    console.log(data)
   },
   onError: function (error) {
     console.log('on error:', error)
@@ -219,7 +209,7 @@ const subscription =  {
 client.subscribe(subscription)
 ```
 ```
-on data: {
+{
   "currency":"BTC",
   "unit":"KRW",
   "high":"97300000",
