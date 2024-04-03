@@ -1,9 +1,9 @@
-import axios, { AxiosError, RawAxiosRequestHeaders } from "axios";
-import { TRequestData, TRequestParam } from "./request.interface";
+import axios, { AxiosError, RawAxiosRequestHeaders } from 'axios'
+import { TRequestData, TRequestParam } from './request.interface'
 
 export enum method {
-  "get" = "GET",
-  "post" = "POST",
+  'get' = 'GET',
+  'post' = 'POST',
 }
 
 export const request = async <T>(
@@ -11,9 +11,9 @@ export const request = async <T>(
   baseUrl: string,
   endpoint: string,
   options?: {
-    params?: TRequestParam;
-    data?: TRequestData;
-  },
+    params?: TRequestParam
+    data?: TRequestData
+  }
 ): Promise<T> => {
   return new Promise((resolve, reject) => {
     axios({
@@ -23,13 +23,13 @@ export const request = async <T>(
       data: options?.data,
     })
       .then((response) => {
-        resolve(response.data);
+        resolve(response.data)
       })
       .catch((e: AxiosError) => {
-        reject(e);
-      });
-  });
-};
+        reject(e)
+      })
+  })
+}
 
 export const requestAuth = async <T>(
   method: method,
@@ -37,9 +37,9 @@ export const requestAuth = async <T>(
   endpoint: string,
   headers: RawAxiosRequestHeaders,
   options?: {
-    params?: TRequestParam;
-    data?: TRequestData;
-  },
+    params?: TRequestParam
+    data?: TRequestData
+  }
 ): Promise<T> => {
   return new Promise((resolve, reject) => {
     axios({
@@ -50,10 +50,10 @@ export const requestAuth = async <T>(
       data: options?.data,
     })
       .then((response) => {
-        resolve(response.data);
+        resolve(response.data)
       })
       .catch((e: AxiosError) => {
-        reject(e);
-      });
-  });
-};
+        reject(e)
+      })
+  })
+}

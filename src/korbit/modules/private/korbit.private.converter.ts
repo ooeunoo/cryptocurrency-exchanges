@@ -1,4 +1,4 @@
-import { depositWithdrawType, depsoitWithdrawState } from "../../../common/enum";
+import { depositWithdrawType, depsoitWithdrawState } from '../../../common/enum'
 import {
   IBalance,
   IDepositAddress,
@@ -6,38 +6,52 @@ import {
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from "../../../common/interfaces/exchange.private.interface";
-import { add, isGreaterThan, toBigNumberString } from "../../../utils/number";
-import { IKorbitBalance, IKorbitDepositAddress, IKorbitDepositHistory, IKorbitWithdrawHistory } from "./korbit.private.interface";
+} from '../../../common/interfaces/exchange.private.interface'
+import { add, isGreaterThan, toBigNumberString } from '../../../utils/number'
+import {
+  IKorbitBalance,
+  IKorbitDepositAddress,
+  IKorbitDepositHistory,
+  IKorbitWithdrawHistory,
+} from './korbit.private.interface'
 
 export const converter: IExchangePrivateConverter = {
   walletStatus: function (): IWalletStatus[] {
-    throw new Error("Function not implemented.");
+    throw new Error('Function not implemented.')
   },
   balance: function (data: IKorbitBalance): IBalance[] {
-    const results: IBalance[] = [];
+    const results: IBalance[] = []
     Object.keys(data).forEach((currency) => {
-      const targetCurrency = data[currency];
-      const balance = toBigNumberString(targetCurrency.available);
-      const lockedBalance = add(targetCurrency.trade_in_use, targetCurrency.withdrawal_in_use).toString();
+      const targetCurrency = data[currency]
+      const balance = toBigNumberString(targetCurrency.available)
+      const lockedBalance = add(
+        targetCurrency.trade_in_use,
+        targetCurrency.withdrawal_in_use
+      ).toString()
 
       if (isGreaterThan(add(balance, lockedBalance), 0)) {
         results.push({
           currency: currency.toUpperCase(),
           balance: toBigNumberString(targetCurrency.available),
-          lockedBalance: add(targetCurrency.trade_in_use, targetCurrency.withdrawal_in_use).toString(),
+          lockedBalance: add(
+            targetCurrency.trade_in_use,
+            targetCurrency.withdrawal_in_use
+          ).toString(),
           avgBuyPrice: toBigNumberString(targetCurrency.avg_price),
-        });
+        })
       }
-    });
-    return results;
+    })
+    return results
   },
-  depositAddress: function (data: IKorbitDepositAddress, { currency }: { currency: string }): IDepositAddress | null {
-    const depositAddresses = data.deposit;
+  depositAddress: function (
+    data: IKorbitDepositAddress,
+    { currency }: { currency: string }
+  ): IDepositAddress | null {
+    const depositAddresses = data.deposit
 
-    const target = depositAddresses[currency.toLowerCase()];
+    const target = depositAddresses[currency.toLowerCase()]
     if (target == undefined) {
-      return null;
+      return null
     }
 
     return {
@@ -45,72 +59,80 @@ export const converter: IExchangePrivateConverter = {
       network: null,
       address: target.address,
       memo: target?.destination_tag ?? null,
-    };
+    }
   },
-  depositHistory: function (data: IKorbitDepositHistory[]): IDepositWithdrawHistory[] {
+  depositHistory: function (
+    data: IKorbitDepositHistory[]
+  ): IDepositWithdrawHistory[] {
     const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
-        case "filled":
-          return depsoitWithdrawState.accepted;
-        case "requested":
-          return depsoitWithdrawState.processing;
+        case 'filled':
+          return depsoitWithdrawState.accepted
+        case 'requested':
+          return depsoitWithdrawState.processing
         default:
-          return depsoitWithdrawState.unknown;
+          return depsoitWithdrawState.unknown
       }
-    };
+    }
 
-    return data.map(({ currency, amount, details, status, created_at, completed_at }) => {
-      return {
-        type: depositWithdrawType.deposit,
-        txId: details?.transaction_id,
-        currency: currency.toUpperCase(),
-        network: null,
-        amount: toBigNumberString(amount),
-        fee: null,
-        state: convertState(status),
-        fromAddress: details?.address ?? null,
-        fromAddressTag: details?.destination_tag ?? null,
-        toAddress: null,
-        toAddressTag: null,
-        createdAt: created_at,
-        confirmedAt: completed_at,
-      };
-    });
+    return data.map(
+      ({ currency, amount, details, status, created_at, completed_at }) => {
+        return {
+          type: depositWithdrawType.deposit,
+          txId: details?.transaction_id,
+          currency: currency.toUpperCase(),
+          network: null,
+          amount: toBigNumberString(amount),
+          fee: null,
+          state: convertState(status),
+          fromAddress: details?.address ?? null,
+          fromAddressTag: details?.destination_tag ?? null,
+          toAddress: null,
+          toAddressTag: null,
+          createdAt: created_at,
+          confirmedAt: completed_at,
+        }
+      }
+    )
   },
-  withdrawHistory: function (data: IKorbitWithdrawHistory[]): IDepositWithdrawHistory[] {
+  withdrawHistory: function (
+    data: IKorbitWithdrawHistory[]
+  ): IDepositWithdrawHistory[] {
     const convertState = (state: string): depsoitWithdrawState => {
       switch (state) {
-        case "filled":
-          return depsoitWithdrawState.accepted;
-        case "requested":
-          return depsoitWithdrawState.processing;
+        case 'filled':
+          return depsoitWithdrawState.accepted
+        case 'requested':
+          return depsoitWithdrawState.processing
         default:
-          return depsoitWithdrawState.unknown;
+          return depsoitWithdrawState.unknown
       }
-    };
+    }
 
-    return data.map(({ currency, amount, details, status, created_at, completed_at }) => {
-      return {
-        type: depositWithdrawType.withdraw,
-        txId: details?.transaction_id,
-        currency: currency.toUpperCase(),
-        network: null,
-        amount: toBigNumberString(amount),
-        fee: null,
-        state: convertState(status),
-        fromAddress: null,
-        fromAddressTag: null,
-        toAddress: details?.address ?? null,
-        toAddressTag: details?.destination_tag ?? null,
-        createdAt: created_at,
-        confirmedAt: completed_at,
-      };
-    });
+    return data.map(
+      ({ currency, amount, details, status, created_at, completed_at }) => {
+        return {
+          type: depositWithdrawType.withdraw,
+          txId: details?.transaction_id,
+          currency: currency.toUpperCase(),
+          network: null,
+          amount: toBigNumberString(amount),
+          fee: null,
+          state: convertState(status),
+          fromAddress: null,
+          fromAddressTag: null,
+          toAddress: details?.address ?? null,
+          toAddressTag: details?.destination_tag ?? null,
+          createdAt: created_at,
+          confirmedAt: completed_at,
+        }
+      }
+    )
   },
   completedOrderHistory: function (): IOrderHistory[] {
-    throw new Error("Function not implemented.");
+    throw new Error('Function not implemented.')
   },
   unCompletedOrderHistory: function (): IOrderHistory[] {
-    throw new Error("Function not implemented.");
+    throw new Error('Function not implemented.')
   },
-};
+}

@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js'
 
-BigNumber.config({ EXPONENTIAL_AT: 100 });
+BigNumber.config({ EXPONENTIAL_AT: 100 })
 
 /**
  * To BigNumber
@@ -8,8 +8,8 @@ BigNumber.config({ EXPONENTIAL_AT: 100 });
  * @returns BigNumber
  */
 export function toBigNumberString(value: BigNumber.Value): string {
-  if (value == undefined || value == null) return toBigNumberString(0);
-  return new BigNumber(value.toString()).toString();
+  if (value == undefined || value == null) return toBigNumberString(0)
+  return new BigNumber(value.toString()).toString()
 }
 
 /**
@@ -18,7 +18,7 @@ export function toBigNumberString(value: BigNumber.Value): string {
  * @returns 제로 여부
  */
 export function isZero(value: BigNumber.Value): boolean {
-  return new BigNumber(value.toString()).isZero();
+  return new BigNumber(value.toString()).isZero()
 }
 
 /**
@@ -28,7 +28,7 @@ export function isZero(value: BigNumber.Value): boolean {
  * @returns 고정 소수점 표기된 값
  */
 export function toFixed(value: BigNumber.Value, point = 20): string {
-  return new BigNumber(value.toString()).toFixed(point);
+  return new BigNumber(value.toString()).toFixed(point)
 }
 
 /**
@@ -37,7 +37,7 @@ export function toFixed(value: BigNumber.Value, point = 20): string {
  * @returns 부정 값
  */
 export function toNegated(value: BigNumber.Value): BigNumber {
-  return new BigNumber(value.toString()).negated();
+  return new BigNumber(value.toString()).negated()
 }
 
 /**
@@ -47,7 +47,7 @@ export function toNegated(value: BigNumber.Value): BigNumber {
  * @returns 이동 연산된 값
  */
 export function shift(value: BigNumber.Value, n: number): BigNumber {
-  return new BigNumber(value.toString()).shiftedBy(n);
+  return new BigNumber(value.toString()).shiftedBy(n)
 }
 
 /**
@@ -57,7 +57,7 @@ export function shift(value: BigNumber.Value, n: number): BigNumber {
  * @returns 더한 값
  */
 export function add(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
-  return new BigNumber(a.toString()).plus(b.toString());
+  return new BigNumber(a.toString()).plus(b.toString())
 }
 
 /**
@@ -67,7 +67,7 @@ export function add(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
  * @returns 뺀 값
  */
 export function sub(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
-  return new BigNumber(a.toString()).minus(b.toString());
+  return new BigNumber(a.toString()).minus(b.toString())
 }
 
 /**
@@ -77,7 +77,7 @@ export function sub(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
  * @returns 곱한 값
  */
 export function mul(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
-  return new BigNumber(a.toString()).multipliedBy(b.toString());
+  return new BigNumber(a.toString()).multipliedBy(b.toString())
 }
 
 /**
@@ -87,7 +87,7 @@ export function mul(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
  * @returns 나눈 값
  */
 export function div(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
-  return new BigNumber(a.toString()).div(b.toString());
+  return new BigNumber(a.toString()).div(b.toString())
 }
 
 /**
@@ -97,7 +97,7 @@ export function div(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
  * @returns 제곱 값
  */
 export function pow(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
-  return new BigNumber(a.toString()).pow(b.toString());
+  return new BigNumber(a.toString()).pow(b.toString())
 }
 
 /**
@@ -107,7 +107,7 @@ export function pow(a: BigNumber.Value, b: BigNumber.Value): BigNumber {
  * @returns boolean
  */
 export function isGreaterThan(a: BigNumber.Value, b: BigNumber.Value): boolean {
-  return new BigNumber(a.toString()).isGreaterThan(b.toString());
+  return new BigNumber(a.toString()).isGreaterThan(b.toString())
 }
 
 /**
@@ -116,8 +116,11 @@ export function isGreaterThan(a: BigNumber.Value, b: BigNumber.Value): boolean {
  * @param b b
  * @returns boolean
  */
-export function isGreaterThanOrEqual(a: BigNumber.Value, b: BigNumber.Value): boolean {
-  return new BigNumber(a.toString()).isGreaterThanOrEqualTo(b.toString());
+export function isGreaterThanOrEqual(
+  a: BigNumber.Value,
+  b: BigNumber.Value
+): boolean {
+  return new BigNumber(a.toString()).isGreaterThanOrEqualTo(b.toString())
 }
 
 /**
@@ -127,7 +130,7 @@ export function isGreaterThanOrEqual(a: BigNumber.Value, b: BigNumber.Value): bo
  * @returns boolean
  */
 export function isLessThan(a: BigNumber.Value, b: BigNumber.Value): boolean {
-  return new BigNumber(a.toString()).isLessThan(b.toString());
+  return new BigNumber(a.toString()).isLessThan(b.toString())
 }
 
 /**
@@ -136,6 +139,9 @@ export function isLessThan(a: BigNumber.Value, b: BigNumber.Value): boolean {
  * @param b b
  * @returns boolean
  */
-export function isLessThanOrEqual(a: BigNumber.Value, b: BigNumber.Value): boolean {
-  return new BigNumber(a.toString()).isLessThanOrEqualTo(b.toString());
+export function isLessThanOrEqual(
+  a: BigNumber.Value,
+  b: BigNumber.Value
+): boolean {
+  return new BigNumber(a.toString()).isLessThanOrEqualTo(b.toString())
 }

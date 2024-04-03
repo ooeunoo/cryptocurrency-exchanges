@@ -3,23 +3,23 @@ export interface IExchangeShared {
 }
 
 export interface ISharedEndpoint {
-  market: string;
-  ticker: string;
-  walletStatus: string;
-  balance: string;
-  depositAddress: string;
-  depositHistory: string;
-  withdrawHistory: string;
-  completedOrderHistory: string;
-  unCompletedOrderHistory: string;
+  market: string
+  ticker: string
+  walletStatus: string
+  balance: string
+  depositAddress: string
+  depositHistory: string
+  withdrawHistory: string
+  completedOrderHistory: string
+  unCompletedOrderHistory: string
 
   // korbit
-  oauth2?: string;
+  oauth2?: string
 }
 
 export interface ISharedSubscribeType {
-  ticker: string;
-  transaction: string;
-  orderbook: string;
-  myTransaction?: string;
+  ticker: string
+  transaction: string
+  orderbook: string
+  myTransaction?: string
 }

@@ -1,1 +1,1 @@
-export type DataConverter = (data: unknown) => unknown;
+export type DataConverter = (data: unknown) => unknown

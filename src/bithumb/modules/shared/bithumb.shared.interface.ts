@@ -1,10 +1,10 @@
 export interface IBithumbResponse<T> {
-  status: string;
-  data: T;
+  status: string
+  data: T
 }
 
 export interface IBithumbHeader {
-  "Api-Key": string;
-  "Api-Sign": string;
-  "Api-Nonce": number;
+  'Api-Key': string
+  'Api-Sign': string
+  'Api-Nonce': number
 }
