@@ -1,6 +1,6 @@
 import * as crypto from 'crypto'
 import * as queystring from 'querystring'
-import { IExchangeShared } from '../../../common/interfaces/exchange.shared.interface'
+import { IExchangeShared } from '../../../exchange/interfaces/exchange.shared.interface'
 import { RawAxiosRequestHeaders } from 'axios'
 
 export class BithumbShared implements IExchangeShared {

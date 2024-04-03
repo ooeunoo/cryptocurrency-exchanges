@@ -1,10 +1,11 @@
-import { orderSide, tickerChange } from '../../../common/enum'
+import { OrderSide } from '../../../exchange/enums/exchange.private.enum'
+import { TickerChange } from '../../../exchange/enums/exchange.subscribe.enum'
 import {
   IExchangeSubscribeConverter,
   ISubscribeOrderbook,
   ISubscribeTicker,
   ISubscribeTransaction,
-} from '../../../common/interfaces/exchange.subscribe.interface'
+} from '../../../exchange/interfaces/exchange.subscribe.interface'
 import { isGreaterThan, isZero, toBigNumberString } from '../../../utils/number'
 import {
   IKorbitSubscribeOrderbook,
@@ -21,10 +22,10 @@ export const converter: IExchangeSubscribeConverter = {
     const data = res.data
     const [currency, unit] = data.currency_pair.split('_')
     const change = isGreaterThan(data.change, 0)
-      ? tickerChange.rise
+      ? TickerChange.rise
       : isZero(data.change)
-        ? tickerChange.even
-        : tickerChange.fall
+        ? TickerChange.even
+        : TickerChange.fall
     return {
       currency: currency.toUpperCase(),
       unit: unit.toUpperCase(),
@@ -52,7 +53,7 @@ export const converter: IExchangeSubscribeConverter = {
       unit: unit.toUpperCase(),
       price: toBigNumberString(data.price),
       amount: toBigNumberString(data.amount),
-      side: data.taker == 'buy' ? orderSide.ask : orderSide.bid,
+      side: data.taker == 'buy' ? OrderSide.ask : OrderSide.bid,
       timestamp: data.timestamp,
     }
   },

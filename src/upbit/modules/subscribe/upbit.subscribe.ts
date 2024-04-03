@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
-import { IExchangeSubscribe } from '../../../common/interfaces/exchange.subscribe.interface'
-import { subscribeType } from '../../../common/enum'
+import { IExchangeSubscribe } from '../../../exchange/interfaces/exchange.subscribe.interface'
 import { UpbitPublic } from '../public/upbit.public'
 import { converter } from './upbit.subscribe.converter'
 import { WebSocketClient } from '../../../common/websocket'
 import { constants } from '../../upbit.constants'
+import { SubscribeType } from '../../../exchange/enums/exchange.subscribe.enum'
 
 export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
   constructor(accessKey: string, secretKey: string) {
@@ -12,7 +12,7 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
   }
 
   async client(
-    subscribe: subscribeType,
+    subscribe: SubscribeType,
     currency: string,
     unit: string
   ): Promise<WebSocketClient> {
@@ -21,20 +21,20 @@ export class UpbitSubscribe extends UpbitPublic implements IExchangeSubscribe {
     let header = null
 
     switch (subscribe) {
-      case subscribeType.ticker:
-        type = constants.subscribeType.ticker
+      case SubscribeType.ticker:
+        type = constants.SubscribeType.ticker
         convert = converter.subscribeTicker
         break
-      case subscribeType.transaction:
-        type = constants.subscribeType.transaction
+      case SubscribeType.transaction:
+        type = constants.SubscribeType.transaction
         convert = converter.subscribeTransaction
         break
-      case subscribeType.orderbook:
-        type = constants.subscribeType.orderbook
+      case SubscribeType.orderbook:
+        type = constants.SubscribeType.orderbook
         convert = converter.subscribeOrderbook
         break
-      case subscribeType.myTransaction:
-        type = constants.subscribeType.myTransaction
+      case SubscribeType.myTransaction:
+        type = constants.SubscribeType.myTransaction
         convert = converter.subscribeMyTransaction
         header = this.header()
         break

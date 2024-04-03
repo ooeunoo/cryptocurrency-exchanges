@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 import { Coinone } from './coinone'
-import { subscribeType } from '../common/enum'
+import { SubscribeType } from '../exchange/enums/exchange.subscribe.enum'
 
 describe('coinone', () => {
   let coinone: Coinone
@@ -51,7 +51,7 @@ describe('coinone', () => {
   })
   it('Subscribe public data', async () => {
     const ws = await coinone.subscribe.client(
-      subscribeType.ticker,
+      SubscribeType.ticker,
       'BTC',
       'KRW'
     )

@@ -1,6 +1,4 @@
-// Upbit.ts
-
-import { IExchange } from '../common/interfaces/exchange.interface'
+import { IExchange } from '../exchange/interfaces/exchange.interface'
 import { UpbitPrivate } from './modules/private/upbit.private'
 import { UpbitPublic } from './modules/public/upbit.public'
 import { UpbitSubscribe } from './modules/subscribe/upbit.subscribe'

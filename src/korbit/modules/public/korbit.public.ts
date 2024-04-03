@@ -3,7 +3,7 @@ import {
   IExchangePublic,
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { KorbitShared } from '../shared/korbit.shared'
 import { converter } from './korbit.public.converter'
 import { constants } from '../../korbit.constants'

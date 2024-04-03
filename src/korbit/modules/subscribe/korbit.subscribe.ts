@@ -1,9 +1,9 @@
-import { IExchangeSubscribe } from '../../../common/interfaces/exchange.subscribe.interface'
-import { subscribeType } from '../../../common/enum'
+import { IExchangeSubscribe } from '../../../exchange/interfaces/exchange.subscribe.interface'
 import { WebSocketClient } from '../../../common/websocket'
 import { converter } from './korbit.subscribe.converter'
 import { KorbitShared } from '../shared/korbit.shared'
 import { constants } from '../../korbit.constants'
+import { SubscribeType } from '../../../exchange/enums/exchange.subscribe.enum'
 
 export class KorbitSubscribe
   extends KorbitShared
@@ -14,7 +14,7 @@ export class KorbitSubscribe
   }
 
   async client(
-    subscribe: subscribeType,
+    subscribe: SubscribeType,
     currency: string,
     unit: string
   ): Promise<WebSocketClient> {
@@ -24,16 +24,16 @@ export class KorbitSubscribe
     let convert = null
 
     switch (subscribe) {
-      case subscribeType.ticker:
-        type = constants.subscribeType.ticker
+      case SubscribeType.ticker:
+        type = constants.SubscribeType.ticker
         convert = converter.subscribeTicker
         break
-      case subscribeType.transaction:
-        type = constants.subscribeType.transaction
+      case SubscribeType.transaction:
+        type = constants.SubscribeType.transaction
         convert = converter.subscribeTransaction
         break
-      case subscribeType.orderbook:
-        type = constants.subscribeType.orderbook
+      case SubscribeType.orderbook:
+        type = constants.SubscribeType.orderbook
         convert = converter.subscribeOrderbook
         break
     }

@@ -1,4 +1,7 @@
-import { depositWithdrawType, depsoitWithdrawState } from '../../../common/enum'
+import {
+  DepositWithdrawType,
+  DepsoitWithdrawState,
+} from '../../../exchange/enums/exchange.private.enum'
 import {
   IBalance,
   IDepositAddress,
@@ -6,7 +9,7 @@ import {
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from '../../../common/interfaces/exchange.private.interface'
+} from '../../../exchange/interfaces/exchange.private.interface'
 import { add, isGreaterThan, toBigNumberString } from '../../../utils/number'
 import {
   IKorbitBalance,
@@ -64,21 +67,21 @@ export const converter: IExchangePrivateConverter = {
   depositHistory: function (
     data: IKorbitDepositHistory[]
   ): IDepositWithdrawHistory[] {
-    const convertState = (state: string): depsoitWithdrawState => {
+    const convertState = (state: string): DepsoitWithdrawState => {
       switch (state) {
         case 'filled':
-          return depsoitWithdrawState.accepted
+          return DepsoitWithdrawState.accepted
         case 'requested':
-          return depsoitWithdrawState.processing
+          return DepsoitWithdrawState.processing
         default:
-          return depsoitWithdrawState.unknown
+          return DepsoitWithdrawState.unknown
       }
     }
 
     return data.map(
       ({ currency, amount, details, status, created_at, completed_at }) => {
         return {
-          type: depositWithdrawType.deposit,
+          type: DepositWithdrawType.deposit,
           txId: details?.transaction_id,
           currency: currency.toUpperCase(),
           network: null,
@@ -98,21 +101,21 @@ export const converter: IExchangePrivateConverter = {
   withdrawHistory: function (
     data: IKorbitWithdrawHistory[]
   ): IDepositWithdrawHistory[] {
-    const convertState = (state: string): depsoitWithdrawState => {
+    const convertState = (state: string): DepsoitWithdrawState => {
       switch (state) {
         case 'filled':
-          return depsoitWithdrawState.accepted
+          return DepsoitWithdrawState.accepted
         case 'requested':
-          return depsoitWithdrawState.processing
+          return DepsoitWithdrawState.processing
         default:
-          return depsoitWithdrawState.unknown
+          return DepsoitWithdrawState.unknown
       }
     }
 
     return data.map(
       ({ currency, amount, details, status, created_at, completed_at }) => {
         return {
-          type: depositWithdrawType.withdraw,
+          type: DepositWithdrawType.withdraw,
           txId: details?.transaction_id,
           currency: currency.toUpperCase(),
           network: null,

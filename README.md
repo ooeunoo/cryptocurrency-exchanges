@@ -26,8 +26,6 @@ import { Upbit } from "cryptocurrency-exchanges"
 
 ### 공개 (Public)
 
-
-
 - **fetchMarkets**: 거래소에서 지원하는 모든 종목 목록
 ```ts
 const upbit = new Upbit()
@@ -98,8 +96,8 @@ const walletStatus = await upbit.private.fetchBalance();
 ```
 [  
   { 
-    currency: 'KRW', 
-    balance: '1000000', 
+    currency: 'BTC', 
+    balance: '0.232', 
     lockedBalance: '0', 
     avgBuyPrice: '0'
   },

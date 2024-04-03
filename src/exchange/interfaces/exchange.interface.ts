@@ -1,4 +1,4 @@
-import { Exchange } from '../enum'
+import { IResponseStatus } from '../../common/enum'
 import { IExchangePrivate } from './exchange.private.interface'
 import { IExchangePublic } from './exchange.public.interface'
 import { IExchangeSubscribe } from './exchange.subscribe.interface'
@@ -9,7 +9,9 @@ export interface IExchange {
   subscribe: IExchangeSubscribe
 }
 
-export interface IExcahngeResponse {
-  platform: Exchange
-  data: unknown
+export interface IResponse {
+  status: IResponseStatus
+  platform: IExchange
+  result: unknown
+  message?: string
 }

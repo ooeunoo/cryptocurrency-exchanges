@@ -3,7 +3,7 @@ import {
   IExchangePublic,
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { CoinoneShared } from '../shared/coinone.shared'
 import { converter } from './coinone.public.converter'
 import { constants } from '../../coinone.constants'

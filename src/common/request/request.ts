@@ -1,5 +1,5 @@
 import axios, { AxiosError, RawAxiosRequestHeaders } from 'axios'
-import { TRequestData, TRequestParam } from './request.interface'
+import { TRequestData, TRequestParam } from './request.type'
 
 export enum method {
   'get' = 'GET',

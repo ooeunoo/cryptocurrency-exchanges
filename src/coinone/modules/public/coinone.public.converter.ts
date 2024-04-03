@@ -2,7 +2,7 @@ import {
   IExchangePublicConverter,
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { toBigNumberString } from '../../../utils/number'
 import { ICoinoneMarket, ICoinoneTicker } from './coinone.public.interface'
 

@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 import { Bithumb } from './bithumb'
-import { subscribeType } from '../common/enum'
+import { SubscribeType } from '../exchange/enums/exchange.subscribe.enum'
 
 describe('bithumb', () => {
   let bithumb: Bithumb
@@ -52,7 +52,7 @@ describe('bithumb', () => {
 
   it('Subscribe public data', async () => {
     const ws = await bithumb.subscribe.client(
-      subscribeType.ticker,
+      SubscribeType.ticker,
       'BTC',
       'KRW'
     )

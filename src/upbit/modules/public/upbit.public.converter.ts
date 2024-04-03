@@ -1,7 +1,7 @@
 import {
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { IUpbitMarket, IUpbitTicker } from './upbit.public.interface'
 import { toBigNumberString } from '../../../utils/number'
 

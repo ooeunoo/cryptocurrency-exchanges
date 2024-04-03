@@ -1,9 +1,9 @@
 import {
-  depsoitWithdrawState,
-  orderSide,
-  orderState,
-  orderType,
-} from '../../common/enum'
+  DepsoitWithdrawState,
+  OrderSide,
+  OrderState,
+  OrderType,
+} from '../enums/exchange.private.enum'
 
 export interface IExchangePrivate {
   fetchWalletStatus(): Promise<IWalletStatus[]>
@@ -69,7 +69,7 @@ export interface IDepositWithdrawHistory {
   network: string | null // 네트워크
   amount: string // 수량
   fee: string | null // 수수료
-  state: depsoitWithdrawState //  상태
+  state: DepsoitWithdrawState //  상태
   fromAddress: string | null // From 주소
   fromAddressTag: string | null // To 주소의 태그
   toAddress: string | null // To 주소
@@ -80,9 +80,9 @@ export interface IDepositWithdrawHistory {
 
 export interface IOrderHistory {
   id: string // 주문 id
-  type: orderType | null // 타입 - 리밋 / 마켓/ 스탑 리밋
-  side: orderSide // 사이드 - 매수 / 매도
-  state: orderState | null // 주문 상태
+  type: OrderType | null // 타입 - 리밋 / 마켓/ 스탑 리밋
+  side: OrderSide // 사이드 - 매수 / 매도
+  state: OrderState | null // 주문 상태
   currency: string // 통화
   unit: string // 단위
   price: string // 구매가

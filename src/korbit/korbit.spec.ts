@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 import { Korbit } from './korbit'
-import { subscribeType } from '../common/enum'
+import { SubscribeType } from '../exchange/enums/exchange.subscribe.enum'
 
 describe('KORBIT', () => {
   let korbit: Korbit
@@ -50,7 +50,7 @@ describe('KORBIT', () => {
     console.log(result)
   })
   it('Subscribe public data', async () => {
-    const ws = await korbit.subscribe.client(subscribeType.ticker, 'BTC', 'KRW')
+    const ws = await korbit.subscribe.client(SubscribeType.ticker, 'BTC', 'KRW')
     ws.subscribe({
       onData: (data) => {
         console.log(data)

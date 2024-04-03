@@ -2,7 +2,7 @@ import { Upbit } from './upbit'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 import { WebSocketSubscription } from '../common/websocket'
-import { subscribeType } from '../common/enum'
+import { SubscribeType } from '../exchange/enums/exchange.subscribe.enum'
 
 describe('UPBIT', () => {
   let upbit: Upbit
@@ -57,7 +57,7 @@ describe('UPBIT', () => {
 
   it('Subscribe Data', async () => {
     const client = await upbit.subscribe.client(
-      subscribeType.ticker,
+      SubscribeType.ticker,
       'BTC',
       'KRW'
     )

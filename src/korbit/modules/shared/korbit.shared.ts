@@ -1,5 +1,5 @@
 import * as querystring from 'querystring'
-import { IExchangeShared } from '../../../common/interfaces/exchange.shared.interface'
+import { IExchangeShared } from '../../../exchange/interfaces/exchange.shared.interface'
 import { IKorbitOAuth, IKorbitOAuthData } from './korbit.shared.interface'
 import { method, request } from '../../../common/request/request'
 import { constants } from '../../korbit.constants'

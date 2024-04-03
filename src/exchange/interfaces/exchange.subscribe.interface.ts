@@ -1,9 +1,10 @@
-import { orderSide, subscribeType, tickerChange } from '../../common/enum'
-import { WebSocketClient } from '../websocket'
+import { WebSocketClient } from '../../common/websocket'
+import { OrderSide } from '../enums/exchange.private.enum'
+import { SubscribeType, TickerChange } from '../enums/exchange.subscribe.enum'
 
 export interface IExchangeSubscribe {
   client(
-    type: subscribeType,
+    type: SubscribeType,
     currency: string,
     unit: string
   ): Promise<WebSocketClient>
@@ -23,7 +24,7 @@ export interface ISubscribeTicker {
   low: string //	저가 (24시간 기준)
   first: string //	시가 (24시간 기준)
   last: string // 종가 (24시간 기준)
-  change: tickerChange // 가격 변화
+  change: TickerChange // 가격 변화
   accTradeVolume: string | null // 누적 거래량(UTC 0시 기준)	Double
   accTradeVolume24h: string | null // 24시간 누적 거래량	Double
   accTradePrice: string | null // 누적 거래대금(UTC 0시 기준)	Double
@@ -36,7 +37,7 @@ export interface ISubscribeTransaction {
   unit: string
   price: string // 가격
   amount: string // 수량
-  side: orderSide // 사이드 - 매수 / 매도
+  side: OrderSide // 사이드 - 매수 / 매도
   timestamp: number // 타임스탬프
 }
 
@@ -60,7 +61,7 @@ export interface ISubscribeOrderbook {
 export interface ISubscribeMyTransaction {
   currency: string
   unit: string
-  side: orderSide
+  side: OrderSide
   price: string
   amount: string
   timestamp: number

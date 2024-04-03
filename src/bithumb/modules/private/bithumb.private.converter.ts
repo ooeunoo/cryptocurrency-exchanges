@@ -1,16 +1,11 @@
 import {
-  depositWithdrawType,
-  depsoitWithdrawState,
-  orderSide,
-} from '../../../common/enum'
-import {
   IBalance,
   IDepositAddress,
   IDepositWithdrawHistory,
   IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
-} from '../../../common/interfaces/exchange.private.interface'
+} from '../../../exchange/interfaces/exchange.private.interface'
 import { sub, toBigNumberString } from '../../../utils/number'
 import {
   IBithumbBalance,
@@ -21,6 +16,11 @@ import {
   IBithumbWithdrawHistory,
 } from './bithumb.private.interface'
 import { IBithumbResponse } from '../shared/bithumb.shared.interface'
+import {
+  DepositWithdrawType,
+  DepsoitWithdrawState,
+  OrderSide,
+} from '../../../exchange/enums/exchange.private.enum'
 
 export const converter: IExchangePrivateConverter = {
   walletStatus: function (
@@ -88,13 +88,13 @@ export const converter: IExchangePrivateConverter = {
     const pdata = data.data
     return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
       return {
-        type: depositWithdrawType.deposit,
+        type: DepositWithdrawType.deposit,
         txId: null,
         currency: order_currency.toUpperCase(),
         network: null,
         amount: toBigNumberString(amount),
         fee: toBigNumberString(fee),
-        state: depsoitWithdrawState.accepted,
+        state: DepsoitWithdrawState.accepted,
         fromAddress: null,
         fromAddressTag: null,
         toAddress: null,
@@ -111,13 +111,13 @@ export const converter: IExchangePrivateConverter = {
 
     return pdata.map(({ order_currency, fee, amount, transfer_date }) => {
       return {
-        type: depositWithdrawType.withdraw,
+        type: DepositWithdrawType.withdraw,
         txId: null,
         currency: order_currency.toUpperCase(),
         network: null,
         amount: toBigNumberString(amount),
         fee: toBigNumberString(fee),
-        state: depsoitWithdrawState.accepted,
+        state: DepsoitWithdrawState.accepted,
         fromAddress: null,
         fromAddressTag: null,
         toAddress: null,
@@ -146,7 +146,7 @@ export const converter: IExchangePrivateConverter = {
         return {
           id: order_id,
           type: null,
-          side: type == 'bid' ? orderSide.bid : orderSide.ask,
+          side: type == 'bid' ? OrderSide.bid : OrderSide.ask,
           state: null,
           currency: order_currency.toUpperCase(),
           unit: payment_currency.toUpperCase(),
@@ -178,7 +178,7 @@ export const converter: IExchangePrivateConverter = {
         return {
           id: order_id,
           type: null,
-          side: type == 'bid' ? orderSide.bid : orderSide.ask,
+          side: type == 'bid' ? OrderSide.bid : OrderSide.ask,
           state: null,
           currency: order_currency.toUpperCase(),
           unit: payment_currency.toUpperCase(),

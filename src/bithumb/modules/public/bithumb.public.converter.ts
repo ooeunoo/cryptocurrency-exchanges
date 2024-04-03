@@ -2,7 +2,7 @@ import {
   IExchangePublicConverter,
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { toBigNumberString } from '../../../utils/number'
 import { IBithumbResponse } from '../shared/bithumb.shared.interface'
 import {

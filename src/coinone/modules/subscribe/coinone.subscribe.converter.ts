@@ -1,10 +1,11 @@
-import { orderSide, tickerChange } from '../../../common/enum'
+import { OrderSide } from '../../../exchange/enums/exchange.private.enum'
+import { TickerChange } from '../../../exchange/enums/exchange.subscribe.enum'
 import {
   IExchangeSubscribeConverter,
   ISubscribeOrderbook,
   ISubscribeTicker,
   ISubscribeTransaction,
-} from '../../../common/interfaces/exchange.subscribe.interface'
+} from '../../../exchange/interfaces/exchange.subscribe.interface'
 import {
   isGreaterThan,
   isZero,
@@ -25,10 +26,10 @@ export const converter: IExchangeSubscribeConverter = {
     const data = res.data
 
     const change = isGreaterThan(data.yesterday_last, data.last)
-      ? tickerChange.rise
+      ? TickerChange.rise
       : isZero(sub(data.yesterday_last, data.last))
-        ? tickerChange.even
-        : tickerChange.fall
+        ? TickerChange.even
+        : TickerChange.fall
 
     return {
       currency: data.target_currency.toUpperCase(),
@@ -54,7 +55,7 @@ export const converter: IExchangeSubscribeConverter = {
       unit: data.quote_currency.toUpperCase(),
       price: toBigNumberString(data.price),
       amount: toBigNumberString(data.qty),
-      side: data.is_seller_maker ? orderSide.bid : orderSide.ask,
+      side: data.is_seller_maker ? OrderSide.bid : OrderSide.ask,
       timestamp: data.timestamp,
     }
   },

@@ -1,4 +1,4 @@
-import { IExchange } from '../common/interfaces/exchange.interface'
+import { IExchange } from '../exchange/interfaces/exchange.interface'
 import { KorbitPrivate } from './modules/private/korbit.private'
 import { KorbitPublic } from './modules/public/korbit.public'
 import { KorbitSubscribe } from './modules/subscribe/korbit.subscribe'

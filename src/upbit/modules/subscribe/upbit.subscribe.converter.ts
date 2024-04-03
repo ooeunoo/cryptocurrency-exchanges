@@ -4,29 +4,30 @@ import {
   ISubscribeOrderbook,
   ISubscribeMyTransaction,
   IOrderBook,
-} from '../../../common/interfaces/exchange.subscribe.interface'
+} from '../../../exchange/interfaces/exchange.subscribe.interface'
 import {
   IUpbitSubscribeTransaction,
   IUpbitSubscribeTicker,
   IUpbitSubscribeOrderbook,
   IUpbitSubscribeMyTransaction,
 } from './upbit.subscribe.interface'
-import { orderSide, tickerChange } from '../../../common/enum'
 import { toBigNumberString } from '../../../utils/number'
+import { TickerChange } from '../../../exchange/enums/exchange.subscribe.enum'
+import { OrderSide } from '../../../exchange/enums/exchange.private.enum'
 
 export const converter = {
   subscribeTicker: (data: IUpbitSubscribeTicker): ISubscribeTicker | null => {
     const [unit, currency] = data.code.split('-')
-    const convertChange = (change: string): tickerChange => {
+    const convertChange = (change: string): TickerChange => {
       switch (change) {
         case 'FALL':
-          return tickerChange.fall
+          return TickerChange.fall
         case 'RISE':
-          return tickerChange.rise
+          return TickerChange.rise
         case 'EVEN':
-          return tickerChange.even
+          return TickerChange.even
         default:
-          return tickerChange.unknown
+          return TickerChange.unknown
       }
     }
     return {
@@ -53,7 +54,7 @@ export const converter = {
       unit: unit.toUpperCase(),
       price: toBigNumberString(data.trade_price),
       amount: toBigNumberString(data.trade_volume),
-      side: data.ask_bid == 'ASK' ? orderSide.ask : orderSide.bid,
+      side: data.ask_bid == 'ASK' ? OrderSide.ask : OrderSide.bid,
       timestamp: data.trade_timestamp,
     }
   },
@@ -92,7 +93,7 @@ export const converter = {
     return {
       currency: currency.toUpperCase(),
       unit: unit.toUpperCase(),
-      side: data.ask_bid == 'ASK' ? orderSide.ask : orderSide.bid,
+      side: data.ask_bid == 'ASK' ? OrderSide.ask : OrderSide.bid,
       price: toBigNumberString(data.price),
       amount: toBigNumberString(data.volume),
       timestamp: data.trade_timestamp,

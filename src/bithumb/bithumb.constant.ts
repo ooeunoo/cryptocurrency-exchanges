@@ -12,7 +12,7 @@ export const constants = {
     completedOrderHistory: '',
     unCompletedOrderHistory: '',
   },
-  subscribeType: {
+  SubscribeType: {
     ticker: 'ticker',
     transaction: 'transaction',
     orderbook: 'orderbookdepth',

@@ -5,7 +5,7 @@ import {
   IExchangePrivate,
   IOrderHistory,
   IWalletStatus,
-} from '../../../common/interfaces/exchange.private.interface'
+} from '../../../exchange/interfaces/exchange.private.interface'
 import { method, requestAuth } from '../../../common/request/request'
 import {
   DEFAULT_PAGE_LIMIT,

@@ -1,9 +1,9 @@
-import { IExchangeSubscribe } from '../../../common/interfaces/exchange.subscribe.interface'
-import { subscribeType } from '../../../common/enum'
+import { IExchangeSubscribe } from '../../../exchange/interfaces/exchange.subscribe.interface'
 import { WebSocketClient } from '../../../common/websocket'
 import { converter } from './bithumb.subscribe.converter'
 import { BithumbPublic } from '../public/bithumb.public'
 import { constants } from '../../bithumb.constant'
+import { SubscribeType } from '../../../exchange/enums/exchange.subscribe.enum'
 
 export class BithumbSubscribe
   extends BithumbPublic
@@ -14,7 +14,7 @@ export class BithumbSubscribe
   }
 
   async client(
-    subscribe: subscribeType,
+    subscribe: SubscribeType,
     currency: string,
     unit: string
   ): Promise<WebSocketClient> {
@@ -22,16 +22,16 @@ export class BithumbSubscribe
     let convert = null
 
     switch (subscribe) {
-      case subscribeType.ticker:
-        type = constants.subscribeType.ticker
+      case SubscribeType.ticker:
+        type = constants.SubscribeType.ticker
         convert = converter.subscribeTicker
         break
-      case subscribeType.transaction:
-        type = constants.subscribeType.transaction
+      case SubscribeType.transaction:
+        type = constants.SubscribeType.transaction
         convert = converter.subscribeTransaction
         break
-      case subscribeType.orderbook:
-        type = constants.subscribeType.orderbook
+      case SubscribeType.orderbook:
+        type = constants.SubscribeType.orderbook
         convert = converter.subscribeOrderbook
         break
     }

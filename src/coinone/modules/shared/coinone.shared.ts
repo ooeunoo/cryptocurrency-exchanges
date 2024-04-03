@@ -1,5 +1,5 @@
 import * as crypto from 'crypto'
-import { IExchangeShared } from '../../../common/interfaces/exchange.shared.interface'
+import { IExchangeShared } from '../../../exchange/interfaces/exchange.shared.interface'
 import { RawAxiosRequestHeaders } from 'axios'
 
 export class CoinoneShared implements IExchangeShared {

@@ -4,7 +4,7 @@ import {
   IDepositWithdrawHistory,
   IOrderHistory,
   IWalletStatus,
-} from '../../../common/interfaces/exchange.private.interface'
+} from '../../../exchange/interfaces/exchange.private.interface'
 import { toBigNumberString } from '../../../utils/number'
 import {
   IUpbitBalance,
@@ -15,14 +15,15 @@ import {
   IUpbitWalletStatus,
   IUpbitWithdrawHistory,
 } from './upbit.private.interface'
-import {
-  depositWithdrawType,
-  depsoitWithdrawState,
-  orderSide,
-  orderState,
-  orderType,
-} from '../../../common/enum'
+
 import { toTimestamp } from '../../../utils/time'
+import {
+  DepositWithdrawType,
+  DepsoitWithdrawState,
+  OrderSide,
+  OrderState,
+  OrderType,
+} from '../../../exchange/enums/exchange.private.enum'
 
 export const converter = {
   walletStatus: (data: IUpbitWalletStatus[]): IWalletStatus[] => {
@@ -75,24 +76,24 @@ export const converter = {
     }
   },
   depositHistory: (data: IUpbitDepositHistory[]): IDepositWithdrawHistory[] => {
-    const convertState = (state: string): depsoitWithdrawState => {
+    const convertState = (state: string): DepsoitWithdrawState => {
       switch (state) {
         case 'PROCESSING':
-          return depsoitWithdrawState.processing
+          return DepsoitWithdrawState.processing
         case 'ACCEPTED':
-          return depsoitWithdrawState.accepted
+          return DepsoitWithdrawState.accepted
         case 'CANCELLED':
-          return depsoitWithdrawState.canceled
+          return DepsoitWithdrawState.canceled
         case 'REJECTED':
-          return depsoitWithdrawState.rejected
+          return DepsoitWithdrawState.rejected
         case 'TRAVEL_RULE_SUSPECTED':
-          return depsoitWithdrawState.travelRuleSuspected
+          return DepsoitWithdrawState.travelRuleSuspected
         case 'REFUNDING':
-          return depsoitWithdrawState.refunded
+          return DepsoitWithdrawState.refunded
         case 'REFUNDED':
-          return depsoitWithdrawState.refunded
+          return DepsoitWithdrawState.refunded
         default:
-          return depsoitWithdrawState.unknown
+          return DepsoitWithdrawState.unknown
       }
     }
     return data.map(
@@ -107,7 +108,7 @@ export const converter = {
         fee,
       }) => {
         return {
-          type: depositWithdrawType.deposit,
+          type: DepositWithdrawType.deposit,
           txId: txid,
           currency: currency.toUpperCase(),
           network: net_type.toUpperCase() ?? null,
@@ -127,28 +128,28 @@ export const converter = {
   withdrawHistory: (
     data: IUpbitWithdrawHistory[]
   ): IDepositWithdrawHistory[] => {
-    const convertState = (state: string): depsoitWithdrawState => {
+    const convertState = (state: string): DepsoitWithdrawState => {
       switch (state) {
         case 'WAITING': // 입금진행
-          return depsoitWithdrawState.waiting
+          return DepsoitWithdrawState.waiting
         case 'PROCESSING':
-          return depsoitWithdrawState.processing
+          return DepsoitWithdrawState.processing
         case 'DONE':
-          return depsoitWithdrawState.accepted
+          return DepsoitWithdrawState.accepted
         case 'FAILED':
-          return depsoitWithdrawState.failed
+          return DepsoitWithdrawState.failed
         case 'CANCELLED':
-          return depsoitWithdrawState.canceled
+          return DepsoitWithdrawState.canceled
         case 'REJECTED':
-          return depsoitWithdrawState.rejected
+          return DepsoitWithdrawState.rejected
         default:
-          return depsoitWithdrawState.unknown
+          return DepsoitWithdrawState.unknown
       }
     }
     return data.map(
       ({ currency, txid, state, created_at, done_at, amount, fee }) => {
         return {
-          type: depositWithdrawType.withdraw,
+          type: DepositWithdrawType.withdraw,
           txId: txid,
           currency: currency.toUpperCase(),
           network: null,
@@ -168,33 +169,33 @@ export const converter = {
   completedOrderHistory: (
     data: IUpbitCompletedOrderHistory[]
   ): IOrderHistory[] => {
-    const convertorderType = (type: string): orderType => {
+    const convertorderType = (type: string): OrderType => {
       switch (type) {
         case 'limit':
-          return orderType.limit
+          return OrderType.limit
         case 'price':
         case 'market':
-          return orderType.market
+          return OrderType.market
         case 'best':
-          return orderType.best
+          return OrderType.best
         case 'stop_limit':
-          return orderType.stop_limit
+          return OrderType.stop_limit
         default:
-          return orderType.unknown
+          return OrderType.unknown
       }
     }
-    const convertState = (state: string): orderState => {
+    const convertState = (state: string): OrderState => {
       switch (state) {
         case 'wait':
-          return orderState.undone
+          return OrderState.undone
         case 'watch':
-          return orderState.undone
+          return OrderState.undone
         case 'done':
-          return orderState.done
+          return OrderState.done
         case 'cancel':
-          return orderState.done
+          return OrderState.done
         default:
-          return orderState.unknown
+          return OrderState.unknown
       }
     }
     return data.map(
@@ -214,7 +215,7 @@ export const converter = {
         return {
           id: uuid,
           type: convertorderType(ord_type),
-          side: side == 'ask' ? orderSide.ask : orderSide.bid,
+          side: side == 'ask' ? OrderSide.ask : OrderSide.bid,
           state: convertState(state),
           currency: currency.toUpperCase(),
           unit,
@@ -230,33 +231,33 @@ export const converter = {
   unCompletedOrderHistory: (
     data: IUpbitUnCompletedOrderHistory[]
   ): IOrderHistory[] => {
-    const convertorderType = (type: string): orderType => {
+    const convertorderType = (type: string): OrderType => {
       switch (type) {
         case 'limit':
-          return orderType.limit
+          return OrderType.limit
         case 'price':
         case 'market':
-          return orderType.market
+          return OrderType.market
         case 'best':
-          return orderType.best
+          return OrderType.best
         case 'stop_limit':
-          return orderType.stop_limit
+          return OrderType.stop_limit
         default:
-          return orderType.unknown
+          return OrderType.unknown
       }
     }
-    const convertState = (state: string): orderState => {
+    const convertState = (state: string): OrderState => {
       switch (state) {
         case 'wait':
-          return orderState.undone
+          return OrderState.undone
         case 'watch':
-          return orderState.undone
+          return OrderState.undone
         case 'done':
-          return orderState.done
+          return OrderState.done
         case 'cancel':
-          return orderState.done
+          return OrderState.done
         default:
-          return orderState.unknown
+          return OrderState.unknown
       }
     }
     return data.map(
@@ -276,7 +277,7 @@ export const converter = {
         return {
           id: uuid,
           type: convertorderType(ord_type),
-          side: side == 'ask' ? orderSide.ask : orderSide.bid,
+          side: side == 'ask' ? OrderSide.ask : OrderSide.bid,
           state: convertState(state),
           currency: currency.toUpperCase(),
           unit,

@@ -4,7 +4,7 @@ import {
   IExchangePublic,
   IMarket,
   ITicker,
-} from '../../../common/interfaces/exchange.public.interface'
+} from '../../../exchange/interfaces/exchange.public.interface'
 import { converter } from './upbit.public.converter'
 import { constants } from '../../upbit.constants'
 import { IUpbitMarket, IUpbitTicker } from './upbit.public.interface'
