@@ -2,6 +2,7 @@ import {
   IBalance,
   IDepositAddress,
   IDepositWithdrawHistory,
+  IExchangePrivateConverter,
   IOrderHistory,
   IWalletStatus,
 } from '../../../exchange/interfaces/exchange.private.interface'
@@ -15,7 +16,6 @@ import {
   IUpbitWalletStatus,
   IUpbitWithdrawHistory,
 } from './upbit.private.interface'
-
 import { toTimestamp } from '../../../utils/time'
 import {
   DepositWithdrawType,
@@ -25,7 +25,7 @@ import {
   OrderType,
 } from '../../../exchange/enums/exchange.private.enum'
 
-export const converter = {
+export const converter: IExchangePrivateConverter = {
   walletStatus: (data: IUpbitWalletStatus[]): IWalletStatus[] => {
     return data.map(({ currency, wallet_state, net_type }) => {
       let deposit = false

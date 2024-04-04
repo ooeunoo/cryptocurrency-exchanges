@@ -1,6 +1,8 @@
+import { IResponse } from '../../common/response/response.interface'
+
 export interface IExchangePublic {
-  fetchMarkets(): Promise<IMarket[]>
-  fetchTickers(): Promise<ITicker[]>
+  fetchMarkets(): Promise<IResponse<IMarket[]>>
+  fetchTickers(): Promise<IResponse<ITicker[]>>
 }
 
 export interface IExchangePublicConverter {

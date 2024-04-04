@@ -1,9 +1,9 @@
-export interface IError {
+export interface IBithumbError {
   status: string
   message: string
 }
 
-export const error = {
+export const BITHUMB_ERROR: { [key: string]: string } = {
   'Bad Request(SSL)': 'https 호출 URL이 아님',
   'Bad Request(Bad Method)': 'POST 형식으로 호출하지 않음',
   'Bad Request(Auth Data)': '잘못된 요청 내용',

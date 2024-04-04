@@ -1,4 +1,4 @@
 export enum IResponseStatus {
-  Ok = 'OK',
-  Error = 'Error',
+  ok = 'ok',
+  error = 'error',
 }

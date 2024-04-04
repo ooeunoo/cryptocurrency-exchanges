@@ -1,12 +1,11 @@
-export interface IError {
+export interface IUpbitError {
   error: {
     message: string
     name: string
   }
 }
 
-export const error = {
-  server_error: '알수없는 에러',
+export const UPBIT_ERROR: { [key: string]: string } = {
   create_ask_error:
     '주문 요청 정보가 올바르지 않습니다. 파라미터 값이 올바른지 확인해주세요.',
   create_bid_error:
@@ -21,6 +20,8 @@ export const error = {
     '잘못된 API 요청입니다. 누락된 파라미터가 없는지 확인해주세요.',
   invalid_query_payload:
     '올바르지 않는 서명입니다. AccessKey 또는 SecretKey가 올바른지 확인 후 이용해주세요.',
+  invalid_access_key: '올바르지 않은 AccessKey 입니다.',
+  invalid_secret_key: '올바르지 않은 SecretKey 입니다.',
   jwt_verification:
     '올바르지 않는 서명입니다. AccessKey 또는 SecretKey가 올바른지 확인 후 이용해주세요.',
   expired_acess_key:

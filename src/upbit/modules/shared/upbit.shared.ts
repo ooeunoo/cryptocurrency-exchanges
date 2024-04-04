@@ -76,3 +76,17 @@ export class UpbitShared implements IExchangeShared {
     return { Authorization: `Bearer ${token}` }
   }
 }
+
+// function upbitPrivate(
+//   target: any,
+//   key: string,
+//   descriptor: PropertyDescriptor
+// ) {
+//   const originalMethod = descriptor.value
+//   descriptor.value = function (...args: any[]) {
+//     if (!this.accessKey || !this.secretKey) {
+//       throw new Error(CREDENTITAL_NOT_SETTED)
+//     }
+//     return originalMethod.apply(this, args)
+//   }
+// }

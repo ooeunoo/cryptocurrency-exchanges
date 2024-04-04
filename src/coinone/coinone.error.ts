@@ -1,10 +1,10 @@
-export interface IError {
+export interface ICoinoneError {
   result: string
   error_code: string
   error_msg: string
 }
 
-export const error = {
+export const COINONE_ERROR: { [key: string]: string } = {
   'Blocked user access': '제한된 사용자의 접근입니다.',
   'Request Token Parameter is needed': '토큰 파라미터 요청이 필요합니다.',
   'Access token is missing': '액세스 토큰이 필요합니다.',

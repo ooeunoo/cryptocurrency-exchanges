@@ -1,3 +1,4 @@
+import { IResponse } from '../../common/response/response.interface'
 import {
   DepsoitWithdrawState,
   OrderSide,
@@ -6,24 +7,24 @@ import {
 } from '../enums/exchange.private.enum'
 
 export interface IExchangePrivate {
-  fetchWalletStatus(): Promise<IWalletStatus[]>
-  fetchBalance(): Promise<IBalance[]>
+  fetchWalletStatus(): Promise<IResponse<IWalletStatus[]>>
+  fetchBalance(): Promise<IResponse<IBalance[]>>
   fetchDepositAddress(
     currency: string,
     network?: string
-  ): Promise<IDepositAddress | null>
+  ): Promise<IResponse<IDepositAddress | null>>
   fetchDepositHistory(
     currency: string,
     page: number,
     limit: number
-  ): Promise<IDepositWithdrawHistory[]>
+  ): Promise<IResponse<IDepositWithdrawHistory[]>>
   fetchWithdrawHistory(
     currency: string,
     page: number,
     limit: number
-  ): Promise<IDepositWithdrawHistory[]>
-  fetchCompletedOrderHistory(): Promise<IOrderHistory[]>
-  fetchUnCompletedOrderHistory(): Promise<IOrderHistory[]>
+  ): Promise<IResponse<IDepositWithdrawHistory[]>>
+  fetchCompletedOrderHistory(): Promise<IResponse<IOrderHistory[]>>
+  fetchUnCompletedOrderHistory(): Promise<IResponse<IOrderHistory[]>>
 }
 
 export interface IExchangePrivateConverter {

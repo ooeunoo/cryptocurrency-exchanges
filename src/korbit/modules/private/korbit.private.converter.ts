@@ -133,9 +133,9 @@ export const converter: IExchangePrivateConverter = {
     )
   },
   completedOrderHistory: function (): IOrderHistory[] {
-    throw new Error('Function not implemented.')
+    return []
   },
   unCompletedOrderHistory: function (): IOrderHistory[] {
-    throw new Error('Function not implemented.')
+    return []
   },
 }

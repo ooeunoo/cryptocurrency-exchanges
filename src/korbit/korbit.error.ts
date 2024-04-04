@@ -1,3 +1,3 @@
-export const error = {}
+export interface IKorbitError {}
 
-export interface IError {}
+export const KORBIT_ERROR: { [key: string]: string } = {}
